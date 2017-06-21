@@ -1,0 +1,41 @@
+﻿@using RTLS.ViewNotification
+
+@{
+    var alerts = TempData.ContainsKey(Alert.TempDataKey)
+                ? (List<Alert>)TempData[Alert.TempDataKey]
+                : new List<Alert>();
+}
+
+@foreach(var item in alerts)
+{
+    if (item.AlertStyle == AlertStyles.Success)
+    {
+        <div class="alert alert-success alert-dismissable fade in">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <b>@item.Message</b>
+        </div>
+    }
+    else if (item.AlertStyle == AlertStyles.Danger)
+    {
+        <div class="alert alert-danger alert-dismissable fade in">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <b>@item.Message</b>
+        </div>
+    }
+    else if (item.AlertStyle == AlertStyles.Warning)
+    {
+        <div class="alert alert-warning alert-dismissable fade in">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <b>@item.Message</b>
+        </div>
+    }
+    else if (item.AlertStyle == AlertStyles.Information)
+    {
+        <div class="alert alert-info alert-dismissable fade in">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <b>@item.Message</b>
+        </div>
+    }
+
+
+}

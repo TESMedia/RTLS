@@ -3,3 +3,7 @@
 ################################################################################
 
 /packages
+/RTLS.Services.App/obj/Debug
+/RTLS/obj/Debug
+/RTLS/RTLS.csproj.user
+/RTLS/bin
