@@ -27,7 +27,7 @@ namespace RTLS.Models
 
         public int z { get; set; }
 
-        public long last_seen_ts { get; set; }
+        public string last_seen_ts { get; set; }
 
         public string action { get; set; }
 
@@ -35,10 +35,10 @@ namespace RTLS.Models
 
         [NotMapped]
         public string[] an { get; set; }
-        
+
         public string AreaName { get; set; }
 
-        public int ? AreaId { get; set; }
+        public int? AreaId { get; set; }
 
         [ForeignKey("AreaId")]
         public virtual Area Areas { get; set; }

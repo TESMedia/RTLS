@@ -20,18 +20,14 @@ using RTLS.Repository;
 using System.Threading.Tasks;
 using RTLS.Enum;
 using Newtonsoft.Json.Linq;
+using RTLS.ViewModel;
 
 namespace RTLS.Controllers
 {
-    public class AdminController : BaseController
+    public class AdminController : Controller
     {
         // GET: Admin
         private ApplicationDbContext db = new ApplicationDbContext();
-
-        private TestService objtestService = new TestService();
-        private JavaScriptSerializer objSerialization = new JavaScriptSerializer();
-
-
         private static log4net.ILog Log { get; set; }
         ILog log = log4net.LogManager.GetLogger(typeof(AdminController));
 
@@ -42,7 +38,15 @@ namespace RTLS.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            List<MacAddress> lstMacAddress = db.MacAddress.ToList();
+            List<MacAddress> lstMacAddress = null;
+            try
+            {
+                lstMacAddress = db.MacAddress.ToList();
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.InnerException);
+            }
             return View(lstMacAddress);
         }
 
@@ -54,271 +58,20 @@ namespace RTLS.Controllers
         /// <param name="txtMacDevices"></param>
         /// <returns></returns>
         [HttpPost]
-        public  ActionResult Index(string Command,int [] chkMacDevices,string [] txtMacDevices,int ddlSelectCompany)
+        public ActionResult Index(RequestLocationDataVM model)
         {
-            TempData["MacAddresses"] = chkMacDevices;
-            //log.Error("error");
-            //log.Fatal("fatal");
-            //log.Warn("warning");
-            //log.Info("Get the MacAddress");
-
-            if (Command == "Save")
+            try
             {
-                SaveMacAddressInDb(txtMacDevices, ddlSelectCompany);
+                using (MacAddressRepository objMacRepository = new MacAddressRepository())
+                {
+                    objMacRepository.SaveMacAddress(model.MacAddresses, true);
+                }
             }
-            else if(Command=="Register")
+            catch(Exception ex)
             {
-                AddDeviceIds(chkMacDevices);
-            }
-            else if (Command == "Get Latest Position")
-            {
-                return RedirectToActionPermanent("GetLatestPosition",new { CompanyId= ddlSelectCompany });
-            }
-            else if (Command == "ViewMacAddress")
-            {
-
-            }
-            else if (Command == "De-Register")
-            {
-                DeRegisterMacAddress(chkMacDevices);
-            }
-            else if (Command == "Delete Mac Address")
-            {
-                DeleteMacAddress(chkMacDevices);
+                log.Error(ex.Message);
             }
             return RedirectToAction("Index");
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult Authenticate(LoginViewModel model)
-        {
-            try
-            {
-                this.log.Debug("Enter into the Authentication Action Method");
-                objtestService.Authenticate(model);
-                Success(string.Format("{0},  successfully Authenticated.", model.UserName), true);
-            }
-            catch(Exception ex)
-            {
-                this.log.Error("Exception occur"+ex.Message);
-                Danger("Looks like something went wrong. Please check your form.");
-            }
-            return RedirectToAction("Index");
-        }
-
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="deviceIds"></param>
-        /// <returns></returns>
-        public void SaveMacAddressInDb(string [] txtMacDevices,int CompanyId)
-        {
-  
-            try
-            {
-                this.log.Debug("Enter into the SaveMacAddressInDb Action Method");
-                foreach (var item in txtMacDevices)
-                {
-                    if(!(db.MacAddress.Any(m=>m.Mac==item)))
-                    {
-
-                        MacAddress objMac = new MacAddress();
-                        objMac.CompnayId = CompanyId;
-                     
-                        objMac.Mac = item;
-                        objMac.Intstatus = Convert.ToInt32(DeviceStatus.None);
-                        db.MacAddress.Add(objMac);
-                        db.SaveChanges();
-                        Success(string.Format("{0}{1} Successfully Saved into database.", item, "success"), true);
-                    }
-                    else
-                    {
-                        Warning(string.Format("{0}{1} MacAddress exist",item,"Warning"),true);
-                    }
-                   
-                }
-                
-            }
-            catch(Exception ex)
-            {
-                this.log.Error("Exception occur" + ex.Message);
-                Danger(string.Format("{0} Failed to store into database.", "Warning"), true);
-            }
-        }
-
-         /// <summary>
-         /// 
-         /// </summary>
-         /// <param name="chkMacDevices"></param>
-         /// <returns></returns>
-        public void AddDeviceIds(int [] macDevices)
-        {
-            try
-            {
-                this.log.Debug("Enter into the AddDeviceIds Action Method");
-                string strResult = null;
-                foreach (var item in macDevices)
-                {
-                    var ObjDevice = db.MacAddress.FirstOrDefault(m => m.Id == item);
-                    string mac = ObjDevice.Mac;
-                    if (db.MacAddress.FirstOrDefault(m => m.Id == item).Intstatus != Convert.ToInt32(DeviceStatus.Registered))
-                    {
-                        var objCompany = db.Company.FirstOrDefault(m => m.CompnayId == ObjDevice.CompnayId);
-                        var objSite = db.Site.FirstOrDefault(m => m.SiteId == objCompany.SiteId);
-
-                        //Call the API to register one one device 
-                        EngageLocations objApiCall = new EngageLocations();
-                        strResult = objApiCall.AddDeviceLocationRestClient(objCompany.CompanyName, objSite.SiteName, ObjDevice.Mac);
-                        ReturnNew objResult = JsonConvert.DeserializeObject<ReturnNew>(strResult);
-
-                        
-
-                        if (objResult.result.returncode == 0)
-                        {
-                            //Change the Status to Registered after getting success
-                            ObjDevice.Intstatus = Convert.ToInt32(DeviceStatus.Registered);
-                            db.Entry(ObjDevice).State = System.Data.Entity.EntityState.Modified;
-                            db.SaveChanges();
-
-                            //Notify the Success after the registeration successfully
-                            Success(string.Format("{0} Successfully Registered into server.", mac), true);
-                        }
-                        else
-                        {
-                            //Notify the failure after registration failed
-                            Danger(string.Format("{0}", objResult.result.errmsg), true);
-                        }
-
-                    }
-                    else
-                    {
-                        Warning(string.Format("{0}",mac+"MacAddress already Registered"), true);
-                    }
-                }
-               
-            }
-            catch (Exception ex)
-            {
-                this.log.Error("Exception occur" + ex.Message);
-                Danger(string.Format("{0}" + ex.Message), true);
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public ActionResult GetDeviceIds(int[] chkMacDevices)
-        {
-            try
-            {
-              
-            }
-            catch (Exception ex)
-            {
-                return View();
-            }
-            return RedirectToAction("Index");
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void DeleteMacAddress(int [] chkMacDevices)
-        {
-            try
-            {
-                this.log.Debug("Enter into the DeleteMacAddress Action Method");
-                Result objResult = null;
-                string strResult = objtestService.DeleteDevicesMonitor(chkMacDevices);
-                objResult = JsonConvert.DeserializeObject<Result>(strResult);
-
-                if (Convert.ToUInt32(objResult.returncode) == ServiceResult.Success)
-                {
-                    foreach (var item in chkMacDevices)
-                    {
-                        var deviceObject = db.MacAddress.FirstOrDefault(m => m.Id == item);
-                        string mac = deviceObject.Mac;
-                        if (deviceObject.Intstatus != Convert.ToInt32(DeviceStatus.Registered))
-                        {
-                            db.MacAddress.Remove(deviceObject);
-                            db.SaveChanges();
-                            Success(string.Format("{0} Successfully Registered into server.", mac), true);
-                        }
-                        else
-                        {
-                            Warning(string.Format("{0} is a Registered User So shouldn't Delete.", mac), true);
-                        }
-                    }
-                }
-                else
-                {
-                    Warning(string.Format("{0}" + objResult.errmsg), true);
-                }
-            }
-            catch(Exception ex)
-            {
-                this.log.Error("Exception occur" + ex.Message);
-                Danger(string.Format("{0}" + ex.Message), true);
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public void DeRegisterMacAddress(int[] chkMacDevices)
-        {
-            try
-            {
-                this.log.Debug("Enter into the DeRegisterMacAddress Action Method");
-
-                foreach (var item in chkMacDevices)
-                {
-                    var deviceObject = db.MacAddress.FirstOrDefault(m => m.Id == item);
-                    string mac = deviceObject.Mac;
-                    if (db.MacAddress.FirstOrDefault(m => m.Id == item).Intstatus != Convert.ToInt32(DeviceStatus.DeRegistered))
-                    {
-                        EngageLocations objEngage = new EngageLocations();
-                        objEngage.DeleteDeviceLocation(deviceObject.Company.CompanyName, deviceObject.Company.Site.SiteName, mac);
-                        deviceObject.Intstatus = Convert.ToInt32(DeviceStatus.DeRegistered);
-                        db.Entry(deviceObject).State = System.Data.Entity.EntityState.Modified;
-                        db.SaveChanges();
-                        Success(string.Format("{0} Successfully DeRegistred in server.", mac), true);
-                    }
-                    else
-                    {
-                        Warning(string.Format("{0} MacAddress alreadey DeRegister in server", mac), true);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                this.log.Error("Exception occur" + ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="chkMacDevice"></param>
-        /// <returns></returns>
-        public ActionResult ViewDevice(int chkMacDevice)
-        {
-            try
-            {
-
-            }
-            catch(Exception ex)
-            {
-                this.log.Error("Exception occur" + ex.Message);
-            }
-            return View();
         }
 
         /// <summary>
@@ -333,50 +86,24 @@ namespace RTLS.Controllers
             {
                 this.log.Debug("Enter into the ViewMonitorDevices Action Method");
                 EngageLocations objApiCall = new EngageLocations();
-                string strResult=objApiCall.GetAllDeviceDetails();
+                string strResult = objApiCall.GetAllDeviceDetails();
                 objMonitorDevice = JsonConvert.DeserializeObject<MonitorDevices>(strResult);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 this.log.Error("Exception occur" + ex.Message);
             }
             return View(objMonitorDevice.records);
         }
 
-
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="DeviceId"></param>
         /// <returns></returns>
-        public ActionResult GetLatestPosition(int CompanyId)
+        public ActionResult RTLSDataAsDevice(int DeviceId)
         {
-            MonitorDevices objMonitorDevice = null;
-            this.log.Debug("Enter into the GetLatestPosition Action Method");
-            try
-            {
-                int[] chkMacDevices = (int[]) TempData["MacAddresses"];
-                EngageLocations objApiCall = new EngageLocations();
-                var objCompanyDetail = db.Company.FirstOrDefault(m => m.CompnayId == CompanyId);
-                var objSiteDetail = db.Site.FirstOrDefault(m => m.SiteId ==(int)objCompanyDetail.SiteId);
-                string strResult=objApiCall.GetAllDeviceDetailsAsPerSnBn(objCompanyDetail.CompanyName,objSiteDetail.SiteName);
-                //string strResult = objtestService.GetLatestPostion(chkMacDevices);
-                //objLocationModel = JsonConvert.DeserializeObject<LocationViewModel>(strResult);
-                objMonitorDevice = JsonConvert.DeserializeObject<MonitorDevices>(strResult);
-                if(objMonitorDevice.result.returncode==0)
-                {
-                    
-                    return View(objMonitorDevice.records);
-                }
-                else
-                {
-                    Warning(objMonitorDevice.result.errmsg,false);
-                }
-            }
-            catch (Exception ex)
-            {
-                this.log.Error("Exception occur" + ex.Message);
-            }
-            return RedirectToAction("Index");
+            return View();
         }
 
 
@@ -386,9 +113,130 @@ namespace RTLS.Controllers
         /// <returns></returns>
         public ActionResult RTLSRegisteredData()
         {
-            EngageLocations obj = new EngageLocations();
-            obj.GetAllNotification();
             return View();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetRTLSLogs()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="chkMacDevices"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult DeleteMacAddress(int[] chkMacDevices)
+        {
+            Result objResult = new Result();
+            string retResult = "";
+            try
+            { 
+                this.log.Debug("Enter into the DeleteMacAddress Action Method");
+                foreach (var item in chkMacDevices)
+                {
+                    var deviceObject = db.MacAddress.FirstOrDefault(m => m.Id == item);
+                    string mac = deviceObject.Mac;
+                    if (deviceObject.Intstatus != Convert.ToInt32(DeviceStatus.Registered))
+                    {
+                        db.MacAddress.Remove(deviceObject);
+                        db.SaveChanges();
+                        retResult=string.Format("{0} Successfully Registered into server.", mac);
+                    }
+                    else
+                    {
+                        retResult=string.Format("{0} is a Registered User So shouldn't Delete.", mac);
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.log.Error("Exception occur" + ex.InnerException.Message);
+                retResult = "Exception occur" + ex.InnerException.Message;
+                objResult.returncode = -1;
+            }
+            objResult.errmsg = retResult;
+            return Json(JsonConvert.SerializeObject(retResult),JsonRequestBehavior.AllowGet);
+        }
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="CompanyName"></param>
+        ///// <returns></returns>
+        //[HttpPost]
+        //public ActionResult CreateCompany(CompanyViewModel model)
+        //{
+        //    try
+        //    {
+        //        Company objCmp = new Company();
+        //        if (string.IsNullOrEmpty(model.ddlCompany))
+        //        {
+        //            objCmp.CompanyName = model.CompanyName;
+        //            db.Company.Add(objCmp);
+        //        }
+
+        //        db.SaveChanges();
+
+        //        Site objSite = new Site();
+        //        objSite.SiteName = model.SiteName;
+        //        objSite.CompanyId = objCmp.CompnayId != 0 ? objCmp.CompnayId : Convert.ToInt32(model.ddlCompany);
+        //        db.Site.Add(objSite);
+
+        //        db.SaveChanges();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        log.Error(ex.Message);
+        //    }
+        //    return RedirectToAction("Index");
+        //}
+
+        //[HttpGet]
+        //public JsonResult GetCompanyList()
+        //{
+        //    try
+        //    {
+        //        var cmpList = db.Company.Select(m => new { text = m.CompanyName, value = m.CompnayId });
+        //        return Json(cmpList, JsonRequestBehavior.AllowGet);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        log.Error(ex.Message);
+        //        throw ex;
+        //    }
+        //}
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="CompanyId"></param>
+        /// <returns></returns>
+        //public ActionResult GetSiteOfCompany(int CompanyId)
+        //{
+        //    try
+        //    {
+        //        var siteList = db.Site.Where(m => m.CompanyId == CompanyId).ToList();
+        //        return Json(siteList, JsonRequestBehavior.AllowGet);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        log.Error(ex.Message);
+        //        throw ex;
+        //    }
+        //}
     }
-} 
+
+    //public class CompanyViewModel
+    //{
+    //    public string CompanyName { get; set; }
+    //    public string SiteName { get; set; }
+    //    public string ddlCompany { get; set; }
+    //}
+}

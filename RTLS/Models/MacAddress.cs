@@ -16,11 +16,12 @@ namespace RTLS.Models
 
         public int Intstatus { get; set; }
 
-        public int ? CompnayId { get; set; }
+        public int ? SiteId { get; set; }
 
-        [ForeignKey("CompnayId")]
-        public virtual Company Company { get; set; }
+        public bool IsCreatedByAdmin { get; set; }
 
+        [ForeignKey("SiteId")]
+        public virtual Site site { get; set; }
     }
 
 }

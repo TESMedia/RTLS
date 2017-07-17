@@ -38,7 +38,7 @@ namespace RTLS.ReturnModel
 
         public string ts_last_seen { get; set; }
 
-        public string [] an { get; set; }
+        public string[] an { get; set; }
 
     }
 

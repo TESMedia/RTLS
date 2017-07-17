@@ -34,5 +34,10 @@ namespace RTLS.Models
         {
             return new ApplicationDbContext();
         }
+
+        //protected override void OnModelCreating(System.Data.Entity.DbModelBuilder modelBuilder)
+        //{
+        //    base.OnModelCreating(modelBuilder);
+        //}
     }
 }

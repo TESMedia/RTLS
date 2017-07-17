@@ -8,7 +8,7 @@ namespace RTLS.Models
 {
     public class Record
     {
-      public LocationData [] records {get;set;}
+        public LocationData[] records { get; set; }
     }
 
     public class ListOfArea

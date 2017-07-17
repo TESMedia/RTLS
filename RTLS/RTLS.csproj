@@ -271,10 +271,28 @@
     <Compile Include="Migrations\201706211102375_Update_table_LocationData.Designer.cs">
       <DependentUpon>201706211102375_Update_table_LocationData.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201706260715270_Update_table_cmp_Site.cs" />
+    <Compile Include="Migrations\201706260715270_Update_table_cmp_Site.Designer.cs">
+      <DependentUpon>201706260715270_Update_table_cmp_Site.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706270031375_Update_tbl_MacAddress.cs" />
+    <Compile Include="Migrations\201706270031375_Update_tbl_MacAddress.Designer.cs">
+      <DependentUpon>201706270031375_Update_tbl_MacAddress.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201707031011032_Add_LocationData_tbl.cs" />
+    <Compile Include="Migrations\201707031011032_Add_LocationData_tbl.Designer.cs">
+      <DependentUpon>201707031011032_Add_LocationData_tbl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201707160442216_changes_MacAddress_Tbl.cs" />
+    <Compile Include="Migrations\201707160442216_changes_MacAddress_Tbl.Designer.cs">
+      <DependentUpon>201707160442216_changes_MacAddress_Tbl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AppLog.cs" />
     <Compile Include="Models\Area.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\jQueryDataTableParamModel.cs" />
     <Compile Include="Models\LocationData.cs" />
     <Compile Include="Models\Record.cs" />
     <Compile Include="Models\MacAddress.cs" />
@@ -285,6 +303,7 @@
     <Compile Include="Notification\ViewNotification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\EngageLocations.cs" />
+    <Compile Include="Repository\MacAddressRepository.cs" />
     <Compile Include="ReturnModel\LocationsViewModel.cs" />
     <Compile Include="ReturnModel\MonitorDevice.cs" />
     <Compile Include="TesServices\TestService.cs" />
@@ -300,9 +319,7 @@
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="ApplicationInsights.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="ApplicationInsights.config" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -351,12 +368,13 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Admin\AddDevices.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Admin\GetLatestPosition.cshtml" />
     <Content Include="Views\Admin\ViewMonitorDevices.cshtml" />
     <Content Include="Views\Shared\_Alert.cshtml" />
     <Content Include="Views\Admin\RTLSRegisteredData.cshtml" />
+    <Content Include="Views\Admin\GetRTLSLogs.cshtml" />
+    <Content Include="Views\Admin\RTLSDataAsDevice.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -388,6 +406,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201706211102375_Update_table_LocationData.resx">
       <DependentUpon>201706211102375_Update_table_LocationData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706260715270_Update_table_cmp_Site.resx">
+      <DependentUpon>201706260715270_Update_table_cmp_Site.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706270031375_Update_tbl_MacAddress.resx">
+      <DependentUpon>201706270031375_Update_tbl_MacAddress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707031011032_Add_LocationData_tbl.resx">
+      <DependentUpon>201707031011032_Add_LocationData_tbl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707160442216_changes_MacAddress_Tbl.resx">
+      <DependentUpon>201707160442216_changes_MacAddress_Tbl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

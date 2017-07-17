@@ -11,9 +11,9 @@
     </div>
     <div class="col-md-12 col-sm-12 col-lg-12">
         <div class="col-md-6 col-sm-6 col-lg-6 pull-left ">
-           <h6>Total Count</h6>
+            <h6>Total Count</h6>
             <div>
-               @Model.Count()
+                @Model.Count()
             </div>
         </div>
     </div>
@@ -26,7 +26,7 @@
                 @Html.DisplayNameFor(model => model.bn)
             </th>
             <th>
-               @Html.DisplayNameFor(model=>model.device_id)
+                @Html.DisplayNameFor(model => model.device_id)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.monitor_updated)
@@ -46,7 +46,7 @@
                     @Html.DisplayFor(modelItem => item.bn)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem=>item.device_id)
+                    @Html.DisplayFor(modelItem => item.device_id)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.monitor_updated)
@@ -62,4 +62,3 @@
         }
     </table>
 </div>
-

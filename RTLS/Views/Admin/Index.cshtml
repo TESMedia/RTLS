@@ -3,51 +3,43 @@
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 <div class="navbar-static-top">
     <div class="row col-lg-12 col-sm-12 col-md-12">
-        @{ Html.RenderPartial("_Alert"); }
+        @*@{ Html.RenderPartial("_Alert"); }*@
         <div class="col-lg-6 col-md-6 col-sm-6">
             <h4>Real Time Location Services-API administrator</h4>
         </div>
-        <div class="col-lg-6 col=md-6 col-sm-6">
-            <div class="pull-right col-md-3 col-sm-3 col-lg-3">
-                @*<input type="button" value="View RTLS Data" name="RTLSData" class="btn btn-info" />*@
-                @Html.ActionLink("View RTLS Data", "RTLSRegisteredData", new { @name = "RTLSData", @id = "RTLSData", @class = "btn btn-info" })
+        <div class="pull-right col-lg-6 col-md-6 col-sm-6">
+            <div class="col-md-3 col-sm-3 col-lg-3">
+                @Html.ActionLink("View RTLS Data", "RTLSRegisteredData", "Admin", null, new { @id = "RTLSData", @class = "btn btn-info" })
             </div>
-            <div class="pull-right col-md-3 col-sm-3 col-lg-3">
-                <input type="button" value="View RTLS Log" name="RTLSLog" class="btn btn-info" />
+            <div class="col-md-3 col-sm-3 col-lg-3">
+                @Html.ActionLink("View RTLS Log", "GetRTLSLogs", "Admin", null, new { @id = "GetRTLSLogs", @class = "btn btn-info" })
+            </div>
+            <div class="col-md-3 col-sm-3 col-lg-3">
+                @Html.ActionLink("View RTLSRegistered Data", "ViewMonitorDevices", "Admin", null, new { @id = "GetRegistred", @class = "btn btn-info" })
             </div>
         </div>
     </div>
     <br />
     <div class="row col-lg-12 col-sm-12 col-md-12">
         <div class="col-lg-8 col-md-8 col-sm-8">
-        @using (Html.BeginForm("Authenticate", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-        {
-            <div class="col-md-4 col-lg-4 col-sm-4">
-                <input type="text" name="UserName" placeholder="Enter the UserName" class="form-control" required />
-            </div>
-            <div class="col-sm-4 col-md-4 col-lg-4">
-                <input type="password" name="Password" class="form-control" required/>
-            </div>
-            <div class="col-sm-3 col-md-3 col-lg-3">
-                <input type="submit" value="Connect" class="btn btn-success" />
-            </div>
-        }
-        </div>
-        <div class="col-lg-4 col-md-4 col-sm-4">
-            <div class="pull-right">
-               @using (Html.BeginForm("ViewMonitorDevices", "Admin", FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
-               {  
-                <input type="submit" value="GetRegistred" name="registered" id="GetRegistred" class="btn btn-success" />
-               }
-            </div>
+            @using (Html.BeginForm("Authenticate", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            {
+                <div class="col-md-4 col-lg-4 col-sm-4">
+                    <input type="text" name="UserName" placeholder="Enter the UserName" class="form-control" required />
+                </div>
+                <div class="col-sm-4 col-md-4 col-lg-4">
+                    <input type="password" name="Password" class="form-control" required />
+                </div>
+                <div class="col-sm-3 col-md-3 col-lg-3">
+                    <input type="submit" value="Connect" class="btn btn-success" />
+                </div>
+            }
         </div>
     </div>
 </div>
-
-<br/><br/><br/>
+<br /><br />
 <div class="col-sm-12 col-lg-12 col-md-12">
     @using (Html.BeginForm("Index", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
     {
@@ -55,208 +47,226 @@
             <div class="form-group">
                 <label class="control-label col-md-5">Enter the Devices</label>
                 <div class="btn pull-left form-horizontal" id="txtDiv">
-                    <input type="text" id="txtMacDevices" name="txtMacDevices" class="form-control">
+                    <input type="text" id="txtMacDevices" name="MacAddresses" class="form-control">
                 </div>
             </div>
-            <div class="form-group  text-center col-md-6 col-lg-6 col-sm-6">
+            @*<div class="form-group col-md-6 col-lg-6 col-sm-6">
                 <input type="button" class="btn btn-success" name="plus" id="plus" value="+">
                 <input type="button" class="btn btn-danger" name="minus" id="minus" value="-">
-            </div>
+            </div>*@
         </div>
-        <div class="container row  col-md-2 col-lg-2">
+        <div class="container row  col-md-1 col-lg-1 col-sm-1">
             <div class="form-group">
                 <input type="submit" class="btn btn-info" value="Save" name="Command" title="Save" id="btnSave">
             </div>
-            <div class="form-group">
-                <input type="submit" class="btn btn-info" value="Register" id="btnRegister" name="Command" title="Register">
-            </div>
-            <div class="form-group">
-                <input type="submit" class="btn btn-info" value="Get Latest Position" id="btnLatestVersion" name="Command" title="Postion">
-            </div>
-            <div class="form-group">
-                <input type="submit" class="btn btn-info" value="View Mac Address" id="btnViewMac" name="Command" title="ViewMacAddress">
-            </div>
-            <div class="form-group row pull-right">
-
-            </div>
-        </div>
-        <div class="container row col-md-4 col-lg-4 pull-right">
-            <div class="form-group row">
-                <input type="submit" class="btn btn-danger" value="De-Register" name="Command" id="btnDeRegister" title="De-Registe">
-                <input type="submit" class="btn btn-danger" value="Delete Mac Address" name="Command" id="btnDeleteMac" title="Delete Mac Address">
-                <input type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal" value="Create New Company" name="btnCreate" id="btnCreate"/> 
-                <input type="button" class="btn btn-success" data-toggle="modal1" data-target="#myModal1" value="Configure Site" name="btnConfigure" id="btnConfigure"/>
-            </div>
-            <div class="form-group">
-                <select class="form-control" id="ddlSelectCompany" name="ddlSelectCompany">
-                    <option value="1">FEUTUI001 - Thomson Cruises</option>
-                    <option value="2">PaurpleDragon</option>
-                </select>
-            </div>
-        </div>
-
-       
-        <div class="body-content">
-            <table class="table">
-                <tr>
-                    <th>
-                        <input type="checkbox" name="chk" />
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Mac)
-                    </th>
-                    <th>
-                        Status
-                    </th>
-                </tr>
-                @foreach (var item in Model)
-            {
-            <tr> 
-                <td>
-                    <input type="checkbox" value="@item.Id" name="chkMacDevices" id="chkMacDevices" />
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Mac)
-                </td>
-                <td>
-                    @Enum.GetName(typeof(RTLS.Enum.DeviceStatus), item.Intstatus)
-                </td>
-            </tr>
-            }
-            </table>
         </div>
     }
-
-    <div class="modal fade" id="myModal" role="dialog">
-        <div class="modal-dialog">
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Create the Company</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="col-lg-6 col-md-6 col-sm-6">Enter the Company Name</label>
-                        <div class="col-lg-6 col-md-6 col-sm-6">
-                            <input type="text" class="col-sm-6 col-md-6 col-lg-6" id="txtCompanyName" />
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
+</div>
+<br/><br/>
+<div class="col-sm-12 col-lg-12 col-sm-12">
+    <div class="form-group row">
+        <!--call the api for register as per the selection-->
+        <input type="button" class="btn btn-info BtnChkSelect" value="Register" id="btnRegister" title="Register" disabled>
+        <input type="button" class="btn btn-info BtnChkSelect" value="De-Register" id="btnDeRegister" title="De-Registe" disabled>
+        <input type="button" class="btn btn-info BtnChkSelect" value="Delete Mac Address" id="btnDeleteMac" title="Delete Mac Address" disabled />
+        <input type="button" class="btn btn-info BtnChkSelect" value="Get Latest Position" id="btnLatestVersion" title="Postion" disabled>
+        <input type="button" class="btn btn-info BtnChkSelect" value="View Mac Address" id="btnViewMac" title="ViewMacAddress" disabled>
     </div>
-    <div class="modal fade" id="myModal1" role="dialog">
-        <div class="modal-dialog">
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Create the Site</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="col-lg-6 col-md-6 col-sm-6">Enter the Site</label>
-                        <div class="col-lg-6 col-md-6 col-sm-6">
-                            <input type="text" class="col-sm-6 col-md-6 col-lg-6" id="txtSiteName" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <select class="col-lg-6 col-md-6 col-sm-6" id="ddlCompany">
-                            <option>Thumpson Cusies</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
+</div>
+<br/>
+<div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="body-content">
+        <table class="table">
+            <tr>
+                <th>
+                    <input type="checkbox" name="chkMacDevices" id="chkMacDevices" />
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Mac)
+                </th>
+                <th>
+                    CompanyName
+                </th>
+                <th>
+                    SiteName
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>
+                    IsCreatedByAdmin
+                </th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" value="@item.Id" name="chkMacDevices" class="chKDevices" />
+                    </td>
+                    <td class="tdMac">
+                        @Html.DisplayFor(modelItem => item.Mac)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.site.Company.CompanyName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.site.SiteName)
+                    </td>
+                    <td>
+                        @Enum.GetName(typeof(RTLS.Enum.DeviceStatus), item.Intstatus)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsCreatedByAdmin)
+                    </td>
+                </tr>
+            }
+        </table>
     </div>
 
 </div>
 
 
-        <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-        <script type="text/javascript">
-            $("#plus").on("click", function () {
-                $("#txtDiv").append('<input class="form-control" id="txtMacDevices" name="txtMacDevices" type="text"/>');
-            });
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script type="text/javascript">
 
-            $("#minus").on("click", function () {
-                if ($("input[name='txtMacDevices']").length > 1) {
-                    $("input[name='txtMacDevices']:eq(" + (length - 1) + ")").remove();
+    //function CheckMacAddressValidation() {
+    //    var regex = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
+    //    regex.test(mystring);
+    //}
+
+    //function valueChanged() {
+    //    if ($('#chkNewCompany').is(":checked")) {
+    //        $("#txtCompanyName").show();
+    //        $("#ddlCompanyList").hide();
+    //    }
+    //    else {
+    //        $("#txtCompanyName").hide();
+    //        $("#ddlCompanyList").show();
+    //    }
+    //}
+
+    $(document).ready(function () {
+
+        //$("#plus").on("click", function () {
+        //    $("#txtDiv").append('<input class="form-control" id="txtMacDevices" name="txtMacDevices" type="text"/>');
+        //});
+
+        //$("#minus").on("click", function () {
+        //    if ($("input[name='txtMacDevices']").length > 1) {
+        //        $("input[name='txtMacDevices']:eq(" + (length - 1) + ")").remove();
+        //    }
+        //});
+
+        $("input[name='chkMacDevices']").change(function () {
+            if ($(this).is(":checked")) {
+                $(".BtnChkSelect").removeAttr("disabled");
+            } else {
+                $(".BtnChkSelect").attr("disabled", "disabled");
+            }
+        })
+
+        //$.get("/Admin/GetCompanyList", function (result) {
+        //    $.each(result, function (key, data) {
+        //        $("#ddlCompanyList").append("<option value=" + data.value + ">" + data.text + "</option>")
+        //    })
+        //})
+
+        //$.get("/Admin/GetCompanyList", function (result) {
+        //    $.each(result, function (key, data) {
+        //        $("#ddlSelectCompany").append("<option value=" + data.value + ">" + data.text + "</option>")
+        //    })
+        //})
+
+        //$("#ddlSelectCompany").change(function () {
+        //    $('#ddlSelectSite').html('');
+        //    if ($(this).val() != 0)
+        //    {
+        //        $.get("/Admin/GetSiteOfCompany?CompanyId=" + $(this).val(), function (result) {
+        //            $.each(result, function (key, data) {
+        //                $("#ddlSelectSite").append("<option value=" + data.SiteId + ">" + data.SiteName + "</option>")
+        //            })
+        //        })
+        //    }
+        //    else
+        //    {
+        //        alert("Select the Company")
+        //    }
+
+        //});
+
+        //$("#chkNewCompany")
+
+        //$("#btnSave").on("click", function () {
+        //    var values = $("input[name='txtMacDevices']").map(function () {
+        //        return this.value
+        //    }).get()
+        //    var data = { txtMacDevices: values }
+        //    $.post("/Admin/SaveMacAddressInDb/", data, function (e) {
+        //        location.reload();
+        //    });
+        //});
+
+        $("#btnRegister").on("click", function () {
+            var arrData = [];
+            $.each($("input[name='chkMacDevices']:checked"), function () {
+                arrData.push($(this).parents("tr").find(".tdMac").text().trim());
+            });
+            var data = { MacAddresses: arrData, IscreatedByAdmin:true }
+            $.post("/RealTimeLocation/AddDevices/", data, function (result) {
+                if (result.returncode == 0) {
+                    alert(arrData+"Rigisterd successfully")
                 }
+                else {
+                    alert(result.errmsg);
+               }
             });
+        });
 
-            //$("#btnSave").on("click", function () {
-            //    var values = $("input[name='txtMacDevices']").map(function () {
-            //        return this.value
-            //    }).get()
-            //    var data = { txtMacDevices: values }
-            //    $.post("/Admin/SaveMacAddressInDb/", data, function (e) {
-            //        location.reload();
-            //    });
-            //});
-           
-            //$("#btnRegister").on("click", function () {
-            //    var arrData = [];
-            //    $.each($("input[name='chkMacDevices']:checked"), function () {
-            //        arrData.push(parseInt($(this).val()));
-            //    });
-            //    var data = {chkMacDevices:arrData}
-            //    $.post("/Admin/AddDeviceIds/", data, function (e) {
-            //        location.reload();
-            //    });
-            //});
+        //$("#btnLatestVersion").on("click", function () {
+        //    var arrData = [];
+        //    $.each($("input[name='chkMacDevices']:checked"), function () {
+        //        arrData.push(parseInt($(this).val()));
+        //    });
+        //    var data = { chkMacDevices: arrData }
+        //    $.get("/Admin/GetLatestPosition/", data, function (e) {
+        //        e.preventDefault();
+        //    });
+        //});
 
-            //$("#btnLatestVersion").on("click", function () {
-            //    var arrData = [];
-            //    $.each($("input[name='chkMacDevices']:checked"), function () {
-            //        arrData.push(parseInt($(this).val()));
-            //    });
-            //    var data = { chkMacDevices: arrData }
-            //    $.get("/Admin/GetLatestPosition/", data, function (e) {
-            //        e.preventDefault();
-            //    });
-            //});
+        //$("#btnViewMac").on("click", function () {
+        //    $.post("/Admin/SaveMacAddressInDb/", $("#txtMacDevices").val(), function (e) {
 
-            //$("#btnViewMac").on("click", function () {
-            //    $.post("/Admin/SaveMacAddressInDb/", $("#txtMacDevices").val(), function (e) {
+        //    });
+        //});
 
-            //    });
-            //});
+        ////$("#GetRegistred").on("click", function () {
+        ////    $.get("/Admin/ViewMonitorDevices", function (e) {
+        ////        window.location.htref = "/Admin/ViewMonitorDevices";
+        ////    });
+        ////});
 
-            ////$("#GetRegistred").on("click", function () {
-            ////    $.get("/Admin/ViewMonitorDevices", function (e) {
-            ////        window.location.htref = "/Admin/ViewMonitorDevices";
-            ////    });
-            ////});
+        $("#btnDeRegister").on("click", function () {
+            var arrData = [];
+            $.each($("input[name='chkMacDevices']:checked"), function () {
+                arrData.push(parseInt($(this).val()));
+            });
+            var data = { chkMacDevices: arrData }
+            $.post("/Admin/DeRegisterMacAddress/", data, function (e) {
+                location.reload();
+            });
+        });
 
-            //$("#btnDeRegister").on("click", function () {
-            //    var arrData = [];
-            //    $.each($("input[name='chkMacDevices']:checked"), function () {
-            //        arrData.push(parseInt($(this).val()));
-            //    });
-            //    var data = { chkMacDevices: arrData }
-            //    $.post("/Admin/DeRegisterMacAddress/", data, function (e) {
-            //        location.reload();
-            //    });
-            //});
+        $("#btnDeleteMac").on("click", function () {
+            var arrData = [];
+            $.each($("input[name='chkMacDevices']:checked"), function () {
+                arrData.push(parseInt($(this).val()));
+            });
+            var data = { chkMacDevices: arrData }
+            $.post("/Admin/DeleteMacAddress/", data, function (e) {
+                location.reload();
+            });
+        });
 
-            //$("#btnDeleteMac").on("click", function () {
-            //    var arrData = [];
-            //    $.each($("input[name='chkMacDevices']:checked"), function () {
-            //        arrData.push(parseInt($(this).val()));
-            //    });
-            //    var data = { chkMacDevices: arrData }
-            //    $.post("/Admin/DeleteMacAddress/", data, function (e) {
-            //        location.reload();
-            //    });
-            //});
+    });
+</script>
 
-           
-        </script>

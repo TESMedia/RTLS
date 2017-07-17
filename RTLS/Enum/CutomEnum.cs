@@ -13,7 +13,7 @@ namespace RTLS.Enum
         DeRegistered = 2
     }
 
-    public enum RTLSApiResult
+    public enum FatiApiResult
     {
         Success = 0,
         Failure = 1

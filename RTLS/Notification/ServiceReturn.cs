@@ -9,13 +9,13 @@ namespace RTLS.ServiceReturn
     public class Notification
     {
         //public static bool IsSuccess { get; set; }
-        public Result result { get;}
+        public Result result { get; set; }
     }
 
     public class Result
     {
-        public int returncode { get; }
-        public string errmsg { get; }
+        public int returncode { get; set; }
+        public string errmsg { get; set; }
     }
 
     public static class ServiceResult
@@ -23,5 +23,5 @@ namespace RTLS.ServiceReturn
         public const int Success = 0;
         public const int Failure = 1;
     }
-   
+
 }

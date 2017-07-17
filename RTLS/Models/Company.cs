@@ -13,10 +13,5 @@ namespace RTLS.Models
         public int CompnayId { get; set; }
 
         public string CompanyName { get; set; }
-
-        public int ? SiteId { get; set; }
-
-        [ForeignKey("SiteId")]
-        public virtual Site Site { get; set; }
     }
 }
