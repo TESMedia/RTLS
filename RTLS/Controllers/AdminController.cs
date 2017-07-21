@@ -64,10 +64,13 @@ namespace RTLS.Controllers
             {
                 using (MacAddressRepository objMacRepository = new MacAddressRepository())
                 {
-                    objMacRepository.SaveMacAddress(model.MacAddresses, true);
+                    if (objMacRepository.CheckListExistOrNot(model.MacAddresses))
+                    {
+                        objMacRepository.SaveMacAddress(model.MacAddresses, true);
+                    }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.Error(ex.Message);
             }
@@ -87,7 +90,10 @@ namespace RTLS.Controllers
                 this.log.Debug("Enter into the ViewMonitorDevices Action Method");
                 EngageLocations objApiCall = new EngageLocations();
                 string strResult = objApiCall.GetAllDeviceDetails();
-                objMonitorDevice = JsonConvert.DeserializeObject<MonitorDevices>(strResult);
+                if (!string.IsNullOrEmpty(strResult))
+                {
+                    objMonitorDevice = JsonConvert.DeserializeObject<MonitorDevices>(strResult);
+                }
             }
             catch (Exception ex)
             {
@@ -101,7 +107,7 @@ namespace RTLS.Controllers
         /// </summary>
         /// <param name="DeviceId"></param>
         /// <returns></returns>
-        public ActionResult RTLSDataAsDevice(int DeviceId)
+        public ActionResult RTLSDataAsDevice(string DeviceId)
         {
             return View();
         }
@@ -125,32 +131,32 @@ namespace RTLS.Controllers
             return View();
         }
 
+
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="chkMacDevices"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
-        [HttpGet]
-        public ActionResult DeleteMacAddress(int[] chkMacDevices)
+        [HttpPost]
+        public ActionResult DeleteMacAddress(RequestLocationDataVM model)
         {
             Result objResult = new Result();
             string retResult = "";
             try
-            { 
+            {
                 this.log.Debug("Enter into the DeleteMacAddress Action Method");
-                foreach (var item in chkMacDevices)
+                foreach (var item in model.MacAddresses)
                 {
-                    var deviceObject = db.MacAddress.FirstOrDefault(m => m.Id == item);
-                    string mac = deviceObject.Mac;
+                    var deviceObject = db.MacAddress.FirstOrDefault(m => m.Mac == item);
                     if (deviceObject.Intstatus != Convert.ToInt32(DeviceStatus.Registered))
                     {
                         db.MacAddress.Remove(deviceObject);
                         db.SaveChanges();
-                        retResult=string.Format("{0} Successfully Registered into server.", mac);
+                        retResult = string.Format("{0} Successfully Deleted from server", item);
                     }
                     else
                     {
-                        retResult=string.Format("{0} is a Registered User So shouldn't Delete.", mac);
+                        retResult = string.Format("{0} is a Registered User So shouldn't Delete", item);
 
                     }
                 }
@@ -162,7 +168,7 @@ namespace RTLS.Controllers
                 objResult.returncode = -1;
             }
             objResult.errmsg = retResult;
-            return Json(JsonConvert.SerializeObject(retResult),JsonRequestBehavior.AllowGet);
+            return Json(JsonConvert.SerializeObject(retResult), JsonRequestBehavior.AllowGet);
         }
 
         ///// <summary>

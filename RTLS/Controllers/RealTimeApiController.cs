@@ -47,7 +47,7 @@ namespace RTLS.Controllers
         [HttpPost]
         public async Task<HttpResponseMessage> AddDevices(RequestLocationDataVM model)
         {
-            Result objResult = new Result();
+            Notification objNotifications = new Notification();
             try
             {
                 queryParams = new FormUrlEncodedContent(new Dictionary<string, string>()
@@ -61,12 +61,12 @@ namespace RTLS.Controllers
                 if (result.IsSuccessStatusCode)
                 {
                     string resultContent = await result.Content.ReadAsStringAsync();
-                    objResult = JsonConvert.DeserializeObject<Result>(resultContent);
-                    if (objResult.returncode==Convert.ToInt32(FatiApiResult.Success))
+                    objNotifications = JsonConvert.DeserializeObject<Notification>(resultContent);
+                    if (objNotifications.result.returncode == Convert.ToInt32(FatiApiResult.Success))
                     {
                         using (MacAddressRepository objMacRepository = new MacAddressRepository())
                         {
-                            objMacRepository.RegisterListOfMacAddresses(model.MacAddresses,model.IscreatedByAdmin);
+                            objMacRepository.RegisterListOfMacAddresses(model.MacAddresses, model.IscreatedByAdmin);
                         }
                     }
                 }
@@ -74,12 +74,12 @@ namespace RTLS.Controllers
             catch (Exception ex)
             {
                 log.Error(ex.InnerException.Message);
-                objResult.returncode = -1;
-                objResult.errmsg = ex.InnerException.Message;
+                objNotifications.result.returncode = -1;
+                objNotifications.result.errmsg = ex.InnerException.Message;
             }
             return new HttpResponseMessage()
             {
-                Content = new StringContent(JsonConvert.SerializeObject(objResult), Encoding.UTF8, "application/json")
+                Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
             };
         }
 
@@ -111,8 +111,8 @@ namespace RTLS.Controllers
                 var result = await httpClient.GetAsync(completeFatiAPI);
                 if (result.IsSuccessStatusCode)
                 {
-                   string resultContent = result.Content.ReadAsAsync<string>().Result;
-                   objMonitorDevice = JsonConvert.DeserializeObject<MonitorDevices>(resultContent);
+                    string resultContent = result.Content.ReadAsAsync<string>().Result;
+                    objMonitorDevice = JsonConvert.DeserializeObject<MonitorDevices>(resultContent);
                 }
             }
             catch (Exception ex)
@@ -131,15 +131,14 @@ namespace RTLS.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [Route("DeleteDevices")]
+        [Route("DeRegisterDevices")]
         [HttpPost]
-        public async Task<HttpResponseMessage> DeleteDevice(RequestLocationDataVM model)
+        public async Task<HttpResponseMessage> DeRegisterDevices(RequestLocationDataVM model)
         {
-            Result objResult = new Result();
+            Notification objNotifications = new Notification();
             try
-            { 
+            {
                 HttpRequestMessage message = new HttpRequestMessage(new HttpMethod("DELETE"), "/api/engage/v1/device_monitors/");
-                message.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
                 var queryParams = new Dictionary<string, string>()
                 {
                     { "sn",ConfigurationManager.AppSettings["sn"] },
@@ -154,8 +153,8 @@ namespace RTLS.Controllers
                     if (httpResponseMessage.EnsureSuccessStatusCode().IsSuccessStatusCode)
                     {
                         string resultContent = await httpResponseMessage.Content.ReadAsStringAsync();
-                        objResult = JsonConvert.DeserializeObject<Result>(resultContent);
-                        if (objResult.returncode == Convert.ToInt32(FatiApiResult.Success))
+                        objNotifications = JsonConvert.DeserializeObject<Notification>(resultContent);
+                        if (objNotifications.result.returncode == Convert.ToInt32(FatiApiResult.Success))
                         {
                             using (MacAddressRepository objMacRepository = new MacAddressRepository())
                             {
@@ -165,8 +164,8 @@ namespace RTLS.Controllers
                     }
                     else
                     {
-                        objResult.returncode=Convert.ToInt32(httpResponseMessage.StatusCode.ToString());
-                        objResult.errmsg ="Some Problem Occured";
+                        objNotifications.result.returncode = Convert.ToInt32(httpResponseMessage.StatusCode.ToString());
+                        objNotifications.result.errmsg = "Some Problem Occured";
                     }
                 }
                 catch (Exception ex)
@@ -179,12 +178,12 @@ namespace RTLS.Controllers
             catch (Exception ex)
             {
                 log.Error(ex.InnerException.Message);
-                objResult.returncode = -1;
-                objResult.errmsg = ex.InnerException.Message;
+                objNotifications.result.returncode = -1;
+                objNotifications.result.errmsg = ex.InnerException.Message;
             }
             return new HttpResponseMessage()
             {
-                Content = new StringContent(JsonConvert.SerializeObject(objResult), Encoding.UTF8, "application/json")
+                Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
             };
         }
     }

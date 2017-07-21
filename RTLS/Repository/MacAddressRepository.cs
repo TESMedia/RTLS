@@ -7,7 +7,7 @@ using RTLS.Enum;
 
 namespace RTLS.Repository
 {
-    public class MacAddressRepository:IDisposable
+    public class MacAddressRepository : IDisposable
     {
         private ApplicationDbContext db = null;
 
@@ -22,11 +22,11 @@ namespace RTLS.Repository
         /// <param name="SiteId"></param>
         /// <param name="Mac"></param>
         /// <returns></returns>
-        public bool SaveMacAddress(string [] lstMac,bool IsCreateFromAdmin)
+        public bool SaveMacAddress(string[] lstMac, bool IsCreateFromAdmin)
         {
             try
             {
-                foreach(var Item in lstMac)
+                foreach (var Item in lstMac)
                 {
                     if (!(db.MacAddress.Any(m => m.Mac == Item)))
                     {
@@ -35,12 +35,12 @@ namespace RTLS.Repository
                         objMac.Intstatus = Convert.ToInt32(DeviceStatus.None);
                         objMac.IsCreatedByAdmin = IsCreateFromAdmin;
                         db.MacAddress.Add(objMac);
-                        db.SaveChanges();  
+                        db.SaveChanges();
                     }
                 }
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -52,21 +52,33 @@ namespace RTLS.Repository
         /// <param name="lstMac"></param>
         /// <param name="SiteName"></param>
         /// <returns></returns>
-        public bool RegisterListOfMacAddresses(string[] lstMac,bool IsCreatedByAdmin)
+        public bool RegisterListOfMacAddresses(string[] lstMac, bool IsCreatedByAdmin)
         {
             try
             {
                 foreach (var mac in lstMac)
                 {
-                    MacAddress objMac = new MacAddress();
-                    objMac.Mac = mac;
-                    objMac.Intstatus = Convert.ToInt32(DeviceStatus.Registered);
-                    objMac.IsCreatedByAdmin = IsCreatedByAdmin;
-                    db.MacAddress.Add(objMac);
+                    int intStatus = Convert.ToInt32(DeviceStatus.None);
+                    //If MacAddress already exist with None status then 
+                    if (db.MacAddress.Any(m => m.Mac == mac && m.Intstatus == intStatus))
+                    {
+                        var objMac = db.MacAddress.FirstOrDefault(m => m.Mac == mac);
+                        objMac.Intstatus = Convert.ToInt32(DeviceStatus.Registered);
+                        db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
+                    }
+                    else
+                    {
+                        MacAddress objMac = new MacAddress();
+                        objMac.Mac = mac;
+                        objMac.Intstatus = Convert.ToInt32(DeviceStatus.Registered);
+                        objMac.IsCreatedByAdmin = IsCreatedByAdmin;
+                        db.MacAddress.Add(objMac);
+
+                    }
                     db.SaveChanges();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -89,18 +101,18 @@ namespace RTLS.Repository
                 db.Entry(ObjDevice).State = System.Data.Entity.EntityState.Modified;
                 db.SaveChanges();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
             return true;
         }
 
-        public bool DeRegisterListOfMacs(String [] MacAddresses)
+        public bool DeRegisterListOfMacs(String[] MacAddresses)
         {
             try
             {
-                foreach(var item in MacAddresses)
+                foreach (var item in MacAddresses)
                 {
                     var ObjDevice = db.MacAddress.FirstOrDefault(m => m.Mac == item);
                     ObjDevice.Intstatus = Convert.ToInt32(DeviceStatus.DeRegistered);
@@ -116,7 +128,7 @@ namespace RTLS.Repository
         }
 
 
-        public bool CheckMacAddressExitOrNot(int MacId,int IntStatus)
+        public bool CheckMacAddressExitOrNot(int MacId, int IntStatus)
         {
             if (db.MacAddress.FirstOrDefault(m => m.Id == MacId).Intstatus != IntStatus)
             {
@@ -128,10 +140,10 @@ namespace RTLS.Repository
             }
         }
 
-        public bool CheckListExistOrNot(string [] lstMac,int IntStatus)
+        public bool CheckListExistOrNot(string[] lstMac)
         {
-            var difference = db.MacAddress.Select(m=>m.Mac).Except(lstMac);
-            if(difference.Count()>0)
+            var difference = db.MacAddress.Select(m => m.Mac).Except(lstMac);
+            if (difference.Count() > 0)
             {
                 return true;
             }
@@ -141,7 +153,7 @@ namespace RTLS.Repository
             }
         }
 
-        public string [] GetMacAdressFromId(int MacId)
+        public string[] GetMacAdressFromId(int MacId)
         {
             return new[] { db.MacAddress.FirstOrDefault(m => m.Id == MacId).Mac };
         }

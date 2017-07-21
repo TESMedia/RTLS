@@ -1,17 +1,87 @@
-﻿
-@{
+﻿@{
+    ViewBag.Title = "RTLSRegisteredData";
     Layout = null;
 }
-
-<!DOCTYPE html>
-
-<html>
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>RTLSDataAsDevice</title>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/ju-1.11.4/jqc-1.11.3,dt-1.10.8/datatables.min.css">
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.15/datatables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/r/dt/jq-2.1.4,jszip-2.5.0,pdfmake-0.1.18,dt-1.10.9,af-2.0.0,b-1.0.3,b-colvis-1.0.3,b-html5-1.0.3,b-print-1.0.3,se-1.0.1/datatables.min.js"></script>
+    <title>RTLSRegisteredData</title>
 </head>
 <body>
-    <div> 
-    </div>
+    <br /><br /><br />
+    <table id="myDataTable" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>mac</th>
+                <th>sn</th>
+                <th>bn</th>
+                <th>fn</th>
+                <th>x</th>
+                <th>
+                    y
+                </th>
+                <th>
+                    z
+                </th>
+                <th>last_seen_ts</th>
+                <th>AreaName</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
 </body>
-</html>
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+@*<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>*@
+
+<script type="text/javascript">
+    $.noConflict();
+    $(document).ready(function () {
+        $('#myDataTable').DataTable({
+            dom: 'lBfrtip',
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "@string.Format("{0}://{1}{2}", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"))/Base/AjaxHandlerGetDeviceData?DeviceId=@Request.QueryString["DeviceId"]",
+                "type": "POST"
+            },
+            buttons: [
+                    {
+                        extend: 'collection',
+                        text: 'Export',
+                        buttons: ['pdfHtml5', 'csvHtml5', 'copyHtml5', 'excelHtml5']
+                    }
+            ],
+            "columns": [
+                { "data": "Id" },
+                { "data": "mac" },
+                { "data": "sn" },
+                { "data": "bn" },
+                { "data": "fn" },
+                { "data": "x" },
+                { "data": "y" },
+                {"data":"z"},
+                { "data": "last_seen_ts" },
+                {"data": "AreaName" }
+
+            ]
+        });
+
+        //var table = $('#myDataTable').DataTable();
+
+        //// #myInput is a <input type="text"> element
+        //$('#txtSearch').on('keyup', function () {
+        //    alert("Hello");
+        //    alert(this.value);
+        //    table.search(this.value).draw();
+        //});
+
+    });
+</script>

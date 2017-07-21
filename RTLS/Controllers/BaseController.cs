@@ -8,7 +8,7 @@ using RTLS.Models;
 
 namespace RTLS.Controllers
 {
-    public class BaseController : Controller,IDisposable
+    public class BaseController : Controller, IDisposable
     {
         public void Success(string message, bool dismissable = false)
         {
@@ -56,8 +56,8 @@ namespace RTLS.Controllers
         {
             try
             {
-                int SkipStart= Convert.ToInt32(Request["start"]);
-                int FixedLength =Convert.ToInt32(Request["length"]);
+                int SkipStart = Convert.ToInt32(Request["start"]);
+                int FixedLength = Convert.ToInt32(Request["length"]);
                 int pages = (SkipStart + FixedLength) / FixedLength;
                 int TotalRecords = 0;
                 IEnumerable<LocationData> filteredLocationData = null;
@@ -128,6 +128,49 @@ namespace RTLS.Controllers
                         sEcho = param.sEcho,
                         iTotalRecords = allLocationData.Count(),
                         iTotalDisplayRecords = allLocationData.Count(),
+                        aaData = result
+                    },
+                      JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public JsonResult AjaxHandlerGetDeviceData(string DeviceId)
+        {
+            try
+            {
+                int SkipStart = Convert.ToInt32(Request["start"]);
+                int FixedLength = Convert.ToInt32(Request["length"]);
+                int pages = (SkipStart + FixedLength) / FixedLength;
+                int TotalRecords = 0;
+                IEnumerable<LocationData> filteredLocationData = null;
+                string sSearch = Request["search[value]"].ToString();
+                using (ApplicationDbContext db = new ApplicationDbContext())
+                {
+                    TotalRecords = db.LocationData.Where(m => m.mac == DeviceId).Count();
+                    var allLocationData = db.LocationData.Where(m => m.mac == DeviceId).ToList().Skip(SkipStart).Take(FixedLength);
+                    if (!string.IsNullOrEmpty(sSearch))
+                    {
+                        filteredLocationData = allLocationData.Where(c => c.AreaName.ToLower().Contains(sSearch.ToLower()));
+                    }
+                    else
+                    {
+                        filteredLocationData = allLocationData;
+                    }
+
+                    var displayLocationData = filteredLocationData;
+                    var result = from c in displayLocationData
+                                 select new { Id = c.Id, mac = c.mac, sn = c.sn, bn = c.bn, fn = c.fn, x = c.x, y = c.y, z = c.z, last_seen_ts = c.last_seen_ts, AreaName = c.AreaName };
+
+                    return Json(new
+                    {
+                        sEcho = "",
+                        iTotalRecords = TotalRecords,
+                        iTotalDisplayRecords = TotalRecords,
                         aaData = result
                     },
                       JsonRequestBehavior.AllowGet);

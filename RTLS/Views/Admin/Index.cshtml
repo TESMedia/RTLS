@@ -51,9 +51,9 @@
                 </div>
             </div>
             @*<div class="form-group col-md-6 col-lg-6 col-sm-6">
-                <input type="button" class="btn btn-success" name="plus" id="plus" value="+">
-                <input type="button" class="btn btn-danger" name="minus" id="minus" value="-">
-            </div>*@
+                    <input type="button" class="btn btn-success" name="plus" id="plus" value="+">
+                    <input type="button" class="btn btn-danger" name="minus" id="minus" value="-">
+                </div>*@
         </div>
         <div class="container row  col-md-1 col-lg-1 col-sm-1">
             <div class="form-group">
@@ -62,7 +62,7 @@
         </div>
     }
 </div>
-<br/><br/>
+<br /><br />
 <div class="col-sm-12 col-lg-12 col-sm-12">
     <div class="form-group row">
         <!--call the api for register as per the selection-->
@@ -70,10 +70,10 @@
         <input type="button" class="btn btn-info BtnChkSelect" value="De-Register" id="btnDeRegister" title="De-Registe" disabled>
         <input type="button" class="btn btn-info BtnChkSelect" value="Delete Mac Address" id="btnDeleteMac" title="Delete Mac Address" disabled />
         <input type="button" class="btn btn-info BtnChkSelect" value="Get Latest Position" id="btnLatestVersion" title="Postion" disabled>
-        <input type="button" class="btn btn-info BtnChkSelect" value="View Mac Address" id="btnViewMac" title="ViewMacAddress" disabled>
+
     </div>
 </div>
-<br/>
+<br />
 <div class="col-sm-12 col-md-12 col-lg-12">
     <div class="body-content">
         <table class="table">
@@ -83,12 +83,6 @@
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Mac)
-                </th>
-                <th>
-                    CompanyName
-                </th>
-                <th>
-                    SiteName
                 </th>
                 <th>
                     Status
@@ -107,16 +101,14 @@
                         @Html.DisplayFor(modelItem => item.Mac)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.site.Company.CompanyName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.site.SiteName)
-                    </td>
-                    <td>
                         @Enum.GetName(typeof(RTLS.Enum.DeviceStatus), item.Intstatus)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.IsCreatedByAdmin)
+                    </td>
+                    <td>
+                        @*<input type="button" class="btn btn-info BtnChkSelect" value="View Mac Address" id="btnViewMac" title="ViewMacAddress" disabled>*@
+                        @Html.ActionLink("View Device Data", "RTLSDataAsDevice", "Admin", new { DeviceId = item.Mac }, new { @id = "GetRegistred", @class = "btn btn-info" })
                     </td>
                 </tr>
             }
@@ -212,13 +204,14 @@
                 arrData.push($(this).parents("tr").find(".tdMac").text().trim());
             });
             var data = { MacAddresses: arrData, IscreatedByAdmin:true }
-            $.post("/RealTimeLocation/AddDevices/", data, function (result) {
-                if (result.returncode == 0) {
-                    alert(arrData+"Rigisterd successfully")
+            $.post("/RealTimeLocation/AddDevices/", data, function (response) {
+                if (response.result.returncode == 0) {
+                    alert(arrData + " " + "Register successfully");
                 }
                 else {
-                    alert(result.errmsg);
-               }
+                    alert(response.result.errmsg);
+                }
+                location.reload();
             });
         });
 
@@ -248,10 +241,16 @@
         $("#btnDeRegister").on("click", function () {
             var arrData = [];
             $.each($("input[name='chkMacDevices']:checked"), function () {
-                arrData.push(parseInt($(this).val()));
+                arrData.push($(this).parents("tr").find(".tdMac").text().trim());
             });
-            var data = { chkMacDevices: arrData }
-            $.post("/Admin/DeRegisterMacAddress/", data, function (e) {
+            var data = { MacAddresses: arrData}
+            $.post("/RealTimeLocation/DeRegisterDevices/", data, function (response) {
+                if (response.result.returncode == 0) {
+                    alert(arrData + " " + "DeRigisterd successfully");
+                }
+                else {
+                    alert(response.result.errmsg);
+                }
                 location.reload();
             });
         });
@@ -259,9 +258,9 @@
         $("#btnDeleteMac").on("click", function () {
             var arrData = [];
             $.each($("input[name='chkMacDevices']:checked"), function () {
-                arrData.push(parseInt($(this).val()));
+                arrData.push($(this).parents("tr").find(".tdMac").text().trim());
             });
-            var data = { chkMacDevices: arrData }
+            var data = { MacAddresses: arrData }
             $.post("/Admin/DeleteMacAddress/", data, function (e) {
                 location.reload();
             });
