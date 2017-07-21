@@ -76,7 +76,7 @@
 <br />
 <div class="col-sm-12 col-md-12 col-lg-12">
     <div class="body-content">
-        <table class="table">
+        <table class="table" id="macDetails">
             <tr>
                 <th>
                     <input type="checkbox" name="chkMacDevices" id="chkMacDevices" />
@@ -91,7 +91,7 @@
                     IsCreatedByAdmin
                 </th>
             </tr>
-            @foreach (var item in Model)
+            @*@foreach (var item in Model)
             {
                 <tr>
                     <td>
@@ -107,11 +107,10 @@
                         @Html.DisplayFor(modelItem => item.IsCreatedByAdmin)
                     </td>
                     <td>
-                        @*<input type="button" class="btn btn-info BtnChkSelect" value="View Mac Address" id="btnViewMac" title="ViewMacAddress" disabled>*@
                         @Html.ActionLink("View Device Data", "RTLSDataAsDevice", "Admin", new { DeviceId = item.Mac }, new { @id = "GetRegistred", @class = "btn btn-info" })
                     </td>
                 </tr>
-            }
+            }*@
         </table>
     </div>
 
@@ -138,6 +137,16 @@
     //}
 
     $(document).ready(function () {
+
+        var uri = 'http://localhost:58203/UIData/ListOfMacAddress';
+        $(document).ready(function () {
+            $.getJSON(uri)
+            .done(function (data) {
+                $.each(data, function (key, item) {
+                    $('#macDetails').append("<tr><td>" +"<input type='checkbox' value=' "+item.Id +" '/>"+ "</td>" + "<td>" + item.Mac + "</td>" + "<td>" + item.Intstatus + "</td>" + "<td>" + item.IsCreatedByAdmin +"</td>" +"<td>"+ + "</td></tr>");
+                });
+            });
+        });
 
         //$("#plus").on("click", function () {
         //    $("#txtDiv").append('<input class="form-control" id="txtMacDevices" name="txtMacDevices" type="text"/>');
