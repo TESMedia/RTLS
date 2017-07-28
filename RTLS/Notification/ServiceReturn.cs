@@ -8,6 +8,10 @@ namespace RTLS.ServiceReturn
 {
     public class Notification
     {
+        public Notification()
+        {
+            result = new Result();
+        }
         //public static bool IsSuccess { get; set; }
         public Result result { get; set; }
     }

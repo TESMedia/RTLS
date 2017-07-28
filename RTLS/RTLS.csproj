@@ -288,18 +288,27 @@
     <Compile Include="Migrations\201707160442216_changes_MacAddress_Tbl.Designer.cs">
       <DependentUpon>201707160442216_changes_MacAddress_Tbl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201707241406353_Add_TrackMember.cs" />
+    <Compile Include="Migrations\201707241406353_Add_TrackMember.Designer.cs">
+      <DependentUpon>201707241406353_Add_TrackMember.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201707251508404_Change_Track_Member_tbl.cs" />
+    <Compile Include="Migrations\201707251508404_Change_Track_Member_tbl.Designer.cs">
+      <DependentUpon>201707251508404_Change_Track_Member_tbl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AppLog.cs" />
     <Compile Include="Models\Area.cs" />
+    <Compile Include="Models\Company.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\jQueryDataTableParamModel.cs" />
     <Compile Include="Models\LocationData.cs" />
-    <Compile Include="Models\Record.cs" />
     <Compile Include="Models\MacAddress.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="Models\Company.cs" />
+    <Compile Include="Models\Record.cs" />
     <Compile Include="Models\Site.cs" />
+    <Compile Include="Models\TrackMember.cs" />
     <Compile Include="Notification\ServiceReturn.cs" />
     <Compile Include="Notification\ViewNotification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -419,6 +428,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201707160442216_changes_MacAddress_Tbl.resx">
       <DependentUpon>201707160442216_changes_MacAddress_Tbl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707241406353_Add_TrackMember.resx">
+      <DependentUpon>201707241406353_Add_TrackMember.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707251508404_Change_Track_Member_tbl.resx">
+      <DependentUpon>201707251508404_Change_Track_Member_tbl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

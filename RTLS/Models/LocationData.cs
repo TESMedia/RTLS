@@ -36,6 +36,12 @@ namespace RTLS.Models
         [NotMapped]
         public string[] an { get; set; }
 
+        [NotMapped]
+        public DateTime LastSeenDatetime { get; set; }
+
+        [NotMapped]
+        public DateTime PostDateTime { get; set; }
+
         public string AreaName { get; set; }
 
         public int? AreaId { get; set; }
