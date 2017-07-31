@@ -30,6 +30,7 @@ namespace RTLS.Models
         public DbSet<Site> Site { get; set; }
         public DbSet<LocationData> LocationData { get; set; }
         public DbSet<Area> Area { get; set; }
+        public DbSet<TrackMember> CheckMembers { get; set; }
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
