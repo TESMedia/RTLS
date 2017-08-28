@@ -2,7 +2,9 @@
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+                      ViewBag.PageRange = 2;
 }
+
 <div class="navbar-static-top">
     <div class="row col-lg-12 col-sm-12 col-md-12">
         @*@{ Html.RenderPartial("_Alert"); }*@
@@ -41,13 +43,13 @@
 </div>
 <br /><br />
 <div class="col-sm-12 col-lg-12 col-md-12">
-    @using (Html.BeginForm("Index", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-    {
+    @*@using (Html.BeginForm("Index", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {*@
         <div class="container row col-md-5 col-lg-5 col-sm-5">
             <div class="form-group">
                 <label class="control-label col-md-5">Enter the Devices</label>
                 <div class="btn pull-left form-horizontal" id="txtDiv">
-                    <input type="text" id="txtMacDevices" name="MacAddresses" class="form-control">
+                    <input type="text" id="txtMacDevices" name="MacAddresses" maxlength="17" class="form-control">
                 </div>
             </div>
             @*<div class="form-group col-md-6 col-lg-6 col-sm-6">
@@ -57,10 +59,10 @@
         </div>
         <div class="container row  col-md-1 col-lg-1 col-sm-1">
             <div class="form-group">
-                <input type="submit" class="btn btn-info" value="Save" name="Command" title="Save" id="btnSave">
+                <input type="button" class="btn btn-info" value="Save" name="Command" title="Save" id="btnSave" onclick="saveDevice()">
             </div>
         </div>
-    }
+    @*}*@
 </div>
 <br /><br />
 <div class="col-sm-12 col-lg-12 col-sm-12">
@@ -74,44 +76,76 @@
     </div>
 </div>
 <br />
+<div class="container" style="margin-top:35px;">
+    <h4>Select number of rows</h4>
+    <select name="state" id="maxRows" class="=form-control" style="width:150px">
+        <option value="5000">Show all</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="40">40</option>
+        <option value="50">50</option>
+        <option value="60">60</option>
+    </select>
+
+</div>
 <div class="col-sm-12 col-md-12 col-lg-12">
     <div class="body-content">
-        <table class="table" id="macDetails">
-            <tr>
-                <th>
-                    <input type="checkbox" name="chkMacDevices" id="chkMacDevices" />
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Mac)
-                </th>
-                <th>
-                    Status
-                </th>
-                <th>
-                    IsCreatedByAdmin
-                </th>
-            </tr>
-            @*@foreach (var item in Model)
-            {
+        <table class="table" id="myTable">
+            <thead>
                 <tr>
-                    <td>
-                        <input type="checkbox" value="@item.Id" name="chkMacDevices" class="chKDevices" />
-                    </td>
-                    <td class="tdMac">
-                        @Html.DisplayFor(modelItem => item.Mac)
-                    </td>
-                    <td>
-                        @Enum.GetName(typeof(RTLS.Enum.DeviceStatus), item.Intstatus)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.IsCreatedByAdmin)
-                    </td>
-                    <td>
-                        @Html.ActionLink("View Device Data", "RTLSDataAsDevice", "Admin", new { DeviceId = item.Mac }, new { @id = "GetRegistred", @class = "btn btn-info" })
-                    </td>
+                    <th>
+                        @*<input type="checkbox" class="chkMacDevices" name="chkMacDevices" id="chkMacDevices" />*@
+                    </th>
+                    <th>
+                        Mac
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        IsCreatedByAdmin
+                    </th>
+                    <th>
+                        IsDisplay
+                    </th>
                 </tr>
-            }*@
+            </thead>
+            
+            <tbody id="macDetails">
+
+
+                @*@foreach (var item in Model)
+            {
+                    <tr>
+                        <td>
+                            <input type="checkbox" value="@item.Id" name="chkMacDevices" class="chKDevices" />
+                        </td>
+                        <td class="tdMac">
+                            @Html.DisplayFor(modelItem => item.Mac)
+                        </td>
+                        <td>
+                            @Enum.GetName(typeof(RTLS.Enum.DeviceStatus), item.Intstatus)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsCreatedByAdmin)
+                        </td>
+                        <td>
+                            @Html.ActionLink("View Device Data", "RTLSDataAsDevice", "Admin", new { DeviceId = item.Mac }, new { @id = "GetRegistred", @class = "btn btn-info" })
+                        </td>
+                    </tr>
+                }*@
+            </tbody>
+            <tfoot>
+              
+            </tfoot>
         </table>
+        <div class="pagination-container">
+            <nav>
+                <ul class="pagination"></ul>
+            </nav>
+
+        </div>
     </div>
 
 </div>
@@ -136,15 +170,56 @@
     //    }
     //}
 
+    function saveDevice()
+    {
+        alert("savemac");
+        var macValue=document.getElementById('txtMacDevices').value;
+        var data = { MacAddresses: macValue };
+        $.post("/Device/Save", data, function (response) {
+            if (response.result.returncode == 0) {
+                alert(arrData + " " + "Register successfully");
+            }
+            else {
+                alert(response.result.errmsg);
+            }
+            location.reload();
+        });
+
+    }
+
     $(document).ready(function () {
 
-        var uri = 'http://localhost:58203/UIData/ListOfMacAddress';
+        var uri = '/UIData/ListOfMacAddress';
         $(document).ready(function () {
             $.getJSON(uri)
             .done(function (data) {
-                $.each(data, function (key, item) {
-                    $('#macDetails').append("<tr><td>" +"<input type='checkbox' value=' "+item.Id +" '/>"+ "</td>" + "<td>" + item.Mac + "</td>" + "<td>" + item.Intstatus + "</td>" + "<td>" + item.IsCreatedByAdmin +"</td>" +"<td>"+ + "</td></tr>");
+                $.each(data.lstMacAddress, function (key, item) {
+                    $('#macDetails').append("<tr>" +
+                        "<td> <input type='checkbox' class='chkMacDevices' name='chkMacDevices' id='chkMacDevices' />  </td>" +
+                        "<td class='tdMac' > " + item.Mac + "</td>" +
+                        "<td>" + item.Intstatus + "</td>" +
+                        "<td> <input type='checkbox' value='" + item.IsCreatedByAdmin + "'/>" + "</td>" +
+                        "<td> <input type='checkbox' class='IsDisplay' name='IsDisplay' id='IsDisplay' value='" + item.IsDisplay + "' />" + "</td>" +
+                        "<td>" + + "</td>" +
+                        "</tr>");
                 });
+                //for (i = 0; i <= data.TotalPages; i++) {
+                //    if (i >= data.currentPageIndex - data.PageRange && i <= data.currentPageIndex + data.PageRange) {
+                //        if (data.currentPageIndex == i)
+                //        {
+                //            var foot = $("#macDetails").find('tfoot');
+                //            if (!foot.length) foot = $('<tfoot>').appendTo("#macDetails");
+                //            foot.append($('<ul class="pagination" id="div1"> <li class="active"><a id="pageLink" href="#">' +i + '</a></li> </ul>'));
+                //            }
+                //        else {
+                //            var foot = $("#macDetails").find('tfoot');
+                //            if (!foot.length) foot = $('<tfoot>').appendTo("#macDetails");
+                //        foot.append($('<li><a id="pageLink" href="#" >')+i+'</a></li>');
+                //            }
+                       
+                //    }
+                    
+                //}
             });
         });
 
@@ -157,14 +232,59 @@
         //        $("input[name='txtMacDevices']:eq(" + (length - 1) + ")").remove();
         //    }
         //});
+        $(document).on('click', '#chkMacDevices', function () {
 
-        $("input[name='chkMacDevices']").change(function () {
+            alert("check");
             if ($(this).is(":checked")) {
+
+                // stop the bubbling to prevent firing the row's click event
                 $(".BtnChkSelect").removeAttr("disabled");
             } else {
                 $(".BtnChkSelect").attr("disabled", "disabled");
             }
-        })
+
+        });
+
+
+        $(document).on('click', '#IsDisplay', function () {
+
+
+            if ($(this).is(":checked")) {
+
+                // stop the bubbling to prevent firing the row's click event
+                var arrData = [];
+                $.each($("input[name='IsDisplay']:checked"), function () {
+                    arrData.push($(this).parents("tr").find(".tdMac").text().trim());
+                });
+                var data = { Mac: arrData, IsDisplay: true }
+                $.post("/Device/UpdateDisplay/", data, function (e) {
+                    location.reload();
+                });
+            } else {
+                var arrData = [];
+                $.each($("input[name='IsDisplay']:checked"), function () {
+                    arrData.push($(this).parents("tr").find(".tdMac").text().trim());
+                });
+                var data = { Mac: arrData, IsDisplay: false }
+                $.post("/Device/UpdateDisplay/", data, function (e) {
+                    location.reload();
+                });
+            }
+
+            alert("IsDisplay");
+
+
+        });
+
+
+
+        //$("input[name='chkMacDevices']").change(function () {
+        //    if ($(this).is(":checked")) {
+        //        $(".BtnChkSelect").removeAttr("disabled");
+        //    } else {
+        //        $(".BtnChkSelect").attr("disabled", "disabled");
+        //    }
+        //})
 
         //$.get("/Admin/GetCompanyList", function (result) {
         //    $.each(result, function (key, data) {
@@ -270,11 +390,82 @@
                 arrData.push($(this).parents("tr").find(".tdMac").text().trim());
             });
             var data = { MacAddresses: arrData }
-            $.post("/Admin/DeleteMacAddress/", data, function (e) {
+            $.post("/Device/Delete/", data, function (e) {
                 location.reload();
             });
         });
 
+    //mac address input
+var macAddress = document.getElementById("txtMacDevices");
+
+function formatMAC(e) {
+    var r = /([a-f0-9]{2})([a-f0-9]{2})/i,
+        str = e.target.value.replace(/[^a-f0-9]/ig, "");
+
+    while (r.test(str)) {
+        str = str.replace(r, '$1' + ':' + '$2');
+    }
+
+    e.target.value = str.slice(0, 17);
+};
+
+macAddress.addEventListener("keyup", formatMAC, false);
+
     });
+</script>
+<script>
+    var table = "#myTable";
+    $('#maxRows').on('change', function () {
+        $('.pagination').html('')
+        var trNum = 0
+        var maxRows = parseInt($(this).val())
+        //var totalRows = $(table + 'tbody tr').length
+        var totalRows=4
+        $(table + 'tr:gt(1)').each(function () {
+            trNum++
+            if (trNum > maxRows) {
+                $(this).hide()
+            }
+            if (trNum <= maxRows) {
+                $(this).show()
+            }
+        })
+        if(totalRows>maxRows)
+        {
+            var pagenum = Math.ceil(totalRows / maxRows)
+            for (var i = 1; i <= pagenum;){
+                $('.pagination').append('<li data-page="'+i+'"> \<span>'+i++ +'<span class="sr-only">(current)</span></span></li>').show()
+            }
+        }
+        $('.pagination li:first-child').addClass('active')
+        $('.pagination li').on('click', function () {
+            var pageNum = $(this).attr('data-page')
+            var trIndex = 0;
+            $('.pagination li').removeClass('active')
+            $(this).addClass('active')
+            $(table + 'tr:gt(1)').each(function () {
+                trIndex++
+                if(trIndex>(maxRows*pageNum) || trIndex<=((maxRows*pageNum)-maxRows))
+                {
+                    $(this).hide()
+                }
+                else {
+                    $(this).show()
+                }
+            })
+        })
+
+    })
+
+    $(function () {
+        $('table tr:eq(1)').prepend('<th>ID</th>')
+        var id = 0;
+        $('table tr:gt(1)').each(function () {
+            id++
+            $(this).prepend('<td>'+ id+'</td>')
+        })
+    })
+
+
 </script>
 

@@ -142,7 +142,7 @@ namespace RTLS.Repository
 
         public bool CheckListExistOrNot(string[] lstMac)
         {
-            var difference = db.MacAddress.Select(m => m.Mac).Except(lstMac);
+            var difference = lstMac.Except(db.MacAddress.Select(m => m.Mac));
             if (difference.Count() > 0)
             {
                 return true;

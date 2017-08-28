@@ -8,9 +8,11 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace RTLS.API
 {
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     [RoutePrefix("UIData")]
     public class ViewDataApiController : ApiController
     {
@@ -23,19 +25,25 @@ namespace RTLS.API
         [HttpGet]
         public HttpResponseMessage GetListOfMacAddress()
         {
-            List<MacAddress> lstMacAddress = null;
+            PagedResultsViewModel objPagedResults = new PagedResultsViewModel();
+            objPagedResults.currentPageIndex=  1;
+            objPagedResults.PageRange = 2;
+
             try
             {
-                lstMacAddress = db.MacAddress.ToList();
-               
+                var Maclist = db.MacAddress.ToList();
+                objPagedResults.PageSize = Maclist.Count();
+                objPagedResults.TotalPages= (int)Math.Ceiling((decimal)Maclist.Count / (decimal)objPagedResults.PageRange);
+                objPagedResults.lstMacAddress.AddRange(Maclist);
+                Maclist = Maclist.Skip(((int)objPagedResults.currentPageIndex - 1) * objPagedResults.PageSize).Take(objPagedResults.PageSize).ToList();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.Error(ex.InnerException.Message);
             }
             return new HttpResponseMessage()
             {
-                Content = new StringContent(JsonConvert.SerializeObject(lstMacAddress), Encoding.UTF8, "application/json")
+                Content = new StringContent(JsonConvert.SerializeObject(objPagedResults), Encoding.UTF8, "application/json")
             };
         }
 

@@ -10,6 +10,7 @@ namespace RTLS.Models
 {
     public class MacAddress
     {
+       
         public int Id { get; set; }
 
         public string Mac { get; set; }
@@ -19,6 +20,9 @@ namespace RTLS.Models
         public int ? SiteId { get; set; }
 
         public bool IsCreatedByAdmin { get; set; }
+
+        public bool IsDisplay { get; set; }
+
 
         [ForeignKey("SiteId")]
         public virtual Site site { get; set; }
