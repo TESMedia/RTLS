@@ -245,97 +245,71 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\DeleteDeviceApiController.cs" />
+    <Compile Include="API\RtlsConfigurationApiController.cs" />
     <Compile Include="API\SaveDeviceApiController.cs" />
     <Compile Include="API\ViewDataApiController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="API\RealTimeApiController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
-    <Compile Include="Controllers\RealTimeApiController.cs" />
-    <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Enumes\CutomEnum.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201704141239174_Initial_Migration.cs" />
-    <Compile Include="Migrations\201704141239174_Initial_Migration.Designer.cs">
-      <DependentUpon>201704141239174_Initial_Migration.cs</DependentUpon>
+    <Compile Include="Migrations\201709110644540_Initial_Changes.cs" />
+    <Compile Include="Migrations\201709110644540_Initial_Changes.Designer.cs">
+      <DependentUpon>201709110644540_Initial_Changes.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201704170541230_Add_MacAddress_tbl.cs" />
-    <Compile Include="Migrations\201704170541230_Add_MacAddress_tbl.Designer.cs">
-      <DependentUpon>201704170541230_Add_MacAddress_tbl.cs</DependentUpon>
+    <Compile Include="Migrations\201709110658121_Remove_Area_tbl.cs" />
+    <Compile Include="Migrations\201709110658121_Remove_Area_tbl.Designer.cs">
+      <DependentUpon>201709110658121_Remove_Area_tbl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201704180641363_change_MacAddress_tbl.cs" />
-    <Compile Include="Migrations\201704180641363_change_MacAddress_tbl.Designer.cs">
-      <DependentUpon>201704180641363_change_MacAddress_tbl.cs</DependentUpon>
+    <Compile Include="Migrations\201709111126580_MacAddres_New_Changes.cs" />
+    <Compile Include="Migrations\201709111126580_MacAddres_New_Changes.Designer.cs">
+      <DependentUpon>201709111126580_MacAddres_New_Changes.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201706141021193_Add_Company_Site_tbl.cs" />
-    <Compile Include="Migrations\201706141021193_Add_Company_Site_tbl.Designer.cs">
-      <DependentUpon>201706141021193_Add_Company_Site_tbl.cs</DependentUpon>
+    <Compile Include="Migrations\201709260603241_Add_New_Changes_RtlsConfiguration.cs" />
+    <Compile Include="Migrations\201709260603241_Add_New_Changes_RtlsConfiguration.Designer.cs">
+      <DependentUpon>201709260603241_Add_New_Changes_RtlsConfiguration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201706210721426_Create_table_LocationData.cs" />
-    <Compile Include="Migrations\201706210721426_Create_table_LocationData.Designer.cs">
-      <DependentUpon>201706210721426_Create_table_LocationData.cs</DependentUpon>
+    <Compile Include="Migrations\201709260607406_Add_New_Changes_RtlsConfiguration_withSiteName.cs" />
+    <Compile Include="Migrations\201709260607406_Add_New_Changes_RtlsConfiguration_withSiteName.Designer.cs">
+      <DependentUpon>201709260607406_Add_New_Changes_RtlsConfiguration_withSiteName.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201706211102375_Update_table_LocationData.cs" />
-    <Compile Include="Migrations\201706211102375_Update_table_LocationData.Designer.cs">
-      <DependentUpon>201706211102375_Update_table_LocationData.cs</DependentUpon>
+    <Compile Include="Migrations\201709261022536_Update_Device_Newchanges.cs" />
+    <Compile Include="Migrations\201709261022536_Update_Device_Newchanges.Designer.cs">
+      <DependentUpon>201709261022536_Update_Device_Newchanges.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201706260715270_Update_table_cmp_Site.cs" />
-    <Compile Include="Migrations\201706260715270_Update_table_cmp_Site.Designer.cs">
-      <DependentUpon>201706260715270_Update_table_cmp_Site.cs</DependentUpon>
+    <Compile Include="Migrations\201709261413477_New_Changes_To_Rtls_Configuration.cs" />
+    <Compile Include="Migrations\201709261413477_New_Changes_To_Rtls_Configuration.Designer.cs">
+      <DependentUpon>201709261413477_New_Changes_To_Rtls_Configuration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201706270031375_Update_tbl_MacAddress.cs" />
-    <Compile Include="Migrations\201706270031375_Update_tbl_MacAddress.Designer.cs">
-      <DependentUpon>201706270031375_Update_tbl_MacAddress.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201707031011032_Add_LocationData_tbl.cs" />
-    <Compile Include="Migrations\201707031011032_Add_LocationData_tbl.Designer.cs">
-      <DependentUpon>201707031011032_Add_LocationData_tbl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201707160442216_changes_MacAddress_Tbl.cs" />
-    <Compile Include="Migrations\201707160442216_changes_MacAddress_Tbl.Designer.cs">
-      <DependentUpon>201707160442216_changes_MacAddress_Tbl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201707241406353_Add_TrackMember.cs" />
-    <Compile Include="Migrations\201707241406353_Add_TrackMember.Designer.cs">
-      <DependentUpon>201707241406353_Add_TrackMember.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201707251508404_Change_Track_Member_tbl.cs" />
-    <Compile Include="Migrations\201707251508404_Change_Track_Member_tbl.Designer.cs">
-      <DependentUpon>201707251508404_Change_Track_Member_tbl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708010920213_added_IsDisplay_column_in_MacAddress_table.cs" />
-    <Compile Include="Migrations\201708010920213_added_IsDisplay_column_in_MacAddress_table.Designer.cs">
-      <DependentUpon>201708010920213_added_IsDisplay_column_in_MacAddress_table.cs</DependentUpon>
+    <Compile Include="Migrations\201709270335361_Some_Changes_To_Rtls_Configuration.cs" />
+    <Compile Include="Migrations\201709270335361_Some_Changes_To_Rtls_Configuration.Designer.cs">
+      <DependentUpon>201709270335361_Some_Changes_To_Rtls_Configuration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ApplicationDbContext.cs" />
     <Compile Include="Models\AppLog.cs" />
     <Compile Include="Models\Area.cs" />
-    <Compile Include="Models\Company.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\jQueryDataTableParamModel.cs" />
     <Compile Include="Models\LocationData.cs" />
-    <Compile Include="Models\MacAddress.cs" />
-    <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Device.cs" />
     <Compile Include="Models\PagedResultsViewModel.cs" />
     <Compile Include="Models\Record.cs" />
-    <Compile Include="Models\Site.cs" />
+    <Compile Include="Models\RtlsConfiguration.cs" />
     <Compile Include="Models\TrackMember.cs" />
     <Compile Include="Notification\ServiceReturn.cs" />
     <Compile Include="Notification\ViewNotification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repository\EngageLocations.cs" />
     <Compile Include="Repository\MacAddressRepository.cs" />
+    <Compile Include="Repository\RtlsConfigurationRepository.cs" />
     <Compile Include="ReturnModel\LocationsViewModel.cs" />
     <Compile Include="ReturnModel\MonitorDevice.cs" />
-    <Compile Include="TesServices\TestService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModel\RequestLocationDataVM.cs" />
   </ItemGroup>
@@ -346,6 +320,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Index.html" />
     <Content Include="Scripts\ASPSnippets_Pager.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -379,18 +354,6 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
-    <Content Include="Views\Account\ConfirmEmail.cshtml" />
-    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
-    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
-    <Content Include="Views\Account\ForgotPassword.cshtml" />
-    <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
-    <Content Include="Views\Account\Login.cshtml" />
-    <Content Include="Views\Account\Register.cshtml" />
-    <Content Include="Views\Account\ResetPassword.cshtml" />
-    <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
-    <Content Include="Views\Account\SendCode.cshtml" />
-    <Content Include="Views\Account\VerifyCode.cshtml" />
     <Content Include="Views\Manage\AddPhoneNumber.cshtml" />
     <Content Include="Views\Manage\ChangePassword.cshtml" />
     <Content Include="Views\Manage\Index.cshtml" />
@@ -409,7 +372,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Base\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -420,44 +382,29 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201704141239174_Initial_Migration.resx">
-      <DependentUpon>201704141239174_Initial_Migration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201709110644540_Initial_Changes.resx">
+      <DependentUpon>201709110644540_Initial_Changes.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201704170541230_Add_MacAddress_tbl.resx">
-      <DependentUpon>201704170541230_Add_MacAddress_tbl.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201709110658121_Remove_Area_tbl.resx">
+      <DependentUpon>201709110658121_Remove_Area_tbl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201704180641363_change_MacAddress_tbl.resx">
-      <DependentUpon>201704180641363_change_MacAddress_tbl.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201709111126580_MacAddres_New_Changes.resx">
+      <DependentUpon>201709111126580_MacAddres_New_Changes.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706141021193_Add_Company_Site_tbl.resx">
-      <DependentUpon>201706141021193_Add_Company_Site_tbl.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201709260603241_Add_New_Changes_RtlsConfiguration.resx">
+      <DependentUpon>201709260603241_Add_New_Changes_RtlsConfiguration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706210721426_Create_table_LocationData.resx">
-      <DependentUpon>201706210721426_Create_table_LocationData.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201709260607406_Add_New_Changes_RtlsConfiguration_withSiteName.resx">
+      <DependentUpon>201709260607406_Add_New_Changes_RtlsConfiguration_withSiteName.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706211102375_Update_table_LocationData.resx">
-      <DependentUpon>201706211102375_Update_table_LocationData.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201709261022536_Update_Device_Newchanges.resx">
+      <DependentUpon>201709261022536_Update_Device_Newchanges.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706260715270_Update_table_cmp_Site.resx">
-      <DependentUpon>201706260715270_Update_table_cmp_Site.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201709261413477_New_Changes_To_Rtls_Configuration.resx">
+      <DependentUpon>201709261413477_New_Changes_To_Rtls_Configuration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706270031375_Update_tbl_MacAddress.resx">
-      <DependentUpon>201706270031375_Update_tbl_MacAddress.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201707031011032_Add_LocationData_tbl.resx">
-      <DependentUpon>201707031011032_Add_LocationData_tbl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201707160442216_changes_MacAddress_Tbl.resx">
-      <DependentUpon>201707160442216_changes_MacAddress_Tbl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201707241406353_Add_TrackMember.resx">
-      <DependentUpon>201707241406353_Add_TrackMember.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201707251508404_Change_Track_Member_tbl.resx">
-      <DependentUpon>201707251508404_Change_Track_Member_tbl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708010920213_added_IsDisplay_column_in_MacAddress_table.resx">
-      <DependentUpon>201708010920213_added_IsDisplay_column_in_MacAddress_table.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201709270335361_Some_Changes_To_Rtls_Configuration.resx">
+      <DependentUpon>201709270335361_Some_Changes_To_Rtls_Configuration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

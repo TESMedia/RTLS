@@ -30,9 +30,9 @@ namespace RTLS.API
             {
                 using (MacAddressRepository objMacRepository = new MacAddressRepository())
                 {
-                    if (objMacRepository.CheckListExistOrNot(model.MacAddresses))
+                    if (objMacRepository.CheckListExistOrNot(model.MacAddresses,model.RtlsConfigurationId))
                     {
-                        objMacRepository.SaveMacAddress(model.MacAddresses, true);
+                        objMacRepository.SaveMacAddress(model);
                     }
                 }
             }
@@ -52,9 +52,9 @@ namespace RTLS.API
             try
             {
                
-                if(db.MacAddress.Any(m=>m.Mac==model.Mac))
+                if(db.Device.Any(m=>m.MacAddress==model.Mac))
                 {
-                    var ObjMac = db.MacAddress.First(m => m.Mac == model.Mac);
+                    var ObjMac = db.Device.First(m => m.MacAddress == model.Mac && m.RtlsConfigureId==model.RtlsConfigurationId);
                     ObjMac.IsDisplay = model.IsDisplay;
                     db.Entry(ObjMac).State = EntityState.Modified;
                     db.SaveChanges();

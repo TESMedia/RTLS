@@ -45,5 +45,10 @@ namespace RTLS.Models
         /// Comma separated list of column names
         /// </summary>
         public string sColumns { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string MacAddress { get; set; }
     }
 }

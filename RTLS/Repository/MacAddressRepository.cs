@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using RTLS.Models;
 using RTLS.Enum;
+using RTLS.ViewModel;
 
 namespace RTLS.Repository
 {
@@ -22,19 +21,21 @@ namespace RTLS.Repository
         /// <param name="SiteId"></param>
         /// <param name="Mac"></param>
         /// <returns></returns>
-        public bool SaveMacAddress(string[] lstMac, bool IsCreateFromAdmin)
+        public bool SaveMacAddress(RequestLocationDataVM model)
         {
             try
             {
-                foreach (var Item in lstMac)
+                foreach (var Item in model.MacAddresses)
                 {
-                    if (!(db.MacAddress.Any(m => m.Mac == Item)))
+                    if (!(db.Device.Any(m => m.MacAddress == Item && m.RtlsConfigureId==model.RtlsConfigurationId)))
                     {
-                        MacAddress objMac = new MacAddress();
-                        objMac.Mac = Item;
-                        objMac.Intstatus = Convert.ToInt32(DeviceStatus.None);
-                        objMac.IsCreatedByAdmin = IsCreateFromAdmin;
-                        db.MacAddress.Add(objMac);
+                        Device objMac = new Device();
+                        objMac.MacAddress = Item;
+                        objMac.status = DeviceStatus.None;
+                        objMac.CreatedDateTime = DateTime.Now;
+                        objMac.IsCreatedByAdmin = true;
+                        objMac.RtlsConfigureId = model.RtlsConfigurationId;
+                        db.Device.Add(objMac);
                         db.SaveChanges();
                     }
                 }
@@ -52,27 +53,27 @@ namespace RTLS.Repository
         /// <param name="lstMac"></param>
         /// <param name="SiteName"></param>
         /// <returns></returns>
-        public bool RegisterListOfMacAddresses(string[] lstMac, bool IsCreatedByAdmin)
+        public bool RegisterListOfMacAddresses(RequestLocationDataVM model)
         {
             try
             {
-                foreach (var mac in lstMac)
+                foreach (var mac in model.MacAddresses)
                 {
-                    int intStatus = Convert.ToInt32(DeviceStatus.None);
                     //If MacAddress already exist with None status then 
-                    if (db.MacAddress.Any(m => m.Mac == mac && m.Intstatus == intStatus))
+                    if (db.Device.Any(m => m.MacAddress == mac && m.status == DeviceStatus.None))
                     {
-                        var objMac = db.MacAddress.FirstOrDefault(m => m.Mac == mac);
-                        objMac.Intstatus = Convert.ToInt32(DeviceStatus.Registered);
+                        var objMac = db.Device.FirstOrDefault(m => m.MacAddress == mac);
+                        objMac.status = DeviceStatus.Registered;
                         db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
                     }
                     else
                     {
-                        MacAddress objMac = new MacAddress();
-                        objMac.Mac = mac;
-                        objMac.Intstatus = Convert.ToInt32(DeviceStatus.Registered);
-                        objMac.IsCreatedByAdmin = IsCreatedByAdmin;
-                        db.MacAddress.Add(objMac);
+                        Device objMac = new Device();
+                        objMac.MacAddress = mac;
+                        objMac.status = DeviceStatus.Registered;
+                        objMac.RtlsConfigureId = model.RtlsConfigurationId;
+                        objMac.IsCreatedByAdmin = true;
+                        db.Device.Add(objMac);
 
                     }
                     db.SaveChanges();
@@ -96,8 +97,8 @@ namespace RTLS.Repository
         {
             try
             {
-                var ObjDevice = db.MacAddress.FirstOrDefault(m => m.Id == MacId);
-                ObjDevice.Intstatus = Convert.ToInt32(DeviceStatus.Registered);
+                var ObjDevice = db.Device.FirstOrDefault(m => m.Id == MacId);
+                ObjDevice.status = DeviceStatus.Registered;
                 db.Entry(ObjDevice).State = System.Data.Entity.EntityState.Modified;
                 db.SaveChanges();
             }
@@ -114,8 +115,8 @@ namespace RTLS.Repository
             {
                 foreach (var item in MacAddresses)
                 {
-                    var ObjDevice = db.MacAddress.FirstOrDefault(m => m.Mac == item);
-                    ObjDevice.Intstatus = Convert.ToInt32(DeviceStatus.DeRegistered);
+                    var ObjDevice = db.Device.FirstOrDefault(m => m.MacAddress == item);
+                    ObjDevice.status = DeviceStatus.DeRegistered;
                     db.Entry(ObjDevice).State = System.Data.Entity.EntityState.Modified;
                     db.SaveChanges();
                 }
@@ -127,22 +128,9 @@ namespace RTLS.Repository
             return true;
         }
 
-
-        public bool CheckMacAddressExitOrNot(int MacId, int IntStatus)
+        public bool CheckListExistOrNot(string[] lstMac,int RtlsConfigureId)
         {
-            if (db.MacAddress.FirstOrDefault(m => m.Id == MacId).Intstatus != IntStatus)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool CheckListExistOrNot(string[] lstMac)
-        {
-            var difference = lstMac.Except(db.MacAddress.Select(m => m.Mac));
+            var difference = lstMac.Except(db.Device.Where(m=>m.RtlsConfigureId == RtlsConfigureId).Select(m => m.MacAddress));
             if (difference.Count() > 0)
             {
                 return true;
@@ -155,7 +143,7 @@ namespace RTLS.Repository
 
         public string[] GetMacAdressFromId(int MacId)
         {
-            return new[] { db.MacAddress.FirstOrDefault(m => m.Id == MacId).Mac };
+            return new[] { db.Device.FirstOrDefault(m => m.Id == MacId).MacAddress };
         }
 
         public void Dispose()

@@ -1,7 +1,9 @@
 ﻿using log4net;
 using Newtonsoft.Json;
 using RTLS.Models;
+using RTLS.ViewModel;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -22,20 +24,16 @@ namespace RTLS.API
         private ApplicationDbContext db = new ApplicationDbContext();
 
         [Route("ListOfMacAddress")]
-        [HttpGet]
-        public HttpResponseMessage GetListOfMacAddress()
+        [HttpPost]
+        public HttpResponseMessage GetListOfMacAddress(RequestLocationDataVM model)
         {
-            PagedResultsViewModel objPagedResults = new PagedResultsViewModel();
-            objPagedResults.currentPageIndex=  1;
-            objPagedResults.PageRange = 2;
-
+            IEnumerable Maclist=null;
             try
             {
-                var Maclist = db.MacAddress.ToList();
-                objPagedResults.PageSize = Maclist.Count();
-                objPagedResults.TotalPages= (int)Math.Ceiling((decimal)Maclist.Count / (decimal)objPagedResults.PageRange);
-                objPagedResults.lstMacAddress.AddRange(Maclist);
-                Maclist = Maclist.Skip(((int)objPagedResults.currentPageIndex - 1) * objPagedResults.PageSize).Take(objPagedResults.PageSize).ToList();
+                if(db.RtlsConfigurations.Any(m=>m.SiteId== model.SiteId))
+                {
+                    Maclist = db.Device.Where(m => m.RtlsConfiguration.SiteId == model.SiteId).Select(m=>new {Id=m.Id, Mac=m.MacAddress, StrStatus=m.status.ToString(), IsCreatedByAdmin=m.IsCreatedByAdmin, IsDisplay=m.IsDisplay, }).ToList();
+                }
             }
             catch (Exception ex)
             {
@@ -43,7 +41,7 @@ namespace RTLS.API
             }
             return new HttpResponseMessage()
             {
-                Content = new StringContent(JsonConvert.SerializeObject(objPagedResults), Encoding.UTF8, "application/json")
+                Content = new StringContent(JsonConvert.SerializeObject(Maclist), Encoding.UTF8, "application/json")
             };
         }
 

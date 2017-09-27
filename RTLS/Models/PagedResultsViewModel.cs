@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -9,16 +10,12 @@ namespace RTLS.Models
     {
         public PagedResultsViewModel()
         {
-            lstMacAddress = new List<MacAddress>();
+            lstMacAddress = new List<Device>();
         }
         public int currentPageIndex { get; set; }
         public int PageSize { get; set; }
         public int TotalPages { get; set; }
         public int PageRange { get; set; }
-        public  List<MacAddress> lstMacAddress { get; set; }
+        public List<Device> lstMacAddress { get; set; }
     }
-
-    
-
-
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace RTLS.Models
+﻿namespace RTLS.Models
 {
     public class Area
     {
