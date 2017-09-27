@@ -8,3 +8,11 @@
 /RTLS/RTLS.csproj.user
 /RTLS/bin
 /.vs
+/RTLS.Business/bin/Debug
+/RTLS.Business/obj/Debug
+/RTLS.DataAccess/bin/Debug
+/RTLS.DataAccess/obj/Debug
+/RTLS.Domins/bin/Debug
+/RTLS.Domins/obj/Debug
+/RTLS.Services/obj/Debug
+/RTLS.Services/bin
