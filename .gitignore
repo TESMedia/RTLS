@@ -16,3 +16,5 @@
 /RTLS.Domins/obj/Debug
 /RTLS.Services/obj/Debug
 /RTLS.Services/bin
+/RTLS.Domins/bin/Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+/RTLS.Domins/bin/Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml

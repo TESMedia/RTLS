@@ -5,12 +5,12 @@ namespace RTLS.Domins.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    public sealed class Configuration : DbMigrationsConfiguration<RTLS.Domains.ApplicationDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<RTLS.Domains.ApplicationDbContext>
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
-            MigrationsDirectory = @"Migrations";
+            AutomaticMigrationsEnabled = true;
+            MigrationsDirectory = @"CaptivePortalConfiguration\Migrations";
             AutomaticMigrationDataLossAllowed = false;
             AutomaticMigrationDataLossAllowed = true;
             SetSqlGenerator("MySql.Data.MySqlClient", new MySql.Data.Entity.MySqlMigrationSqlGenerator());

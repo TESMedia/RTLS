@@ -12,7 +12,7 @@ namespace RTLS.Domains
             : base("DefaultConnection")
         {
             this.Configuration.LazyLoadingEnabled = false;
-            Database.CreateIfNotExists();
+            //Database.CreateIfNotExists();
         }
         public DbSet<Device> Device { get; set; }
         public DbSet<LocationData> LocationData { get; set; }

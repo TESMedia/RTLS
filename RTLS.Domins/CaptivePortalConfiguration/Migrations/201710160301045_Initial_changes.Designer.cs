@@ -6,14 +6,14 @@ namespace RTLS.Domins.Migrations
     using System.Data.Entity.Migrations.Infrastructure;
     using System.Resources;
     
-    [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class Initial_Changes : IMigrationMetadata
+    [GeneratedCode("EntityFramework.Migrations", "6.0.0-20911")]
+    public sealed partial class Initial_changes : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Initial_Changes));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Initial_changes));
         
         string IMigrationMetadata.Id
         {
-            get { return "201709271547326_Initial_Changes"; }
+            get { return "201710160301045_Initial_changes"; }
         }
         
         string IMigrationMetadata.Source

@@ -3,7 +3,7 @@ namespace RTLS.Domins.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Initial_Changes : DbMigration
+    public partial class Initial_changes : DbMigration
     {
         public override void Up()
         {
@@ -57,9 +57,9 @@ namespace RTLS.Domins.Migrations
                 c => new
                     {
                         RtlsConfigurationId = c.Int(nullable: false, identity: true),
-                        EngageSiteName = c.String(nullable: false, maxLength: 50, storeType: "nvarchar"),
-                        EngageBuildingName = c.String(nullable: false, maxLength: 50, storeType: "nvarchar"),
-                        EngageBaseAddressUri = c.String(nullable: false, maxLength: 200, storeType: "nvarchar"),
+                        EngageSiteName = c.String(nullable: false, maxLength: 50, unicode: false, storeType: "nvarchar"),
+                        EngageBuildingName = c.String(nullable: false, maxLength: 50, unicode: false, storeType: "nvarchar"),
+                        EngageBaseAddressUri = c.String(nullable: false, maxLength: 200, unicode: false, storeType: "nvarchar"),
                         SiteId = c.Int(nullable: false),
                         SiteName = c.String(nullable: false, unicode: false),
                     })
