@@ -242,6 +242,7 @@
     <Compile Include="API\DeleteDeviceApiController.cs" />
     <Compile Include="API\RtlsConfigurationApiController.cs" />
     <Compile Include="API\SaveDeviceApiController.cs" />
+    <Compile Include="API\SiteFloorsApiController.cs" />
     <Compile Include="API\ViewDataApiController.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />

@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using RTLS.Domins;
+using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -19,11 +20,12 @@ namespace RTLS.Domains
         public DbSet<TrackMember> CheckMembers { get; set; }
         public DbSet<AppLog> AppLogs { get; set; }
         public DbSet<RtlsConfiguration> RtlsConfigurations { get; set; }
+        public DbSet<SiteFloor> SiteFloor { get; set; }
+
 
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
         }
-
     }
 }

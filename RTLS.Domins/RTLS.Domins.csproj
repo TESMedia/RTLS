@@ -64,9 +64,18 @@
     <Compile Include="CaptivePortalConfiguration\Migrations\201710160301045_Initial_changes.Designer.cs">
       <DependentUpon>201710160301045_Initial_changes.cs</DependentUpon>
     </Compile>
+    <Compile Include="CaptivePortalConfiguration\Migrations\201710270845059_Added_SiteFloor_tbl.cs" />
+    <Compile Include="CaptivePortalConfiguration\Migrations\201710270845059_Added_SiteFloor_tbl.Designer.cs">
+      <DependentUpon>201710270845059_Added_SiteFloor_tbl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CaptivePortalConfiguration\Migrations\201710310133068_New_Changes.cs" />
+    <Compile Include="CaptivePortalConfiguration\Migrations\201710310133068_New_Changes.Designer.cs">
+      <DependentUpon>201710310133068_New_Changes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Device.cs" />
     <Compile Include="Enums\CutomEnum.cs" />
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="SiteFloor.cs" />
     <Compile Include="ViewModels\jQueryDataTableParamModel.cs" />
     <Compile Include="LocationData.cs" />
     <Compile Include="ViewModels\LocationsViewModel.cs" />
@@ -89,6 +98,12 @@
   <ItemGroup>
     <EmbeddedResource Include="CaptivePortalConfiguration\Migrations\201710160301045_Initial_changes.resx">
       <DependentUpon>201710160301045_Initial_changes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CaptivePortalConfiguration\Migrations\201710270845059_Added_SiteFloor_tbl.resx">
+      <DependentUpon>201710270845059_Added_SiteFloor_tbl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CaptivePortalConfiguration\Migrations\201710310133068_New_Changes.resx">
+      <DependentUpon>201710310133068_New_Changes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
