@@ -1,4 +1,5 @@
-﻿using RTLS.Domains;
+﻿using Newtonsoft.Json;
+using RTLS.Domains;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,18 +20,29 @@ namespace RTLS.Domins
         [MaxLength(70)]
         public string FlooeImagePath { get; set; }
 
-        public int XRange { get; set; }
+        public int XRangeFeedData { get; set; }
 
-        public int YRange { get; set; }
+        public int YRangeFeedData{ get; set; }
 
         public int ScaleFactor { get; set; }
 
-        [MaxLength(50)]
-        public string  DisplayConfiguration { get; set; }
+        public int CanvasXLength { get; set; }
+
+        public int CanvasYLength { get; set; }
+
+        public int TopStyle { get; set; }
+
+        public int LeftStyle { get; set; }
+
+        public int ImageXLength { get; set; }
+
+        public int ImageYLength { get; set; }
 
         public int RtlsConfigureId { get; set; } 
 
         [ForeignKey("RtlsConfigureId")]
+
+        [JsonIgnore]
         public virtual RtlsConfiguration RtlsConfiguration { get; set; }
     }
 }

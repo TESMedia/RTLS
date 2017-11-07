@@ -38,6 +38,9 @@ namespace RTLS.Domains
         [MaxLength(50)]
         public string SiteName { get; set; }
 
+        [MaxLength(50)]
+        public string DisplayConfiguration { get; set; }
+
         public Displaytype DisplayType { get; set; }
 
         public int Port { get; set; }

@@ -8,12 +8,14 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 /// <summary>
 /// 
 /// </summary>
 namespace RTLS.API
 {
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     [RoutePrefix("api")]
     public class SiteFloorsApiController : ApiController
     {
@@ -40,30 +42,21 @@ namespace RTLS.API
         {
             try
             {
-                RtlsConfiguration objRtlsConfiguration = null;
-                if (_RrlsConfigurationRepository.CheckRtlsConfigExistOrNotAsPerSite(ObjRtlsConfig.SiteId, ObjRtlsConfig.SiteName))
-                {
+               
 
-                    objRtlsConfiguration = _RrlsConfigurationRepository.GetAsPerSite(ObjRtlsConfig.SiteId, ObjRtlsConfig.SiteName);
-                }
-                else
-                {
-                    _RrlsConfigurationRepository.SaveAndUpdateAsPerSite(ObjRtlsConfig);
-                }
-
-                foreach(var item in ObjRtlsConfig.SiteFloors)
+                foreach (var item in ObjRtlsConfig.SiteFloors)
                 {
                     if(!_SiteFloorRepoSitory.IsSiteFloorExist(item.Id))
                     {
-                        item.RtlsConfigureId = objRtlsConfiguration.RtlsConfigurationId;
                         _SiteFloorRepoSitory.CreateSiteFloor(item);
                     }
                     else
                     {
-                        item.RtlsConfigureId = objRtlsConfiguration.RtlsConfigurationId;
                         _SiteFloorRepoSitory.UpdateSiteFloor(item);
                     }
                 }
+
+                _RrlsConfigurationRepository.SaveAndUpdateAsPerSite(ObjRtlsConfig);
 
                 return Request.CreateResponse(HttpStatusCode.OK);
 
@@ -86,7 +79,7 @@ namespace RTLS.API
         {
             try
             {
-               var lstSiteFloor=_SiteFloorRepoSitory.GetAllSiteFloors(SiteId).ToList();
+               var lstSiteFloor=_SiteFloorRepoSitory.GetAllSiteFloors(SiteId);
                 return Request.CreateResponse(HttpStatusCode.OK, lstSiteFloor);
             }
             catch (Exception ex)

@@ -46,6 +46,9 @@
       <HintPath>..\packages\MySql.Data.Entity.6.9.9\lib\net45\MySql.Data.Entity.EF6.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -71,6 +74,14 @@
     <Compile Include="CaptivePortalConfiguration\Migrations\201710310133068_New_Changes.cs" />
     <Compile Include="CaptivePortalConfiguration\Migrations\201710310133068_New_Changes.Designer.cs">
       <DependentUpon>201710310133068_New_Changes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CaptivePortalConfiguration\Migrations\201711031307411_Add_New_Changes_in_SiteFloor_tbl.cs" />
+    <Compile Include="CaptivePortalConfiguration\Migrations\201711031307411_Add_New_Changes_in_SiteFloor_tbl.Designer.cs">
+      <DependentUpon>201711031307411_Add_New_Changes_in_SiteFloor_tbl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CaptivePortalConfiguration\Migrations\201711050629178_New_Changes_RtlsConfiguration.cs" />
+    <Compile Include="CaptivePortalConfiguration\Migrations\201711050629178_New_Changes_RtlsConfiguration.Designer.cs">
+      <DependentUpon>201711050629178_New_Changes_RtlsConfiguration.cs</DependentUpon>
     </Compile>
     <Compile Include="Device.cs" />
     <Compile Include="Enums\CutomEnum.cs" />
@@ -104,6 +115,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CaptivePortalConfiguration\Migrations\201710310133068_New_Changes.resx">
       <DependentUpon>201710310133068_New_Changes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CaptivePortalConfiguration\Migrations\201711031307411_Add_New_Changes_in_SiteFloor_tbl.resx">
+      <DependentUpon>201711031307411_Add_New_Changes_in_SiteFloor_tbl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CaptivePortalConfiguration\Migrations\201711050629178_New_Changes_RtlsConfiguration.resx">
+      <DependentUpon>201711050629178_New_Changes_RtlsConfiguration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

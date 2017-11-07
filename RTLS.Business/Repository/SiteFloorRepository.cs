@@ -54,9 +54,9 @@ namespace RTLS.Business.Repository
         /// </summary>
         /// <param name="SiteId"></param>
         /// <returns></returns>
-        public IQueryable<SiteFloor> GetAllSiteFloors(int SiteId)
+        public RtlsConfiguration GetAllSiteFloors(int SiteId)
         {
-           return db.SiteFloor;
+           return db.RtlsConfigurations.Include("SiteFloors").FirstOrDefault(m=>m.SiteId==SiteId);
         }
 
 
