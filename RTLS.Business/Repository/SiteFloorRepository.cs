@@ -56,7 +56,7 @@ namespace RTLS.Business.Repository
         /// <returns></returns>
         public RtlsConfiguration GetAllSiteFloors(int SiteId)
         {
-           return db.RtlsConfigurations.Include("SiteFloors").FirstOrDefault(m=>m.SiteId==SiteId);
+           return db.RtlsConfiguration.Include("SiteFloors").FirstOrDefault(m=>m.SiteId==SiteId);
         }
 
 

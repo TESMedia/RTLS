@@ -18,13 +18,11 @@ namespace RTLS.Domins
         public string SiteFloorName { get; set; }
 
         [MaxLength(70)]
-        public string FlooeImagePath { get; set; }
+        public string FloorImagePath { get; set; }
 
         public int XRangeFeedData { get; set; }
 
-        public int YRangeFeedData{ get; set; }
-
-        public int ScaleFactor { get; set; }
+        public int YRangeFeedData { get; set; }
 
         public int CanvasXLength { get; set; }
 
@@ -34,11 +32,10 @@ namespace RTLS.Domins
 
         public int LeftStyle { get; set; }
 
-        public int ImageXLength { get; set; }
+        public int RtlsConfigureId { get; set; }
 
-        public int ImageYLength { get; set; }
-
-        public int RtlsConfigureId { get; set; } 
+        [MaxLength(20)]
+        public string CanvasName { get; set; }
 
         [ForeignKey("RtlsConfigureId")]
 

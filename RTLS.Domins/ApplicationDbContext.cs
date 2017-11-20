@@ -15,17 +15,36 @@ namespace RTLS.Domains
             this.Configuration.LazyLoadingEnabled = false;
             //Database.CreateIfNotExists();
         }
+
+        public DbSet<Site> Site { get; set; }
+        public DbSet<RtlsConfiguration> RtlsConfiguration { get; set; }
+        public DbSet<SiteFloor> SiteFloor { get; set; }
+
         public DbSet<Device> Device { get; set; }
+        public DbSet<DeviceAssociateSite> DeviceAssociateSite { get; set; }
+
         public DbSet<LocationData> LocationData { get; set; }
         public DbSet<TrackMember> CheckMembers { get; set; }
         public DbSet<AppLog> AppLogs { get; set; }
-        public DbSet<RtlsConfiguration> RtlsConfigurations { get; set; }
-        public DbSet<SiteFloor> SiteFloor { get; set; }
-
 
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
+        }
+
+        protected override void OnModelCreating(System.Data.Entity.DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Site>().ToTable("Site");
+            modelBuilder.Entity<RtlsConfiguration>().ToTable("RtlsConfiguration");
+            modelBuilder.Entity<SiteFloor>().ToTable("SiteFloor");
+            modelBuilder.Entity<Device>().ToTable("Device");
+            modelBuilder.Entity<DeviceAssociateSite>().ToTable("DeviceAssociateSite");
+            modelBuilder.Entity<LocationData>().ToTable("LocationData");
+            modelBuilder.Entity<AppLog>().ToTable("AppLog");
+
+            modelBuilder.Entity<Site>()
+           .HasOptional(f => f.RtlsConfiguration)
+           .WithRequired(s => s.Site);
         }
     }
 }

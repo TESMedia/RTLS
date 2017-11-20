@@ -19,17 +19,9 @@ namespace RTLS.Repository
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public RtlsConfiguration GetAsPerSite(int SiteId,string SiteName)
+        public Site GetAsPerSite(int SiteId,string SiteName)
         {
-           if( CheckRtlsConfigExistOrNotAsPerSite(SiteId,SiteName))
-            {
-                return db.RtlsConfigurations.FirstOrDefault(m => m.SiteId == SiteId || m.SiteName== SiteName);
-            }
-           else
-            {
-                return new RtlsConfiguration();
-            }
-           
+            return db.Site.Include("RtlsConfiguration").Include("RtlsConfiguration.Devices").FirstOrDefault(m => m.SiteId == SiteId);
         }
 
 
@@ -39,13 +31,13 @@ namespace RTLS.Repository
         /// <param name="model"></param>
         public void SaveAndUpdateAsPerSite(RtlsConfiguration model)
         {
-            if (CheckRtlsConfigExistOrNotAsPerSite((int)model.SiteId,model.SiteName))
+            if (CheckRtlsConfigExistOrNotAsPerSite((int)model.SiteId))
             {
                 db.Entry(model).State = System.Data.Entity.EntityState.Modified;
             }
             else
             {
-                db.RtlsConfigurations.Add(model);
+                db.RtlsConfiguration.Add(model);
             }
             db.SaveChanges();
         }
@@ -55,9 +47,9 @@ namespace RTLS.Repository
         /// </summary>
         /// <param name="SiteId"></param>
         /// <returns></returns>
-        public bool CheckRtlsConfigExistOrNotAsPerSite(int SiteId,string SiteName)
+        public bool CheckRtlsConfigExistOrNotAsPerSite(int SiteId)
         {
-            return db.RtlsConfigurations.Any(m => m.SiteId == SiteId || m.SiteName==SiteName);
+            return db.RtlsConfiguration.Any(m => m.SiteId == SiteId);
         }
 
         public void Dispose()

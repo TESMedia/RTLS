@@ -26,17 +26,23 @@ namespace RTLS.Repository
         {
             try
             {
-                foreach (var Item in model.MacAddresses)
+                foreach (var MacAddress in model.MacAddresses)
                 {
-                    if (!(db.Device.Any(m => m.MacAddress == Item && m.RtlsConfigureId==model.RtlsConfigurationId)))
+                    if (!(db.DeviceAssociateSite.Any(m => m.Device.MacAddress == MacAddress && m.SiteId==model.SiteId)))
                     {
-                        Device objMac = new Device();
-                        objMac.MacAddress = Item;
-                        objMac.status = DeviceStatus.None;
-                        objMac.CreatedDateTime = DateTime.Now;
-                        objMac.IsCreatedByAdmin = true;
-                        objMac.RtlsConfigureId = model.RtlsConfigurationId;
-                        db.Device.Add(objMac);
+                        Device objDevice = new Device();
+                        objDevice.MacAddress = MacAddress;
+                        //objMac. = DeviceStatus.None;
+                        //objMac.CreatedDateTime = DateTime.Now;
+                        //objMac.IsCreatedByAdmin = true;
+                        //objMac.RtlsConfigureId = model.RtlsConfigurationId;
+                        db.Device.Add(objDevice);
+                        db.SaveChanges();
+
+                        DeviceAssociateSite objDeviceAssociate = new DeviceAssociateSite();
+                        objDeviceAssociate.SiteId = model.SiteId;
+                        objDeviceAssociate.DeviceId = objDevice.DeviceId;
+                        db.DeviceAssociateSite.Add(objDeviceAssociate);
                         db.SaveChanges();
                     }
                 }
@@ -61,19 +67,18 @@ namespace RTLS.Repository
                 foreach (var mac in model.MacAddresses)
                 {
                     //If MacAddress already exist with None status then 
-                    if (db.Device.Any(m => m.MacAddress == mac && m.status == DeviceStatus.None))
+                    if (db.Device.Any(m => m.MacAddress == mac))
                     {
                         var objMac = db.Device.FirstOrDefault(m => m.MacAddress == mac);
-                        objMac.status = DeviceStatus.Registered;
                         db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
                     }
                     else
                     {
                         Device objMac = new Device();
                         objMac.MacAddress = mac;
-                        objMac.status = DeviceStatus.Registered;
-                        objMac.RtlsConfigureId = model.RtlsConfigurationId;
-                        objMac.IsCreatedByAdmin = true;
+                        //objMac.status = DeviceStatus.Registered;
+                        //objMac.RtlsConfigureId = model.RtlsConfigurationId;
+                        //objMac.IsCreatedByAdmin = true;
                         db.Device.Add(objMac);
 
                     }
@@ -98,7 +103,7 @@ namespace RTLS.Repository
         {
             try
             {
-                var ObjDevice = db.Device.FirstOrDefault(m => m.Id == MacId);
+                var ObjDevice = db.DeviceAssociateSite.FirstOrDefault(m => m.Id == MacId);
                 ObjDevice.status = DeviceStatus.Registered;
                 db.Entry(ObjDevice).State = System.Data.Entity.EntityState.Modified;
                 db.SaveChanges();
@@ -110,13 +115,13 @@ namespace RTLS.Repository
             return true;
         }
 
-        public bool DeRegisterListOfMacs(String[] MacAddresses)
+        public bool DeRegisterListOfMacs(string [] lstMacAddresses)
         {
             try
             {
-                foreach (var item in MacAddresses)
+                foreach (var item in lstMacAddresses)
                 {
-                    var ObjDevice = db.Device.FirstOrDefault(m => m.MacAddress == item);
+                    var ObjDevice = db.DeviceAssociateSite.FirstOrDefault(m => m.Device.MacAddress == item);
                     ObjDevice.status = DeviceStatus.DeRegistered;
                     db.Entry(ObjDevice).State = System.Data.Entity.EntityState.Modified;
                     db.SaveChanges();
@@ -129,9 +134,9 @@ namespace RTLS.Repository
             return true;
         }
 
-        public bool CheckListExistOrNot(string[] lstMac,int RtlsConfigureId)
+        public bool CheckListExistOrNot(string[] lstMac,int SiteId)
         {
-            var difference = lstMac.Except(db.Device.Where(m=>m.RtlsConfigureId == RtlsConfigureId).Select(m => m.MacAddress));
+            var difference = lstMac.Except(db.DeviceAssociateSite.Where(m=>m.SiteId == SiteId).Select(m => m.Device.MacAddress));
             if (difference.Count() > 0)
             {
                 return true;
@@ -144,7 +149,7 @@ namespace RTLS.Repository
 
         public string[] GetMacAdressFromId(int MacId)
         {
-            return new[] { db.Device.FirstOrDefault(m => m.Id == MacId).MacAddress };
+            return new[] { db.Device.FirstOrDefault(m => m.DeviceId == MacId).MacAddress };
         }
 
         public void Dispose()

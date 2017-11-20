@@ -1,32 +1,42 @@
-﻿using RTLS.Domins.Enums;
+﻿using Newtonsoft.Json;
+using RTLS.Domins.Enums;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RTLS.Domains
 {
-
     public class Device
     {
-        public int Id { get; set; }
+        [Key()]
+        public int DeviceId { get; set; }
 
+        [MaxLength(20)]
+        [Required(ErrorMessage = "Please send MacAddress")]
+        [Display(Name = "MacAddress")]
+        //[Index(IsUnique = true)]
+        //[RegularExpression("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$",ErrorMessage ="MacAddress format not valid"]
         public string MacAddress { get; set; }
 
-        public DeviceStatus status { get; set; }
+        public int? WifiUserId { get; set; }
 
-        public bool IsCreatedByAdmin { get; set; }
+        [MaxLength(100)]
+        public string BrowserName { get; set; }
 
-        public DateTime CreatedDateTime { get; set; }
+        [MaxLength(100)]
+        public string OperatingSystem { get; set; }
 
-        public bool IsDisplay { get; set; }
+        public bool IsMobile { get; set; }
 
-        [NotMapped]
-        public string StrStatus { get; set; }
+        [MaxLength(100)]
+        public string UserAgentName { get; set; }
 
-        public int ? RtlsConfigureId { get; set; }
+        public ICollection<DeviceAssociateSite> DeviceAssociateSite { get; set; }
 
-        [ForeignKey("RtlsConfigureId")]
-        public virtual RtlsConfiguration RtlsConfiguration { get; set; }
-
+        //[JsonIgnore]
+        //[ForeignKey("WifiUserId")]
+        //public virtual WifiUser WifiUser { get; set; }
     }
 
 }

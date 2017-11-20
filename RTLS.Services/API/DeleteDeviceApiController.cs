@@ -35,10 +35,10 @@ namespace RTLS.API
                 this.log.Debug("Enter into the DeleteMacAddress Action Method");
                 foreach (var item in model.MacAddresses)
                 {
-                    Device deviceObject = db.Device.FirstOrDefault(m => m.MacAddress == item && m.RtlsConfigureId==model.RtlsConfigurationId);
-                    if (deviceObject.status != DeviceStatus.Registered)
+                    DeviceAssociateSite deviceAssociateObject = db.DeviceAssociateSite.FirstOrDefault(m => m.Device.MacAddress == item && m.SiteId == model.SiteId);
+                    if (deviceAssociateObject.status != DeviceStatus.Registered)
                     {
-                        db.Device.Remove(deviceObject);
+                        db.DeviceAssociateSite.Remove(deviceAssociateObject);
                         db.SaveChanges();
                         retResult = string.Format("{0} Successfully Deleted from server", item);
                     }

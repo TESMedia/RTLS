@@ -63,29 +63,10 @@
     <Compile Include="ApplicationDbContext.cs" />
     <Compile Include="AppLog.cs" />
     <Compile Include="Area.cs" />
-    <Compile Include="CaptivePortalConfiguration\Migrations\201710160301045_Initial_changes.cs" />
-    <Compile Include="CaptivePortalConfiguration\Migrations\201710160301045_Initial_changes.Designer.cs">
-      <DependentUpon>201710160301045_Initial_changes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CaptivePortalConfiguration\Migrations\201710270845059_Added_SiteFloor_tbl.cs" />
-    <Compile Include="CaptivePortalConfiguration\Migrations\201710270845059_Added_SiteFloor_tbl.Designer.cs">
-      <DependentUpon>201710270845059_Added_SiteFloor_tbl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CaptivePortalConfiguration\Migrations\201710310133068_New_Changes.cs" />
-    <Compile Include="CaptivePortalConfiguration\Migrations\201710310133068_New_Changes.Designer.cs">
-      <DependentUpon>201710310133068_New_Changes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CaptivePortalConfiguration\Migrations\201711031307411_Add_New_Changes_in_SiteFloor_tbl.cs" />
-    <Compile Include="CaptivePortalConfiguration\Migrations\201711031307411_Add_New_Changes_in_SiteFloor_tbl.Designer.cs">
-      <DependentUpon>201711031307411_Add_New_Changes_in_SiteFloor_tbl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CaptivePortalConfiguration\Migrations\201711050629178_New_Changes_RtlsConfiguration.cs" />
-    <Compile Include="CaptivePortalConfiguration\Migrations\201711050629178_New_Changes_RtlsConfiguration.Designer.cs">
-      <DependentUpon>201711050629178_New_Changes_RtlsConfiguration.cs</DependentUpon>
-    </Compile>
     <Compile Include="Device.cs" />
+    <Compile Include="DeviceAssociateSite.cs" />
     <Compile Include="Enums\CutomEnum.cs" />
-    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Site.cs" />
     <Compile Include="SiteFloor.cs" />
     <Compile Include="ViewModels\jQueryDataTableParamModel.cs" />
     <Compile Include="LocationData.cs" />
@@ -105,23 +86,6 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="CaptivePortalConfiguration\Migrations\201710160301045_Initial_changes.resx">
-      <DependentUpon>201710160301045_Initial_changes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CaptivePortalConfiguration\Migrations\201710270845059_Added_SiteFloor_tbl.resx">
-      <DependentUpon>201710270845059_Added_SiteFloor_tbl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CaptivePortalConfiguration\Migrations\201710310133068_New_Changes.resx">
-      <DependentUpon>201710310133068_New_Changes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CaptivePortalConfiguration\Migrations\201711031307411_Add_New_Changes_in_SiteFloor_tbl.resx">
-      <DependentUpon>201711031307411_Add_New_Changes_in_SiteFloor_tbl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CaptivePortalConfiguration\Migrations\201711050629178_New_Changes_RtlsConfiguration.resx">
-      <DependentUpon>201711050629178_New_Changes_RtlsConfiguration.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

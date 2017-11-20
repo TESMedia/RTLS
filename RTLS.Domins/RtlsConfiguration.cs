@@ -17,7 +17,7 @@ namespace RTLS.Domains
         }
 
         [Key]
-        public int RtlsConfigurationId { get; set; }
+        public int SiteId { get; set; }
 
         [MaxLength(50)]
         [Required()]
@@ -31,31 +31,13 @@ namespace RTLS.Domains
         [Required()]
         public string EngageBaseAddressUri { get; set; }
 
-        [Required()]
-        public int SiteId { get; set; }
-
-        [Required()]
-        [MaxLength(50)]
-        public string SiteName { get; set; }
-
-        [MaxLength(50)]
-        public string DisplayConfiguration { get; set; }
-
-        public Displaytype DisplayType { get; set; }
-
         public int Port { get; set; }
-
-        [MaxLength(100)]
-        public string PulisherSocketHostAddress { get; set; }
 
         public virtual ICollection<Device> Devices { get; set; }
 
         public virtual ICollection<SiteFloor> SiteFloors { get; set; }
-    }
 
-    public enum Displaytype
-    {
-        singleScreen = 10,
-        SplitScreen = 20
+        [ForeignKey("SiteId")]
+        public virtual Site Site { get; set; }
     }
 }

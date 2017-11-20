@@ -42,12 +42,11 @@ namespace RTLS.API
         {
             try
             {
-               
-
                 foreach (var item in ObjRtlsConfig.SiteFloors)
                 {
                     if(!_SiteFloorRepoSitory.IsSiteFloorExist(item.Id))
                     {
+                        item.RtlsConfigureId = ObjRtlsConfig.SiteId;
                         _SiteFloorRepoSitory.CreateSiteFloor(item);
                     }
                     else
