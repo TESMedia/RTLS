@@ -46,6 +46,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\MacAddressRepository.cs" />
     <Compile Include="Repository\RtlsConfigurationRepository.cs" />
+    <Compile Include="Repository\SiteFloorRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RTLS.Domins\RTLS.Domins.csproj">

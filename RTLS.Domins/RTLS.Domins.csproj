@@ -46,6 +46,9 @@
       <HintPath>..\packages\MySql.Data.Entity.6.9.9\lib\net45\MySql.Data.Entity.EF6.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -60,13 +63,11 @@
     <Compile Include="ApplicationDbContext.cs" />
     <Compile Include="AppLog.cs" />
     <Compile Include="Area.cs" />
-    <Compile Include="CaptivePortalConfiguration\Migrations\201710160301045_Initial_changes.cs" />
-    <Compile Include="CaptivePortalConfiguration\Migrations\201710160301045_Initial_changes.Designer.cs">
-      <DependentUpon>201710160301045_Initial_changes.cs</DependentUpon>
-    </Compile>
     <Compile Include="Device.cs" />
+    <Compile Include="DeviceAssociateSite.cs" />
     <Compile Include="Enums\CutomEnum.cs" />
-    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Site.cs" />
+    <Compile Include="SiteFloor.cs" />
     <Compile Include="ViewModels\jQueryDataTableParamModel.cs" />
     <Compile Include="LocationData.cs" />
     <Compile Include="ViewModels\LocationsViewModel.cs" />
@@ -85,11 +86,6 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="CaptivePortalConfiguration\Migrations\201710160301045_Initial_changes.resx">
-      <DependentUpon>201710160301045_Initial_changes.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

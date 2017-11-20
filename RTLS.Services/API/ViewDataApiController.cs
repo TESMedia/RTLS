@@ -30,9 +30,9 @@ namespace RTLS.API
             IEnumerable Maclist=null;
             try
             {
-                if(db.RtlsConfigurations.Any(m=>m.SiteId== model.SiteId))
+                if(db.RtlsConfiguration.Any(m=>m.SiteId== model.SiteId))
                 {
-                    Maclist = db.Device.Where(m => m.RtlsConfiguration.SiteId == model.SiteId).Select(m=>new {Id=m.Id, Mac=m.MacAddress, StrStatus=m.status.ToString(), IsCreatedByAdmin=m.IsCreatedByAdmin, IsDisplay=m.IsDisplay, }).ToList();
+                    Maclist = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId).Select(m=>new {Id=m.Id, Mac=m.Device.MacAddress, StrStatus=m.status.ToString(), IsDisplay=m.IsDeviceRegisterInRtls }).ToList();
                 }
             }
             catch (Exception ex)
@@ -44,6 +44,5 @@ namespace RTLS.API
                 Content = new StringContent(JsonConvert.SerializeObject(Maclist), Encoding.UTF8, "application/json")
             };
         }
-
     }
 }

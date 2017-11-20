@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RTLS.Domins;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,9 +13,11 @@ namespace RTLS.Domains
         public RtlsConfiguration()
         {
             Devices = new HashSet<Device>();
+            SiteFloors = new HashSet<SiteFloor>();
         }
+
         [Key]
-        public int RtlsConfigurationId { get; set; }
+        public int SiteId { get; set; }
 
         [MaxLength(50)]
         [Required()]
@@ -28,13 +31,13 @@ namespace RTLS.Domains
         [Required()]
         public string EngageBaseAddressUri { get; set; }
 
-        [Required()]
-        public int SiteId { get; set; }
-
-        [Required()]
-        public string SiteName { get; set; }
+        public int Port { get; set; }
 
         public virtual ICollection<Device> Devices { get; set; }
 
+        public virtual ICollection<SiteFloor> SiteFloors { get; set; }
+
+        [ForeignKey("SiteId")]
+        public virtual Site Site { get; set; }
     }
 }

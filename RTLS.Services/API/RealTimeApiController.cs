@@ -59,14 +59,14 @@ namespace RTLS.API
             Notification objNotifications = new Notification();
             using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
             {
-                RtlsConfiguration objConfig=objRtlsConfigurationRepository.GetAsPerSite(model.SiteId,model.SiteName);
-                CommonHeaderInitializeHttpClient(model.EngageBaseAddressUri);
+                Site objSite=objRtlsConfigurationRepository.GetAsPerSite(model.SiteId,model.SiteName);
+                CommonHeaderInitializeHttpClient(objSite.RtlsConfiguration.EngageBaseAddressUri);
                 try
                 {
                 queryParams = new FormUrlEncodedContent(new Dictionary<string, string>()
                 {
-                    { "sn", objConfig.EngageSiteName },
-                    { "bn",objConfig.EngageBuildingName },
+                    { "sn", objSite.RtlsConfiguration.EngageSiteName },
+                    { "bn",objSite.RtlsConfiguration.EngageBuildingName },
                     {"device_ids",String.Join(",",model.MacAddresses) }
                 }).ReadAsStringAsync().Result;
 
@@ -111,14 +111,14 @@ namespace RTLS.API
             MonitorDevices objMonitorDevice = null;
             using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
             {
-                RtlsConfiguration objConfig = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId, model.SiteName);
+                Site objSite = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId, model.SiteName);
                 CommonHeaderInitializeHttpClient(model.EngageBaseAddressUri);
 
                 //Check the Parameter search or not,if it then add in the QueryParams,else keep as it is
                 queryParams = new FormUrlEncodedContent(new Dictionary<string, string>()
                  {
-                    { "sn", model.EngageSiteName },
-                    { "bn", model.EngageBuildingName},
+                    { "sn",objSite.RtlsConfiguration.EngageSiteName },
+                    { "bn",objSite.RtlsConfiguration.EngageBuildingName},
                  }).ReadAsStringAsync().Result;
                 completeFatiAPI = completeFatiAPI + "?" + queryParams;
                 try
@@ -156,13 +156,13 @@ namespace RTLS.API
             {
                 using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
                 {
-                    RtlsConfiguration objConfig = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId, model.SiteName);
-                    CommonHeaderInitializeHttpClient(model.EngageBaseAddressUri);
+                    Site objSite = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId, model.SiteName);
+                    CommonHeaderInitializeHttpClient(objSite.RtlsConfiguration.EngageBaseAddressUri);
                     HttpRequestMessage message = new HttpRequestMessage(new HttpMethod("DELETE"), "/api/engage/v1/device_monitors/");
                     var queryParams = new Dictionary<string, string>()
                 {
-                    { "sn",model.EngageSiteName },
-                    { "bn",model.EngageBuildingName },
+                    { "sn",objSite.RtlsConfiguration.EngageSiteName },
+                    { "bn",objSite.RtlsConfiguration.EngageBuildingName },
                     {"device_ids",String.Join(",",model.MacAddresses) }
                 };
 

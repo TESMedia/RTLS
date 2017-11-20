@@ -9,7 +9,7 @@ using System.Web.Routing;
 using log4net;
 using System.Data.Entity;
 using RTLS.Domains;
-using RTLS.Domins.Migrations;
+
 
 namespace RTLS
 {
