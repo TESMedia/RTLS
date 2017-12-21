@@ -9,7 +9,7 @@ using System.Web.Routing;
 using log4net;
 using System.Data.Entity;
 using RTLS.Domains;
-using RTLS.Domins.Migrations;
+
 
 namespace RTLS
 {
@@ -21,7 +21,7 @@ namespace RTLS
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, Configuration>());
+            //Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, Configuration>());
             log4net.Config.XmlConfigurator.Configure();
         }
     }

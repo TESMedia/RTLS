@@ -27,12 +27,14 @@ namespace RTLS.API
 
         [Route("GetRtlsConfiguration")]
         [HttpPost]
-        public HttpResponseMessage GetRtlsConfiguration(RtlsConfiguration model)
+        public HttpResponseMessage GetRtlsConfiguration(Site model)
         {
-            RtlsConfiguration objConfiguration = null;
+            Site objSite = null;
+            JsonSerializerSettings jsSettings = new JsonSerializerSettings();
             try
             {
-                objConfiguration = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId,model.SiteName);
+                objSite = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId,model.SiteName);
+                jsSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             }
             catch (Exception ex)
             {
@@ -40,7 +42,7 @@ namespace RTLS.API
             }
             return new HttpResponseMessage()
             {
-                Content = new StringContent(JsonConvert.SerializeObject(objConfiguration), System.Text.Encoding.UTF8, "application/json")
+                Content = new StringContent(JsonConvert.SerializeObject(objSite, Formatting.None, jsSettings), System.Text.Encoding.UTF8, "application/json")
             };
         }
 
