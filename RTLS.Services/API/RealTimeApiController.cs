@@ -209,40 +209,41 @@ namespace RTLS.API
         }
 
 
-        //[Route("TestMemeberApplication")]
-        //[HttpPost]
-        //public HttpResponseMessage TestMemeberApplicationPost(LocationData objLocationData)
-        //{
-        //    log.Debug("Eneter into the TestMemeberApplicationPost");
-        //    Notification objNotifications = new Notification();
-        //    try
-        //    {
-        //        //RecieveDateTime
-        //        using (ApplicationDbContext db = new ApplicationDbContext())
-        //        {
-        //            TrackMember objCheckMemeber = new TrackMember();
-        //            objCheckMemeber.MacAddress = objLocationData.mac;
-        //            objCheckMemeber.VisitedDateTime = objLocationData.LastSeenDatetime;
-        //            objCheckMemeber.PostDateTime = objLocationData.PostDateTime;
-        //            objCheckMemeber.RecieveDateTime = DateTime.Now;
-        //            objCheckMemeber.X = objLocationData.x;
-        //            objCheckMemeber.Y = objLocationData.y;
-        //            db.CheckMembers.Add(objCheckMemeber);
-        //            db.SaveChanges();
-        //            objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Success);
-        //            objNotifications.result.errmsg = "SuccessFully Created";
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Failure);
-        //        objNotifications.result.errmsg = "Error Occured";
-        //    }
-        //    return new HttpResponseMessage()
-        //    {
-        //        Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
-        //    };
-        //}
+        [Route("TestMemeberApplication")]
+        [HttpPost]
+        public HttpResponseMessage TestMemeberApplicationPost(LocationData objLocationData)
+        {
+            log.Debug("Eneter into the TestMemeberApplicationPost");
+            Notification objNotifications = new Notification();
+            try
+            {
+                //RecieveDateTime
+                using (ApplicationDbContext db = new ApplicationDbContext())
+                {
+                    TrackMember objTrackMember = new TrackMember();
+                    objTrackMember.MacAddress = objLocationData.mac;
+                    objTrackMember.VisitedDateTime = objLocationData.LastSeenDatetime;
+                    objTrackMember.PostDateTime = objLocationData.PostDateTime;
+                    objTrackMember.RecieveDateTime = DateTime.Now;
+                    objTrackMember.AreaName = objLocationData.an[0].ToString();
+                    objTrackMember.X = objLocationData.x;
+                    objTrackMember.Y = objLocationData.y;
+                    db.TrackMember.Add(objTrackMember);
+                    db.SaveChanges();
+                    objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Success);
+                    objNotifications.result.errmsg = "SuccessFully Created";
+                }
+            }
+            catch (Exception ex)
+            {
+                objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Failure);
+                objNotifications.result.errmsg = "Error Occured";
+            }
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
+            };
+        }
     }
 
 }

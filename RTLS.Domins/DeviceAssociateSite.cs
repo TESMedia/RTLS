@@ -24,7 +24,9 @@ namespace RTLS.Domains
 
         public bool IsTrackByRtls { get; set; }
 
-        //public bool IsCreatedByAdmin { get; set; }
+        public bool IsTrackByAdmin { get; set; }
+
+        public bool IsCreatedByAdmin { get; set; }
 
         public DateTime CreatedDateTime { get; set; }
 

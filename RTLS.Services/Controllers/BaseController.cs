@@ -1,5 +1,7 @@
 ﻿using RTLS.Domains;
+using RTLS.Domins.ViewModels;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -153,5 +155,51 @@ namespace RTLS.Controllers
                 throw ex;
             }
         }
+        //Sjy Todo Remove
+        //public JsonResult AjaxHandlerGetMacAddress(JQueryDTRequestDeviceData param)
+        //{
+        //    try
+        //    {
+        //        int SkipStart = Convert.ToInt32(Request["start"]);
+        //        int FixedLength = Convert.ToInt32(Request["length"]);
+        //        int pages = (SkipStart + FixedLength) / FixedLength;
+        //        int TotalRecords = 0;
+        //        IEnumerable MacList = null;
+
+
+        //        param.sSearch = Request["search[value]"].ToString();
+        //        using (ApplicationDbContext db = new ApplicationDbContext())
+        //        {
+
+        //            if (db.RtlsConfiguration.Any(m => m.SiteId == param.SiteId))
+        //            {
+        //                var t = db.DeviceAssociateSite.Where(m => m.Site.SiteId == param.SiteId).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList(); // IsDIsplay =m.IsDeviceRegisterInRtls
+        //                TotalRecords = t.Count;
+        //                MacList = t;
+        //            }
+
+        //            //TotalRecords = MacList.     //db.LocationData.Count();
+        //            var allLocationData = db.DeviceAssociateSite.Where(m => m.Site.SiteId == param.SiteId).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList().Skip(SkipStart).Take(FixedLength);
+
+
+        //            var displayLocationData = allLocationData;
+        //            var result = from c in allLocationData
+        //                         select new { Id = c.Id, Mac = c.Mac, Status = c.StrStatus, IsTrackByAdmin = c.IsTrackByAdmin, IsDisplay = c.IsDisplay, IsCreatedByAdmin = c.IsCreatedByAdmin };
+
+        //            return Json(new
+        //            {
+        //                sEcho = param.sEcho,
+        //                iTotalRecords = TotalRecords,
+        //                iTotalDisplayRecords = TotalRecords,
+        //                aaData = result
+        //            },
+        //              JsonRequestBehavior.AllowGet);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
     }
 }

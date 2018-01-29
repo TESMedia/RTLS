@@ -31,17 +31,23 @@ namespace RTLS.Repository
                     if (!(db.DeviceAssociateSite.Any(m => m.Device.MacAddress == MacAddress && m.SiteId==model.SiteId)))
                     {
                         Device objDevice = new Device();
-                        objDevice.MacAddress = MacAddress;
-                        //objMac. = DeviceStatus.None;
-                        //objMac.CreatedDateTime = DateTime.Now;
-                        //objMac.IsCreatedByAdmin = true;
-                        //objMac.RtlsConfigureId = model.RtlsConfigurationId;
-                        db.Device.Add(objDevice);
-                        db.SaveChanges();
-
-                        DeviceAssociateSite objDeviceAssociate = new DeviceAssociateSite();
+                        if (!(db.Device.Any(m => m.MacAddress == MacAddress)))
+                        {
+                            objDevice.MacAddress = MacAddress;
+                            db.Device.Add(objDevice);
+                            db.SaveChanges();
+                        }
+                        else
+                        {
+                            objDevice = db.Device.FirstOrDefault(m => m.MacAddress == MacAddress);
+                        }
+                    DeviceAssociateSite objDeviceAssociate = new DeviceAssociateSite();
                         objDeviceAssociate.SiteId = model.SiteId;
                         objDeviceAssociate.DeviceId = objDevice.DeviceId;
+                        objDeviceAssociate.CreatedDateTime= DateTime.Now;
+                        objDeviceAssociate.IsCreatedByAdmin = true;
+                        //objDeviceAssociate.RtlsConfigureId = model.RtlsConfigurationId;
+                        objDeviceAssociate.IsCreatedByAdmin = true;
                         db.DeviceAssociateSite.Add(objDeviceAssociate);
                         db.SaveChanges();
                     }
@@ -70,19 +76,23 @@ namespace RTLS.Repository
                     if (db.Device.Any(m => m.MacAddress == mac))
                     {
                         var objMac = db.Device.FirstOrDefault(m => m.MacAddress == mac);
-                        db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
+                        //db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
+                        //db.SaveChanges();
+                        UpdateStatusToRegister(objMac.DeviceId);
                     }
                     else
                     {
                         Device objMac = new Device();
                         objMac.MacAddress = mac;
-                        //objMac.status = DeviceStatus.Registered;
+                        //objMa = DeviceStatus.Registered;
                         //objMac.RtlsConfigureId = model.RtlsConfigurationId;
                         //objMac.IsCreatedByAdmin = true;
                         db.Device.Add(objMac);
-
+                        db.SaveChanges();
+                        UpdateStatusToRegister(objMac.DeviceId);
                     }
-                    db.SaveChanges();
+                    
+                    
                 }
             }
             catch (Exception ex)
@@ -99,12 +109,13 @@ namespace RTLS.Repository
         /// <param name="MacId"></param>
         /// <param name="SiteId"></param>
         /// <returns></returns>
-        public bool UpdateStatusToRegister(int MacId)
+        public bool UpdateStatusToRegister(int deviceId)
         {
             try
             {
-                var ObjDevice = db.DeviceAssociateSite.FirstOrDefault(m => m.Id == MacId);
+                var ObjDevice = db.DeviceAssociateSite.FirstOrDefault(m => m.DeviceId == deviceId);
                 ObjDevice.status = DeviceStatus.Registered;
+                ObjDevice.IsDeviceRegisterInRtls = true;
                 db.Entry(ObjDevice).State = System.Data.Entity.EntityState.Modified;
                 db.SaveChanges();
             }
@@ -121,10 +132,22 @@ namespace RTLS.Repository
             {
                 foreach (var item in lstMacAddresses)
                 {
-                    var ObjDevice = db.DeviceAssociateSite.FirstOrDefault(m => m.Device.MacAddress == item);
-                    ObjDevice.status = DeviceStatus.DeRegistered;
-                    db.Entry(ObjDevice).State = System.Data.Entity.EntityState.Modified;
+                    if (db.Device.Any(m => m.MacAddress == item))
+                    { 
+                    //var ObjDevice = db.DeviceAssociateSite.FirstOrDefault(m => m.Device.MacAddress == item);
+                    //ObjDevice.status = DeviceStatus.DeRegistered;
+                    var ObjDevice = db.Device.FirstOrDefault(m => m.MacAddress == item);
+                    
+                        //db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
+                        //db.SaveChanges();
+                        //UpdateStatusToRegister(objMac.DeviceId);
+                        var objMac = db.DeviceAssociateSite.FirstOrDefault(m => m.DeviceId == ObjDevice.DeviceId);
+                        //objMac.status = DeviceStatus.DeRegistered;
+                        objMac.status = DeviceStatus.None;
+                        objMac.IsDeviceRegisterInRtls = false;
+                    db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
                     db.SaveChanges();
+                    }
                 }
             }
             catch (Exception ex)
