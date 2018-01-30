@@ -37,12 +37,5 @@ namespace RTLS.Domains
         public virtual Site Site { get; set; }
 
     }
-
-    //public enum DeviceStatus
-    //{
-    //    None = 0,
-    //    Registered = 1,
-    //    Failed = -1,
-    //    DeRegistered = 2
-    //}
+    
 }

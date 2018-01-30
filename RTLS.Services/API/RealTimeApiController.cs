@@ -108,26 +108,39 @@ namespace RTLS.API
         [HttpPost]
         public async Task<HttpResponseMessage> GetDevices(RequestLocationDataVM model)
         {
-            MonitorDevices objMonitorDevice = null;
+             MonitorDevices objMonitorDevice = new MonitorDevices();
+            //Notification objNotifications = new Notification();
             using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
             {
                 Site objSite = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId, model.SiteName);
-                CommonHeaderInitializeHttpClient(model.EngageBaseAddressUri);
+                CommonHeaderInitializeHttpClient(objSite.RtlsConfiguration.EngageBaseAddressUri);
 
                 //Check the Parameter search or not,if it then add in the QueryParams,else keep as it is
                 queryParams = new FormUrlEncodedContent(new Dictionary<string, string>()
                  {
                     { "sn",objSite.RtlsConfiguration.EngageSiteName },
-                    { "bn",objSite.RtlsConfiguration.EngageBuildingName},
+                    { "bn",objSite.RtlsConfiguration.EngageBuildingName}
+                    //,
+                    //{"device_ids",String.Join(",",model.MacAddresses) }
                  }).ReadAsStringAsync().Result;
-                completeFatiAPI = completeFatiAPI + "?" + queryParams;
+                completeFatiAPI = objSite.RtlsConfiguration.EngageBaseAddressUri + "?" + queryParams;
                 try
                 {
+                    //var result = await httpClient.GetAsync(completeFatiAPI, new StringContent(queryParams, Encoding.UTF8, "application/x-www-form-urlencoded"));
                     var result = await httpClient.GetAsync(completeFatiAPI);
                     if (result.IsSuccessStatusCode)
                     {
-                        string resultContent = result.Content.ReadAsAsync<string>().Result;
+
+                       String msg = "";
+                        
+                        string resultContent = await result.Content.ReadAsStringAsync();
                         objMonitorDevice = JsonConvert.DeserializeObject<MonitorDevices>(resultContent);
+                        using (MacAddressRepository objMacRepo = new MacAddressRepository())
+                        {
+                            msg = objMacRepo.CheckDeviceRegisted(objMonitorDevice, model.SiteId);
+
+                        }
+                        objMonitorDevice.result.errmsg = msg;
                     }
                 }
                 catch (Exception ex)
@@ -138,6 +151,7 @@ namespace RTLS.API
             return new HttpResponseMessage()
             {
                 Content = new StringContent(JsonConvert.SerializeObject(objMonitorDevice), Encoding.UTF8, "application/json")
+                //Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
             };
         }
 

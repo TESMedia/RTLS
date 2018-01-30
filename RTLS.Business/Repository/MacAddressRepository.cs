@@ -4,7 +4,7 @@ using System.Linq;
 using RTLS.ViewModel;
 using RTLS.Domains;
 using RTLS.Domins.Enums;
-
+using RTLS.ReturnModel;
 namespace RTLS.Repository
 {
     public class MacAddressRepository : IDisposable
@@ -47,7 +47,7 @@ namespace RTLS.Repository
                         objDeviceAssociate.CreatedDateTime= DateTime.Now;
                         objDeviceAssociate.IsCreatedByAdmin = true;
                         //objDeviceAssociate.RtlsConfigureId = model.RtlsConfigurationId;
-                        objDeviceAssociate.IsCreatedByAdmin = true;
+                        //objDeviceAssociate.IsCreatedByAdmin = true;
                         db.DeviceAssociateSite.Add(objDeviceAssociate);
                         db.SaveChanges();
                     }
@@ -174,6 +174,76 @@ namespace RTLS.Repository
         {
             return new[] { db.Device.FirstOrDefault(m => m.DeviceId == MacId).MacAddress };
         }
+
+        public string CheckDeviceRegisted(MonitorDevices model,int siteid)
+        {
+            string adminMessage = "";
+            try
+            {
+                foreach (var rec in model.records)
+                {
+                    //If MacAddress already exist with None status then 
+                    if (db.Device.Any(m => m.MacAddress == rec.device_id))
+                    {
+                        var objMac = db.Device.FirstOrDefault(m => m.MacAddress == rec.device_id);
+                        if (db.DeviceAssociateSite.Any(m => m.DeviceId == objMac.DeviceId))
+                        {
+                            var objDevice = db.DeviceAssociateSite.FirstOrDefault(m => m.DeviceId == objMac.DeviceId);
+                            if (objDevice.status != DeviceStatus.Registered)
+                            {
+                                objDevice.IsDeviceRegisterInRtls = true;
+                                objDevice.status = DeviceStatus.Registered;
+                                db.Entry(objDevice).State = System.Data.Entity.EntityState.Modified;
+                                db.SaveChanges();
+                                adminMessage += "[ " + rec.device_id + " ] Change Device Status to Registered." +
+                                                Environment.NewLine;
+                            }
+
+                        }
+                        else
+                        {
+                            DeviceAssociateSite objDeviceAssociate = new DeviceAssociateSite();
+                            objDeviceAssociate.SiteId = siteid;
+                            objDeviceAssociate.DeviceId = objMac.DeviceId;
+                            objDeviceAssociate.CreatedDateTime = DateTime.Now;
+                            objDeviceAssociate.IsDeviceRegisterInRtls = true;
+                            db.DeviceAssociateSite.Add(objDeviceAssociate);
+                            db.SaveChanges();
+                            adminMessage += "[ " + rec.device_id + " ]  Added to Associate Site Mapping." +
+                                            Environment.NewLine;
+                        }
+                    }
+                    else
+                    {
+                        Device objMac = new Device();
+                        objMac.MacAddress = rec.device_id;
+                        db.Device.Add(objMac);
+                        db.SaveChanges();
+                        DeviceAssociateSite objDeviceAssociate = new DeviceAssociateSite();
+                        objDeviceAssociate.SiteId = siteid;
+                        objDeviceAssociate.DeviceId = objMac.DeviceId;
+                        objDeviceAssociate.CreatedDateTime = DateTime.Now;
+                        objDeviceAssociate.IsDeviceRegisterInRtls = true;
+                        objDeviceAssociate.status= DeviceStatus.Registered;
+                        db.DeviceAssociateSite.Add(objDeviceAssociate);
+                        db.SaveChanges();
+                        adminMessage += "[ " + rec.device_id + " ]  Added to Device & Associate Site Mapping." +
+                                        Environment.NewLine;
+                    }
+
+
+                }
+                if(string.IsNullOrEmpty(adminMessage))
+                    adminMessage += "All Device Validated for Registration . Status OK ." +
+                                    Environment.NewLine;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return adminMessage;
+        }
+
 
         public void Dispose()
         {
