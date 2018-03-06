@@ -27,6 +27,8 @@ namespace RTLS.ViewModel
 
         public bool IsDisplay { get; set; }
 
+        public bool IsTrackByAdmin { get; set; }
+
         public int RtlsConfigurationId { get; set; }
 
     }

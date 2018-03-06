@@ -24,7 +24,9 @@ namespace RTLS.Domains
 
         public bool IsTrackByRtls { get; set; }
 
-        //public bool IsCreatedByAdmin { get; set; }
+        public bool IsTrackByAdmin { get; set; }
+
+        public bool IsCreatedByAdmin { get; set; }
 
         public DateTime CreatedDateTime { get; set; }
 
@@ -35,12 +37,5 @@ namespace RTLS.Domains
         public virtual Site Site { get; set; }
 
     }
-
-    //public enum DeviceStatus
-    //{
-    //    None = 0,
-    //    Registered = 1,
-    //    Failed = -1,
-    //    DeRegistered = 2
-    //}
+    
 }

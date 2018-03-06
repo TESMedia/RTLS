@@ -108,26 +108,39 @@ namespace RTLS.API
         [HttpPost]
         public async Task<HttpResponseMessage> GetDevices(RequestLocationDataVM model)
         {
-            MonitorDevices objMonitorDevice = null;
+             MonitorDevices objMonitorDevice = new MonitorDevices();
+            //Notification objNotifications = new Notification();
             using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
             {
                 Site objSite = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId, model.SiteName);
-                CommonHeaderInitializeHttpClient(model.EngageBaseAddressUri);
+                CommonHeaderInitializeHttpClient(objSite.RtlsConfiguration.EngageBaseAddressUri);
 
                 //Check the Parameter search or not,if it then add in the QueryParams,else keep as it is
                 queryParams = new FormUrlEncodedContent(new Dictionary<string, string>()
                  {
                     { "sn",objSite.RtlsConfiguration.EngageSiteName },
-                    { "bn",objSite.RtlsConfiguration.EngageBuildingName},
+                    { "bn",objSite.RtlsConfiguration.EngageBuildingName}
+                    //,
+                    //{"device_ids",String.Join(",",model.MacAddresses) }
                  }).ReadAsStringAsync().Result;
-                completeFatiAPI = completeFatiAPI + "?" + queryParams;
+                completeFatiAPI = objSite.RtlsConfiguration.EngageBaseAddressUri + "?" + queryParams;
                 try
                 {
+                    //var result = await httpClient.GetAsync(completeFatiAPI, new StringContent(queryParams, Encoding.UTF8, "application/x-www-form-urlencoded"));
                     var result = await httpClient.GetAsync(completeFatiAPI);
                     if (result.IsSuccessStatusCode)
                     {
-                        string resultContent = result.Content.ReadAsAsync<string>().Result;
+
+                       String msg = "";
+                        
+                        string resultContent = await result.Content.ReadAsStringAsync();
                         objMonitorDevice = JsonConvert.DeserializeObject<MonitorDevices>(resultContent);
+                        using (MacAddressRepository objMacRepo = new MacAddressRepository())
+                        {
+                            msg = objMacRepo.CheckDeviceRegisted(objMonitorDevice, model.SiteId);
+
+                        }
+                        objMonitorDevice.result.errmsg = msg;
                     }
                 }
                 catch (Exception ex)
@@ -138,6 +151,7 @@ namespace RTLS.API
             return new HttpResponseMessage()
             {
                 Content = new StringContent(JsonConvert.SerializeObject(objMonitorDevice), Encoding.UTF8, "application/json")
+                //Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
             };
         }
 
@@ -209,40 +223,41 @@ namespace RTLS.API
         }
 
 
-        //[Route("TestMemeberApplication")]
-        //[HttpPost]
-        //public HttpResponseMessage TestMemeberApplicationPost(LocationData objLocationData)
-        //{
-        //    log.Debug("Eneter into the TestMemeberApplicationPost");
-        //    Notification objNotifications = new Notification();
-        //    try
-        //    {
-        //        //RecieveDateTime
-        //        using (ApplicationDbContext db = new ApplicationDbContext())
-        //        {
-        //            TrackMember objCheckMemeber = new TrackMember();
-        //            objCheckMemeber.MacAddress = objLocationData.mac;
-        //            objCheckMemeber.VisitedDateTime = objLocationData.LastSeenDatetime;
-        //            objCheckMemeber.PostDateTime = objLocationData.PostDateTime;
-        //            objCheckMemeber.RecieveDateTime = DateTime.Now;
-        //            objCheckMemeber.X = objLocationData.x;
-        //            objCheckMemeber.Y = objLocationData.y;
-        //            db.CheckMembers.Add(objCheckMemeber);
-        //            db.SaveChanges();
-        //            objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Success);
-        //            objNotifications.result.errmsg = "SuccessFully Created";
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Failure);
-        //        objNotifications.result.errmsg = "Error Occured";
-        //    }
-        //    return new HttpResponseMessage()
-        //    {
-        //        Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
-        //    };
-        //}
+        [Route("TestMemeberApplication")]
+        [HttpPost]
+        public HttpResponseMessage TestMemeberApplicationPost(LocationData objLocationData)
+        {
+            log.Debug("Eneter into the TestMemeberApplicationPost");
+            Notification objNotifications = new Notification();
+            try
+            {
+                //RecieveDateTime
+                using (ApplicationDbContext db = new ApplicationDbContext())
+                {
+                    TrackMember objTrackMember = new TrackMember();
+                    objTrackMember.MacAddress = objLocationData.mac;
+                    objTrackMember.VisitedDateTime = objLocationData.LastSeenDatetime;
+                    objTrackMember.PostDateTime = objLocationData.PostDateTime;
+                    objTrackMember.RecieveDateTime = DateTime.Now;
+                    objTrackMember.AreaName = objLocationData.an[0].ToString();
+                    objTrackMember.X = objLocationData.x;
+                    objTrackMember.Y = objLocationData.y;
+                    db.TrackMember.Add(objTrackMember);
+                    db.SaveChanges();
+                    objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Success);
+                    objNotifications.result.errmsg = "SuccessFully Created";
+                }
+            }
+            catch (Exception ex)
+            {
+                objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Failure);
+                objNotifications.result.errmsg = "Error Occured";
+            }
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
+            };
+        }
     }
 
 }
