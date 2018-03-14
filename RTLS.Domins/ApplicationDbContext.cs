@@ -18,6 +18,7 @@ namespace RTLS.Domains
 
         public DbSet<Site> Site { get; set; }
         public DbSet<RtlsConfiguration> RtlsConfiguration { get; set; }
+        public DbSet<RtlsArea> RtlsArea { get; set; }
         public DbSet<SiteFloor> SiteFloor { get; set; }
 
         public DbSet<Device> Device { get; set; }
@@ -38,6 +39,7 @@ namespace RTLS.Domains
         {
             modelBuilder.Entity<Site>().ToTable("Site");
             modelBuilder.Entity<RtlsConfiguration>().ToTable("RtlsConfiguration");
+            modelBuilder.Entity<RtlsArea>().ToTable("RtlsArea").HasKey(m=>m.Id);
             modelBuilder.Entity<SiteFloor>().ToTable("SiteFloor");
             modelBuilder.Entity<Device>().ToTable("Device");
             modelBuilder.Entity<DeviceAssociateSite>().ToTable("DeviceAssociateSite");

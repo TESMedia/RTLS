@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RTLS.Domins;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -41,6 +42,7 @@ namespace RTLS.Domains
         public string RtlsWebSocketUrl { get; set; }
 
         public virtual RtlsConfiguration RtlsConfiguration { get; set; }
+        //public virtual RtlsArea RtlsArea { get; set; }
         public ICollection<DeviceAssociateSite> DeviceAssociateSite { get; set; }
     }
 }
