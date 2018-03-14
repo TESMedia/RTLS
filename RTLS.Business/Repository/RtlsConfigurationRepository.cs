@@ -24,7 +24,15 @@ namespace RTLS.Repository
             return db.Site.Include("RtlsConfiguration").Include("RtlsConfiguration.Devices").FirstOrDefault(m => m.SiteId == SiteId);
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SiteId"></param>
+        /// <returns></returns>
+        public RtlsConfiguration GetAsPerSiteId(int SiteId)
+        {
+            return db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == SiteId);
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -41,6 +49,9 @@ namespace RTLS.Repository
             }
             db.SaveChanges();
         }
+
+
+
 
         /// <summary>
         /// 
