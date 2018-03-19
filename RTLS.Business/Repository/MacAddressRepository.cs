@@ -46,6 +46,7 @@ namespace RTLS.Repository
                         objDeviceAssociate.DeviceId = objDevice.DeviceId;
                         objDeviceAssociate.CreatedDateTime= DateTime.Now;
                         objDeviceAssociate.IsCreatedByAdmin = true;
+                        objDeviceAssociate.IsDeviceRegisterInRtls = true;
                         //objDeviceAssociate.RtlsConfigureId = model.RtlsConfigurationId;
                         //objDeviceAssociate.IsCreatedByAdmin = true;
                         db.DeviceAssociateSite.Add(objDeviceAssociate);

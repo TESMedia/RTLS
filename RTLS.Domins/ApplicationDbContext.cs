@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace RTLS.Domains
 {
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
-
+    [DbConfigurationType(typeof(MySql.Data.Entity.MySqlEFConfiguration))]
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext()
