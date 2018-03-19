@@ -61,6 +61,7 @@
     <Compile Include="Device.cs" />
     <Compile Include="DeviceAssociateSite.cs" />
     <Compile Include="Enums\CutomEnum.cs" />
+    <Compile Include="RtlsArea.cs" />
     <Compile Include="Site.cs" />
     <Compile Include="SiteFloor.cs" />
     <Compile Include="TrackMacNotification.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="TrackMember.cs" />
     <Compile Include="ViewModels\RequestLocationDataVM.cs" />
     <Compile Include="ViewModels\Result.cs" />
+    <Compile Include="ViewModels\RtlsAreaViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

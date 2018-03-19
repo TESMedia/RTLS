@@ -33,9 +33,18 @@ namespace RTLS.Domains
 
         public int Port { get; set; }
 
+        public int ApproachNotification { get; set; }
+
+        public int AreaNotification { get; set; }
+
+        [MaxLength(200)]
+        public string EndPointUrl { get; set; }
+
         public virtual ICollection<Device> Devices { get; set; }
 
         public virtual ICollection<SiteFloor> SiteFloors { get; set; }
+
+        public virtual ICollection<RtlsArea> RtlsAreas { get; set; }
 
         [ForeignKey("SiteId")]
         public virtual Site Site { get; set; }
