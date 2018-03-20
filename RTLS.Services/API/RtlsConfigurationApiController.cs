@@ -14,6 +14,7 @@ namespace RTLS.API
 {
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     [RoutePrefix("api")]
+    [Authorize]
     public class RtlsConfigurationApiController : ApiController
     {
 
