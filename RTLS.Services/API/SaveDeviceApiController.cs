@@ -93,5 +93,29 @@ namespace RTLS.API
             }
             return Request.CreateResponse(HttpStatusCode.OK);
         }
+        [Route("UpdateEntryNotify")]
+        [HttpPost]
+        public HttpResponseMessage UpdateIsEntryNotify(RequestLocationDataVM model)
+        {
+
+            string retResult = "";
+            try
+            {
+
+                if (db.Device.Any(m => m.MacAddress == model.Mac))
+                {
+                    var ObjMac = db.DeviceAssociateSite.First(m => m.Device.MacAddress == model.Mac && m.SiteId == model.SiteId);
+                    ObjMac.IsEntryNotify = model.IsEntryNotify;
+                    db.Entry(ObjMac).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                this.log.Error("Exception occur" + ex.InnerException.Message);
+                retResult = "Exception occur" + ex.InnerException.Message;
+            }
+            return Request.CreateResponse(HttpStatusCode.OK);
+        }
     }
 }

@@ -29,6 +29,7 @@ namespace RTLS.ViewModel
 
         public bool IsTrackByAdmin { get; set; }
 
+        public bool IsEntryNotify { get; set; }
         public int RtlsConfigurationId { get; set; }
 
     }
