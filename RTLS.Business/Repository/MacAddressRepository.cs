@@ -171,6 +171,11 @@ namespace RTLS.Repository
             }
         }
 
+        public string[] GetMacByStatus(DeviceStatus status)
+        {
+            string[] macList = (db.DeviceAssociateSite.Where(m => m.status == status).Select(m => m.Device.MacAddress)).ToArray();
+            return macList;
+        }
         public string[] GetMacAdressFromId(int MacId)
         {
             return new[] { db.Device.FirstOrDefault(m => m.DeviceId == MacId).MacAddress };
