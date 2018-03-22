@@ -17,6 +17,9 @@ using System.Web;
 using RTLS.Domins.ViewModels;
 using RTLS.Domains;
 using RTLS.Domins.Enums;
+using RTLS.Domins.ViewModels.Request;
+using System.Data.Entity;
+using RTLS.Business.Repository;
 
 namespace RTLS.API
 {
@@ -252,6 +255,332 @@ namespace RTLS.API
             {
                 objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Failure);
                 objNotifications.result.errmsg = "Error Occured";
+            }
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
+            };
+        }
+
+
+        [Route("StartNotification")]
+        [HttpPost]
+        public async Task<HttpResponseMessage> StartNotification(NotificationRequest model)
+        {
+            Notification objNotifications = new Notification();
+            
+           
+            try { 
+            #region Save ResetTime in RtlsConfiguration
+
+            if (model.NotificationType != null && model.ResetTime > 0)
+            {
+                //save notification Reset Time
+                RtlsConfiguration objrtls = objRtlsConfigurationRepository.GetAsPerSiteId(model.SiteId);
+                if (objrtls != null)
+                {
+                        if (model.NotificationType == NotificationType.Approach) objrtls.AreaNotification = model.ResetTime; 
+                        if (model.NotificationType == NotificationType.Entry) objrtls.ApproachNotification = model.ResetTime;
+                        objRtlsConfigurationRepository.SaveAndUpdateAsPerSite(objrtls);
+                    }
+            }
+            #endregion
+
+            #region Save Notification Type in DeviceAssociateSite
+            if (model.NotificationType != null && model.MacAddressList!=null && model.MacAddressList.Length > 0)
+            {
+                using (ApplicationDbContext db = new ApplicationDbContext())
+                {
+                    foreach (var mac in model.MacAddressList)
+                    {
+                        if (db.Device.Any(m => m.MacAddress == mac))
+                        {
+                            var ObjMacNotify = db.DeviceAssociateSite.First(m => m.Device.MacAddress == mac && m.SiteId == model.SiteId);
+                                if (model.NotificationType == NotificationType.Approach)
+                                    ObjMacNotify.IsTrackByAdmin = true;
+                                else if (model.NotificationType == NotificationType.Entry)
+                                    ObjMacNotify.IsEntryNotify = true;
+                                else if (model.NotificationType== NotificationType.All) { ObjMacNotify.IsTrackByAdmin = true; ObjMacNotify.IsEntryNotify = true; }
+                            db.Entry(ObjMacNotify).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            #region Save Area in RtlsArea
+            if (model.AreaID != null && model.AreaID.Length > 0)
+            {
+                //RtlsConfiguration objrtls = objRtlsConfigurationRepository.GetAsPerSiteId(model.SiteId);
+                List<RtlsArea> arealist = new List<RtlsArea>();
+                foreach (var area in model.AreaID)
+                {
+                    RtlsArea a = new RtlsArea();
+                    a.GeoFencedAreas = area;
+                    a.RtlsConfigurationId = model.SiteId;
+                    arealist.Add(a);
+                }
+                if (arealist.Count > 0)
+                {
+                    using (RtlsAreaApiRepository rtlsRepo = new RtlsAreaApiRepository())
+                    {
+                            rtlsRepo.RemoveAreaAsPerSite(model.SiteId);
+                            rtlsRepo.SaveAndUpdateAsPerSite(arealist);
+                    }
+                }
+            }
+            #endregion
+
+            #region Register MAC Address to RTLS
+            if (model.MacAddressList.Length > 0)
+            {
+                    RequestLocationDataVM rldvm = new RequestLocationDataVM();
+                    rldvm.SiteId = model.SiteId;
+                    string[] RegisteredMacAdress; List<string> lstDeviceToRegister = new List<string>();
+                    using(MacAddressRepository macRepo = new MacAddressRepository())
+                    {
+                        RegisteredMacAdress = macRepo.GetMacByStatus(DeviceStatus.Registered);
+                    }
+                    if (RegisteredMacAdress != null & RegisteredMacAdress.Length > 0)
+                    {
+                        foreach(var mac in model.MacAddressList)
+                        {
+                            if (!RegisteredMacAdress.Contains(mac))
+                                lstDeviceToRegister.Add(mac);
+                        }
+                    }
+                    else { lstDeviceToRegister.AddRange(model.MacAddressList); }
+                    
+                   rldvm.SiteName = "";
+                   rldvm.MacAddresses = lstDeviceToRegister.ToArray();
+                    try
+                    {
+                        await AddDevices(rldvm);
+                    }
+                    catch
+                    {
+                        //TODO Possible duplicate mac address error.
+                    }
+                }
+                #endregion
+
+                objNotifications.result.returncode = 0;
+                objNotifications.result.errmsg = "";
+            }
+            catch(Exception e)
+            {
+                objNotifications.result.returncode = -1;
+                objNotifications.result.errmsg = e.Message;
+
+            }
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
+            };
+        }
+
+        [Route("StopNotification")]
+        [HttpPost]
+        public async Task<HttpResponseMessage> StopNotification(NotificationRequest model)
+        {
+            Notification objNotifications = new Notification();
+            bool isAreaNotificationExist = false;
+            RequestLocationDataVM rldvm = new RequestLocationDataVM();
+            try
+            {
+                #region Remove ResetTime in RtlsConfiguration
+
+                //Remove notification Reset Time
+                //TODO Check with Jon- if we need to remove the site level configuration.
+                RtlsConfiguration objrtls = objRtlsConfigurationRepository.GetAsPerSiteId(model.SiteId);
+                if (objrtls != null)
+                {
+                    if (model.NotificationType == NotificationType.Approach)
+                        objrtls.AreaNotification = 0; 
+                    else if (model.NotificationType == NotificationType.Entry)
+                        objrtls.ApproachNotification = 0;
+                    else if (model.NotificationType == NotificationType.All)
+                    {
+                        objrtls.ApproachNotification = 0;
+                        objrtls.AreaNotification = 0;
+                    }
+                    objRtlsConfigurationRepository.SaveAndUpdateAsPerSite(objrtls);
+                }
+
+                #endregion
+               
+
+                #region Remove Notification Type in DeviceAssociateSite
+                if (model.NotificationType != null && model.MacAddressList != null && model.MacAddressList.Length > 0)
+                {
+                    using (ApplicationDbContext db = new ApplicationDbContext())
+                    {
+                        foreach (var mac in model.MacAddressList)
+                        {
+                            if (db.Device.Any(m => m.MacAddress == mac))
+                            {
+                                var ObjMacNotify = db.DeviceAssociateSite.First(m => m.Device.MacAddress == mac && m.SiteId == model.SiteId);
+                                if (model.NotificationType == NotificationType.Approach)
+                                    ObjMacNotify.IsTrackByAdmin = false;
+                                else if (model.NotificationType == NotificationType.Entry)
+                                    ObjMacNotify.IsEntryNotify = false;
+                                else if(model.NotificationType == NotificationType.All)
+                                {
+                                    ObjMacNotify.IsTrackByAdmin = false; ObjMacNotify.IsEntryNotify = false;
+                                }
+                                db.Entry(ObjMacNotify).State = EntityState.Modified;
+                                db.SaveChanges();
+                                
+                                #region check if this Mac adress have any of notification enabled.
+                                if(ObjMacNotify.IsTrackByAdmin || ObjMacNotify.IsEntryNotify) { 
+                                    List<string> list = new List<string>(model.MacAddressList);
+                                    list.Remove(mac);
+                                    model.MacAddressList = list.ToArray();
+                                }
+                                if (ObjMacNotify.IsTrackByAdmin) isAreaNotificationExist = true;
+                                #endregion
+                            }
+                        }
+                    }
+                }
+                #endregion
+
+                #region Remove Area in RtlsArea
+                //TODO Check with Jon If need to remove site level configuration
+                using (RtlsAreaApiRepository rtlsRepo = new RtlsAreaApiRepository())
+                {
+                    if (model.NotificationType == NotificationType.Approach && !isAreaNotificationExist)
+                         rtlsRepo.RemoveAreaAsPerSite(model.SiteId);
+                }
+                
+                #endregion
+
+                #region De-Register MAC Address to RTLS
+                if (model.MacAddressList.Length > 0)
+                {
+                    rldvm.SiteId = model.SiteId;
+                    string[] RegisteredMacAdress; List<string> lstDeviceToRegister = new List<string>();
+                    using (MacAddressRepository macRepo = new MacAddressRepository())
+                    {
+                        RegisteredMacAdress = macRepo.GetMacByStatus(DeviceStatus.None);
+                    }
+                    if (RegisteredMacAdress != null & RegisteredMacAdress.Length > 0)
+                    {
+                        foreach (var mac in model.MacAddressList)
+                        {
+                            if (!RegisteredMacAdress.Contains(mac))
+                                lstDeviceToRegister.Add(mac);
+                        }
+                    }
+                    else { lstDeviceToRegister.AddRange(model.MacAddressList); }
+
+                    rldvm.SiteName = "";
+                    rldvm.MacAddresses = lstDeviceToRegister.ToArray();
+                        try
+                        {
+                            await DeRegisterDevices(rldvm);
+                        }
+                        catch
+                        {
+                            //TODO Possible duplicate mac address error.
+                        }
+                    
+
+                }
+                #endregion
+
+                objNotifications.result.returncode = 0;
+                objNotifications.result.errmsg = "Success";
+            }
+            catch (Exception e)
+            {
+                objNotifications.result.returncode = -1;
+                objNotifications.result.errmsg = e.Message;
+
+            }
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
+            };
+        }
+
+        [Route("UserNotification")]
+        [HttpPost]
+        public async Task<HttpResponseMessage> UserNotification(NotificationRequest model)
+        {
+            Notification objNotifications = new Notification();
+
+            RequestLocationDataVM rldvm = new RequestLocationDataVM();
+            try
+            {
+                #region Save Notification Type in DeviceAssociateSite
+                if (model.NotificationType != null && model.MacAddressList != null && model.MacAddressList.Length > 0)
+                {
+                    using (ApplicationDbContext db = new ApplicationDbContext())
+                    {
+                        foreach (var mac in model.MacAddressList)
+                        {
+                            if (db.Device.Any(m => m.MacAddress == mac))
+                            {
+                                var ObjMacNotify = db.DeviceAssociateSite.First(m => m.Device.MacAddress == mac && m.SiteId == model.SiteId);
+                                if (model.NotificationType == NotificationType.Approach)
+                                    ObjMacNotify.IsTrackByAdmin = true;
+                                else if (model.NotificationType == NotificationType.Entry)
+                                    ObjMacNotify.IsEntryNotify = true;
+                                else if (model.NotificationType == NotificationType.All)
+                                {
+                                    ObjMacNotify.IsTrackByAdmin = true; ObjMacNotify.IsEntryNotify = true;
+                                }
+                                db.Entry(ObjMacNotify).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+                }
+                #endregion
+                
+                #region Register MAC Address to RTLS
+                if (model.MacAddressList.Length > 0)
+                {
+                    string[] RegisteredMacAdress; List<string> lstDeviceToRegister = new List<string>();
+                    using (MacAddressRepository macRepo = new MacAddressRepository())
+                    {
+                        RegisteredMacAdress = macRepo.GetMacByStatus(DeviceStatus.Registered);
+                    }
+                    if (RegisteredMacAdress != null & RegisteredMacAdress.Length > 0)
+                    {
+                        foreach (var mac in model.MacAddressList)
+                        {
+                            if (!RegisteredMacAdress.Contains(mac))
+                                lstDeviceToRegister.Add(mac);
+                        }
+                    }
+                    else { lstDeviceToRegister.AddRange(model.MacAddressList); }
+
+                    rldvm.SiteName = "";
+                    rldvm.MacAddresses = lstDeviceToRegister.ToArray();
+                    rldvm.SiteId = model.SiteId;
+                    try
+                        {
+                            await AddDevices(rldvm);
+                        }
+                        catch
+                        {
+                            //TODO Possible duplicate mac address error.
+                        }
+                   
+                }
+                #endregion
+
+                objNotifications.result.returncode = 0;
+                objNotifications.result.errmsg = "Success";
+            }
+            catch (Exception e)
+            {
+                objNotifications.result.returncode = -1;
+                objNotifications.result.errmsg = e.Message;
+
             }
             return new HttpResponseMessage()
             {

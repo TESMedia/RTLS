@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RTLS.Business.Repository
 {
-    public class RtlsAreaApiRepository
+    public class RtlsAreaApiRepository: IDisposable
     {
         private ApplicationDbContext db = null;
         public RtlsAreaApiRepository()
@@ -66,6 +66,30 @@ namespace RTLS.Business.Repository
         public bool CheckRtlsAreaExistOrNotAsPerSite(int SiteId)
         {
             return db.RtlsArea.Any(m => m.RtlsConfigurationId == SiteId);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SiteId"></param>
+        /// <returns></returns>
+        public bool RemoveAreaAsPerSite(int SiteId)
+        {
+            bool val =false;
+            try { 
+            if( db.RtlsArea.Any(m => m.RtlsConfigurationId == SiteId))
+            {
+                db.RtlsArea.RemoveRange(db.RtlsArea.Where(c => c.RtlsConfigurationId == SiteId));
+                    db.SaveChanges();
+                    val = true;
+            }
+            else { val = true; }
+            }catch(Exception e) { val = false; }
+            return val;
+        }
+        public void Dispose()
+        {
+            ((IDisposable)db).Dispose();
         }
     }
 }

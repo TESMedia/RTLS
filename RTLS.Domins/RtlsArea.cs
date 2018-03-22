@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RTLS.Domins
+namespace RTLS.Domains
 {
     public class RtlsArea
     {
