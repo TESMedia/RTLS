@@ -13,12 +13,11 @@ using System.Text;
 using System.Web.Http;
 using System.Web.Http.Cors;
 
-
-
 namespace RTLS.API
 {
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     [RoutePrefix("UIData")]
+    [Authorize]
     public class ViewDataApiController : ApiController
     {
         private static log4net.ILog Log { get; set; }

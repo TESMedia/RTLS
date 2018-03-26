@@ -18,6 +18,7 @@ namespace RTLS.API
 {
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     [RoutePrefix("Device")]
+    [Authorize]
     public class DeleteDeviceApiController : ApiController
     {
         private static log4net.ILog Log { get; set; }
