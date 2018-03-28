@@ -34,7 +34,7 @@ namespace RTLS.API
             {
                 if(db.RtlsConfiguration.Any(m=>m.SiteId== model.SiteId))
                 {
-                    Maclist = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId).Select(m=>new {Id=m.Id, Mac=m.Device.MacAddress, StrStatus=m.status.ToString(), IsEntryNotify = m.IsEntryNotify, IsTrackByAdmin = m.IsTrackByAdmin,IsDisplay = m.IsTrackByRtls ,m.IsCreatedByAdmin}).ToList(); // IsDIsplay =m.IsDeviceRegisterInRtls
+                    Maclist = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.IsDeviceRegisterInRtls==true).Select(m=>new {Id=m.Id, Mac=m.Device.MacAddress, StrStatus=m.status.ToString(),  IsTrackByAdmin = m.IsTrackByAdmin,IsDisplay = m.IsTrackByRtls ,m.IsCreatedByAdmin}).ToList(); // IsDIsplay =m.IsDeviceRegisterInRtls
                 }
             }
             catch (Exception ex)
@@ -62,12 +62,12 @@ namespace RTLS.API
             {
                 if (db.RtlsConfiguration.Any(m => m.SiteId == model.SiteId))
                 {
-                    var row = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsEntryNotify=m.IsEntryNotify, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList(); // IsDIsplay =m.IsDeviceRegisterInRtls
+                    var row = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.IsDeviceRegisterInRtls == true).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList(); // IsDIsplay =m.IsDeviceRegisterInRtls
 
                     TotalRecords = row.Count;
                     
                 }
-                var DeviceAssociateSite = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsEntryNotify = m.IsEntryNotify, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList().Skip(SkipStart).Take(FixedLength);
+                var DeviceAssociateSite = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.IsDeviceRegisterInRtls == true).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList().Skip(SkipStart).Take(FixedLength);
 
 
                 //var displayLocationData = DeviceAssociateSite;
