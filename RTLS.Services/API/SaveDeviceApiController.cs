@@ -54,7 +54,7 @@ namespace RTLS.API
                
                 if(db.Device.Any(m=>m.MacAddress==model.Mac))
                 {
-                    var ObjMac = db.DeviceAssociateSite.First(m => m.Device.MacAddress == model.Mac && m.SiteId==model.SiteId);
+                    var ObjMac = db.DeviceAssociateSite.First(m => m.Device.MacAddress == model.Mac && m.SiteId==model.SiteId && m.IsDeviceRegisterInRtls==true);
                     ObjMac.IsTrackByRtls = model.IsDisplay;
                     db.Entry(ObjMac).State = EntityState.Modified;
                     db.SaveChanges();
