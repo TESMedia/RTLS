@@ -115,7 +115,7 @@ namespace RTLS.API
                 Site objSite = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId, model.SiteName);
                 CommonHeaderInitializeHttpClient(objSite.RtlsConfiguration.EngageBaseAddressUri);
 
-                //Check the Parameter search or not,if it then add in the QueryParams,else keep as it is
+                ////Check the Parameter search or not,if it then add in the QueryParams,else keep as it is
                 queryParams = new FormUrlEncodedContent(new Dictionary<string, string>()
                  {
                     { "sn",objSite.RtlsConfiguration.EngageSiteName },
@@ -123,7 +123,7 @@ namespace RTLS.API
                     //,
                     //{"device_ids",String.Join(",",model.MacAddresses) }
                  }).ReadAsStringAsync().Result;
-                completeFatiAPI = objSite.RtlsConfiguration.EngageBaseAddressUri + "?" + queryParams;
+
                 try
                 {
                     //var result = await httpClient.GetAsync(completeFatiAPI, new StringContent(queryParams, Encoding.UTF8, "application/x-www-form-urlencoded"));
