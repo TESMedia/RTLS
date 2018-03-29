@@ -242,7 +242,9 @@ namespace RTLS.API
                     objTrackMember.VisitedDateTime = objLocationData.LastSeenDatetime;
                     objTrackMember.PostDateTime = objLocationData.PostDateTime;
                     objTrackMember.RecieveDateTime = DateTime.Now;
-                    objTrackMember.AreaName = objLocationData.an[0].ToString();
+                    objTrackMember.AreaName = (objLocationData.an[0]!=null && objLocationData.an[0].Length > 0
+                        ? objLocationData.an[0].ToString()
+                        : "");
                     objTrackMember.X = objLocationData.x;
                     objTrackMember.Y = objLocationData.y;
                     db.TrackMember.Add(objTrackMember);

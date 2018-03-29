@@ -12,8 +12,6 @@ namespace RTLS.Domins.ViewModels.Request
     {
         [Required(ErrorMessage = "SiteId Missing")]
         public int SiteId { get; set; }
-       // [Required(ErrorMessage = "SessionId Missing")]
-        public string SessionId { get; set; }
         public string[] UserIdList { get; set; }
         public string[] MacAddressList { get; set; }
         [Required(ErrorMessage = "Missing Notification Type")]
