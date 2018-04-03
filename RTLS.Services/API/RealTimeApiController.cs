@@ -242,7 +242,9 @@ namespace RTLS.API
                     objTrackMember.VisitedDateTime = objLocationData.LastSeenDatetime;
                     objTrackMember.PostDateTime = objLocationData.PostDateTime;
                     objTrackMember.RecieveDateTime = DateTime.Now;
-                    objTrackMember.AreaName = objLocationData.an[0].ToString();
+                    objTrackMember.AreaName = (objLocationData.an[0]!=null && objLocationData.an[0].Length > 0
+                        ? objLocationData.an[0].ToString()
+                        : "");
                     objTrackMember.X = objLocationData.x;
                     objTrackMember.Y = objLocationData.y;
                     db.TrackMember.Add(objTrackMember);
@@ -279,8 +281,8 @@ namespace RTLS.API
                 RtlsConfiguration objrtls = objRtlsConfigurationRepository.GetAsPerSiteId(model.SiteId);
                 if (objrtls != null)
                 {
-                        if (model.NotificationType == NotificationType.Approach) objrtls.AreaNotification = model.ResetTime; 
-                        if (model.NotificationType == NotificationType.Entry) objrtls.ApproachNotification = model.ResetTime;
+                        if (model.NotificationType == NotificationType.Entry) objrtls.AreaNotification = model.ResetTime; 
+                        if (model.NotificationType == NotificationType.Approach) objrtls.ApproachNotification = model.ResetTime;
                         objRtlsConfigurationRepository.SaveAndUpdateAsPerSite(objrtls);
                     }
             }
@@ -296,9 +298,9 @@ namespace RTLS.API
                         if (db.Device.Any(m => m.MacAddress == mac))
                         {
                             var ObjMacNotify = db.DeviceAssociateSite.First(m => m.Device.MacAddress == mac && m.SiteId == model.SiteId);
-                                if (model.NotificationType == NotificationType.Approach)
+                                if (model.NotificationType == NotificationType.Entry)
                                     ObjMacNotify.IsTrackByAdmin = true;
-                                else if (model.NotificationType == NotificationType.Entry)
+                                else if (model.NotificationType == NotificationType.Approach)
                                     ObjMacNotify.IsEntryNotify = true;
                                 else if (model.NotificationType== NotificationType.All) { ObjMacNotify.IsTrackByAdmin = true; ObjMacNotify.IsEntryNotify = true; }
                             db.Entry(ObjMacNotify).State = EntityState.Modified;
@@ -396,9 +398,9 @@ namespace RTLS.API
                 RtlsConfiguration objrtls = objRtlsConfigurationRepository.GetAsPerSiteId(model.SiteId);
                 if (objrtls != null)
                 {
-                    if (model.NotificationType == NotificationType.Approach)
+                    if (model.NotificationType == NotificationType.Entry)
                         objrtls.AreaNotification = 0; 
-                    else if (model.NotificationType == NotificationType.Entry)
+                    else if (model.NotificationType == NotificationType.Approach)
                         objrtls.ApproachNotification = 0;
                     else if (model.NotificationType == NotificationType.All)
                     {
@@ -421,9 +423,9 @@ namespace RTLS.API
                             if (db.Device.Any(m => m.MacAddress == mac))
                             {
                                 var ObjMacNotify = db.DeviceAssociateSite.First(m => m.Device.MacAddress == mac && m.SiteId == model.SiteId);
-                                if (model.NotificationType == NotificationType.Approach)
+                                if (model.NotificationType == NotificationType.Entry)
                                     ObjMacNotify.IsTrackByAdmin = false;
-                                else if (model.NotificationType == NotificationType.Entry)
+                                else if (model.NotificationType == NotificationType.Approach)
                                     ObjMacNotify.IsEntryNotify = false;
                                 else if(model.NotificationType == NotificationType.All)
                                 {
@@ -450,7 +452,7 @@ namespace RTLS.API
                 //TODO Check with Jon If need to remove site level configuration
                 using (RtlsAreaApiRepository rtlsRepo = new RtlsAreaApiRepository())
                 {
-                    if (model.NotificationType == NotificationType.Approach && !isAreaNotificationExist)
+                    if ((model.NotificationType == NotificationType.Entry || model.NotificationType == NotificationType.All)  && !isAreaNotificationExist)
                          rtlsRepo.RemoveAreaAsPerSite(model.SiteId);
                 }
                 
@@ -524,9 +526,9 @@ namespace RTLS.API
                             if (db.Device.Any(m => m.MacAddress == mac))
                             {
                                 var ObjMacNotify = db.DeviceAssociateSite.First(m => m.Device.MacAddress == mac && m.SiteId == model.SiteId);
-                                if (model.NotificationType == NotificationType.Approach)
+                                if (model.NotificationType == NotificationType.Entry)
                                     ObjMacNotify.IsTrackByAdmin = true;
-                                else if (model.NotificationType == NotificationType.Entry)
+                                else if (model.NotificationType == NotificationType.Approach)
                                     ObjMacNotify.IsEntryNotify = true;
                                 else if (model.NotificationType == NotificationType.All)
                                 {
