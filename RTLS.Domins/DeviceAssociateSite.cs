@@ -16,7 +16,7 @@ namespace RTLS.Domains
 
         public int SiteId { get; set; }
 
-        public bool IsDeviceRegisterInRtls { get; set; }
+        public bool IsDeviceRegisterInRtls { get; set; } = true;
 
         public bool IsRegisterInCaptivePortal { get; set; }
 
