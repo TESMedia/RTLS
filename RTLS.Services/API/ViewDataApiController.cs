@@ -67,12 +67,12 @@ namespace RTLS.API
                     TotalRecords = row.Count;
                     
                 }
-                var DeviceAssociateSite = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.IsDeviceRegisterInRtls == true).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList().Skip(SkipStart).Take(FixedLength);
+                var DeviceAssociateSite = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.IsDeviceRegisterInRtls == true).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin,m.IsEntryNotify }).ToList().Skip(SkipStart).Take(FixedLength);
 
 
                 //var displayLocationData = DeviceAssociateSite;
                 Maclist = from c in DeviceAssociateSite
-                          select new { Id = c.Id, Mac = c.Mac, Status = c.StrStatus, IsTrackByAdmin = c.IsTrackByAdmin, IsDisplay = c.IsDisplay, IsCreatedByAdmin = c.IsCreatedByAdmin, IsEntryNotify=c.IsEntryNotify };
+                          select new { Id = c.Id, Mac = c.Mac, Status = c.StrStatus, IsTrackByAdmin = c.IsTrackByAdmin,IsDisplay = c.IsDisplay, IsCreatedByAdmin = c.IsCreatedByAdmin, IsEntryNotify=c.IsEntryNotify };
                 
             }
             catch (Exception ex)
