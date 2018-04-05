@@ -28,30 +28,28 @@ namespace RTLS.Repository
             {
                 foreach (var MacAddress in model.MacAddresses)
                 {
-                    if (!(db.DeviceAssociateSite.Any(m => m.Device.MacAddress == MacAddress && m.SiteId==model.SiteId)))
+                    
+                    if (!(db.Device.Any(m => m.MacAddress == MacAddress)))
                     {
                         Device objDevice = new Device();
-                        if (!(db.Device.Any(m => m.MacAddress == MacAddress)))
-                        {
-                            objDevice.MacAddress = MacAddress;
-                            db.Device.Add(objDevice);
-                            db.SaveChanges();
-                        }
-                        else
-                        {
-                            objDevice = db.Device.FirstOrDefault(m => m.MacAddress == MacAddress);
-                        }
-                    DeviceAssociateSite objDeviceAssociate = new DeviceAssociateSite();
+                        objDevice.MacAddress = MacAddress;
+                        db.Device.Add(objDevice);
+
+                        DeviceAssociateSite objDeviceAssociate = new DeviceAssociateSite();
                         objDeviceAssociate.SiteId = model.SiteId;
                         objDeviceAssociate.DeviceId = objDevice.DeviceId;
-                        objDeviceAssociate.CreatedDateTime= DateTime.Now;
+                        objDeviceAssociate.CreatedDateTime = DateTime.Now;
                         objDeviceAssociate.IsCreatedByAdmin = true;
                         objDeviceAssociate.IsDeviceRegisterInRtls = true;
-                        //objDeviceAssociate.RtlsConfigureId = model.RtlsConfigurationId;
-                        //objDeviceAssociate.IsCreatedByAdmin = true;
                         db.DeviceAssociateSite.Add(objDeviceAssociate);
-                        db.SaveChanges();
                     }
+                    else
+                    {
+                       var objDevice = db.DeviceAssociateSite
+                            .FirstOrDefault(m => m.Device.MacAddress == MacAddress);
+                        objDevice.IsDeviceRegisterInRtls = true;
+                    }
+                    db.SaveChanges();
                 }
                 return true;
             }
