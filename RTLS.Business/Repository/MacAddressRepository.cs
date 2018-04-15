@@ -73,6 +73,7 @@ namespace RTLS.Repository
                 DeviceAssociateSite objDeviceAssociate = new DeviceAssociateSite();
                 foreach (var MacAddress in model.MacAddresses)
                 {
+                    //If MacAddress not exist in the whole system create the new one and associate with Site
                     if (!(db.Device.Any(m => m.MacAddress == MacAddress)))
                     {
                         objDevice.MacAddress = MacAddress;
