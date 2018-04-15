@@ -16,7 +16,7 @@ namespace RTLS.Repository
             db = new ApplicationDbContext();
         }
 
-        /// <summary>
+        // <summary>
         /// 
         /// </summary>
         /// <param name="SiteId"></param>
@@ -26,15 +26,20 @@ namespace RTLS.Repository
         {
             try
             {
+                Device objDevice = new Device();
                 foreach (var MacAddress in model.MacAddresses)
                 {
-                    
+                    //If MacAddress not exist in the whole system create the new one and associate with Site
                     if (!(db.Device.Any(m => m.MacAddress == MacAddress)))
                     {
-                        Device objDevice = new Device();
                         objDevice.MacAddress = MacAddress;
                         db.Device.Add(objDevice);
-
+                        db.SaveChanges();
+                    }
+                    //If Device associate Site not exist then Create the new one
+                    if (!(db.DeviceAssociateSite.Any(m => m.Device.MacAddress == MacAddress && m.SiteId == model.SiteId)))
+                    {
+                        objDevice = db.Device.FirstOrDefault(m => m.MacAddress == MacAddress);
                         DeviceAssociateSite objDeviceAssociate = new DeviceAssociateSite();
                         objDeviceAssociate.SiteId = model.SiteId;
                         objDeviceAssociate.DeviceId = objDevice.DeviceId;
@@ -45,9 +50,10 @@ namespace RTLS.Repository
                     }
                     else
                     {
-                       var objDevice = db.DeviceAssociateSite
-                            .FirstOrDefault(m => m.Device.MacAddress == MacAddress);
-                        objDevice.IsDeviceRegisterInRtls = true;
+                        //If the Device Already present then try to update the DeviceAssociateSite 
+                        var objDeviceAssociateSite = db.DeviceAssociateSite.FirstOrDefault(m => m.Device.MacAddress == model.Mac && m.SiteId == model.SiteId);
+                        objDeviceAssociateSite.IsDeviceRegisterInRtls = true;
+                        db.Entry(objDeviceAssociateSite).State = System.Data.Entity.EntityState.Modified;
                     }
                     db.SaveChanges();
                 }
@@ -58,6 +64,7 @@ namespace RTLS.Repository
                 throw ex;
             }
         }
+
 
         /// <summary>
         /// 
@@ -125,27 +132,20 @@ namespace RTLS.Repository
             return true;
         }
 
-        public bool DeRegisterListOfMacs(string [] lstMacAddresses)
+        public bool DeRegisterListOfMacs(string[] lstMacAddresses)
         {
             try
             {
                 foreach (var item in lstMacAddresses)
                 {
                     if (db.Device.Any(m => m.MacAddress == item))
-                    { 
-                    //var ObjDevice = db.DeviceAssociateSite.FirstOrDefault(m => m.Device.MacAddress == item);
-                    //ObjDevice.status = DeviceStatus.DeRegistered;
-                    var ObjDevice = db.Device.FirstOrDefault(m => m.MacAddress == item);
-                    
-                        //db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
-                        //db.SaveChanges();
-                        //UpdateStatusToRegister(objMac.DeviceId);
+                    {
+
+                        var ObjDevice = db.Device.FirstOrDefault(m => m.MacAddress == item);
                         var objMac = db.DeviceAssociateSite.FirstOrDefault(m => m.DeviceId == ObjDevice.DeviceId);
-                        //objMac.status = DeviceStatus.DeRegistered;
-                        objMac.status = DeviceStatus.None;
-                        objMac.IsDeviceRegisterInRtls = false;
-                    db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
-                    db.SaveChanges();
+                        objMac.status = DeviceStatus.DeRegistered;
+                        db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
+                        db.SaveChanges();
                     }
                 }
             }

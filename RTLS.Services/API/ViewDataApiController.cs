@@ -107,7 +107,7 @@ namespace RTLS.API
                 var objRtlsConfiguration= db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
                 var row = db.LocationData.Where(m=>m.sn == objRtlsConfiguration.EngageSiteName); // IsDIsplay =m.IsDeviceRegisterInRtls
                 TotalRecords = row.Count();
-                lstLocationData = db.LocationData.Where(m => m.sn == objRtlsConfiguration.EngageSiteName).ToList().Skip(SkipStart).Take(FixedLength);
+                lstLocationData = db.LocationData.OrderByDescending(m => m.last_seen_ts).Where(m => m.sn == objRtlsConfiguration.EngageSiteName).ToList().Skip(SkipStart).Take(FixedLength);
             }
             catch (Exception ex)
             {
