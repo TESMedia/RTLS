@@ -48,5 +48,7 @@ namespace RTLS.Domins.ViewModels
         public int CurrentPage { get; set; }
         public int TotalRecords { get; set; }
 
+        public string Search { get; set; }
+
     }
 }

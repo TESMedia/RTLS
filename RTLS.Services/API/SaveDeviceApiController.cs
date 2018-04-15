@@ -30,7 +30,7 @@ namespace RTLS.API
             {
                 using (MacAddressRepository objMacRepository = new MacAddressRepository())
                 {
-                    if (objMacRepository.CheckListExistOrNot(model.MacAddresses,model.RtlsConfigurationId))
+                    if (objMacRepository.CheckListExistOrNot(model.MacAddresses,model.SiteId))
                     {
                         objMacRepository.SaveMacAddress(model);
                     }
