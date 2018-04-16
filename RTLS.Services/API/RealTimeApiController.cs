@@ -465,7 +465,7 @@ namespace RTLS.API
                     string[] RegisteredMacAdress; List<string> lstDeviceToRegister = new List<string>();
                     using (MacAddressRepository macRepo = new MacAddressRepository())
                     {
-                        RegisteredMacAdress = macRepo.GetMacByStatus(DeviceStatus.None);
+                        RegisteredMacAdress = macRepo.GetMacByStatus(DeviceStatus.DeRegistered);
                     }
                     if (RegisteredMacAdress != null & RegisteredMacAdress.Length > 0)
                     {
