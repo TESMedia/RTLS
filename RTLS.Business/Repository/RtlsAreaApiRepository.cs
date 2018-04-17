@@ -51,6 +51,40 @@ namespace RTLS.Business.Repository
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="model"></param>
+        public void CreateAsPerSite(List<RtlsArea> RtlsArea)
+        {
+            db.RtlsArea.AddRange(RtlsArea);
+            db.SaveChanges();
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        public void UpdateAsPerSite(List<RtlsArea> RtlsArea)
+        {
+            foreach (var RtlsAreas in RtlsArea)
+            {
+                if (RtlsAreas.GeoFencedAreas == null)
+                {
+                    db.Entry(RtlsAreas).State = System.Data.Entity.EntityState.Deleted;
+                }
+                else
+                {
+                    db.Entry(RtlsAreas).State = System.Data.Entity.EntityState.Modified;
+                }
+                db.SaveChanges();
+            }
+            //db.RtlsArea.(RtlsArea);
+            //db.SaveChanges();
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="RtlsConfigurationId"></param>
         /// <returns></returns>
         public List<RtlsArea> GetListOfGeoFencedAreasPerSite(int RtlsConfigurationId)

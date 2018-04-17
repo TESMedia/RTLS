@@ -58,23 +58,30 @@ namespace RTLS.API
         {
             try
             {
-                var RtlsConfig=objRtlsConfigurationRepository.GetAsPerSiteId(lstRtlsAreas.SiteId);
+                var RtlsConfig = objRtlsConfigurationRepository.GetAsPerSiteId(lstRtlsAreas.SiteId);
                 RtlsConfig.ApproachNotification = lstRtlsAreas.ApproachNotification;
                 RtlsConfig.AreaNotification = lstRtlsAreas.AreaNotification;
                 objRtlsConfigurationRepository.SaveAndUpdateAsPerSite(RtlsConfig);
                 List<RtlsArea> lstRtlsArea = new List<RtlsArea>();
-                if(lstRtlsAreas.GeoFencedAreas!=null)
+                if (lstRtlsAreas.GeoFencedAreas != null)
                 {
-                    foreach(var item in lstRtlsAreas.GeoFencedAreas)
+                    foreach (var item in lstRtlsAreas.GeoFencedAreas)
                     {
                         RtlsArea objRtlsArea = new RtlsArea();
                         objRtlsArea.GeoFencedAreas = item.GeoFencedAreas;
-                        objRtlsArea.RtlsConfigurationId = item.RtlsConfigurationId;                        
+                        objRtlsArea.RtlsConfigurationId = item.RtlsConfigurationId;
+                        objRtlsArea.Id = item.Id;
                         lstRtlsArea.Add(objRtlsArea);
                     }
                 }
-
-                objRtlsAreaApiRepository.SaveAndUpdateAsPerSite(lstRtlsArea.Where(m => m.Id == 0).ToList());
+                if (lstRtlsArea.Any(m => m.Id == 0 && m.GeoFencedAreas != null))
+                {
+                    objRtlsAreaApiRepository.CreateAsPerSite(lstRtlsArea.Where(m => m.Id == 0).ToList());
+                }
+                if (lstRtlsArea.Any(m => m.Id != 0))
+                {
+                    objRtlsAreaApiRepository.UpdateAsPerSite(lstRtlsArea.Where(m => m.Id != 0).ToList());
+                }
             }
             catch (Exception ex)
             {
