@@ -32,8 +32,7 @@ namespace RTLS.Domains
         [NotMapped]
         public string[] an { get; set; }
 
-        [NotMapped]
-        public DateTime LastSeenDatetime { get; set; }
+        public DateTime ? LastSeenDatetime { get; set; }
 
         [NotMapped]
         public DateTime PostDateTime { get; set; }

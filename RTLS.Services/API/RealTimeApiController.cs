@@ -239,7 +239,7 @@ namespace RTLS.API
                 {
                     TrackMember objTrackMember = new TrackMember();
                     objTrackMember.MacAddress = objLocationData.mac;
-                    objTrackMember.VisitedDateTime = objLocationData.LastSeenDatetime;
+                    objTrackMember.VisitedDateTime = (DateTime)objLocationData.LastSeenDatetime;
                     objTrackMember.PostDateTime = objLocationData.PostDateTime;
                     objTrackMember.RecieveDateTime = DateTime.Now;
                     objTrackMember.AreaName = (objLocationData.an[0]!=null && objLocationData.an[0].Length > 0
