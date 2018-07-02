@@ -19,3 +19,5 @@
 /RTLS.Domins/bin/Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 /RTLS.Domins/bin/Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
 /RTLS.Business/RTLS.Business.csproj.user
+/RTLS.Domins/obj/Release
+/RTLS.DataAccess
