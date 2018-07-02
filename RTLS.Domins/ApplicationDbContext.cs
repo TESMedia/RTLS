@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace RTLS.Domains
 {
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
-
+    [DbConfigurationType(typeof(MySql.Data.Entity.MySqlEFConfiguration))]
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext()
@@ -24,8 +24,10 @@ namespace RTLS.Domains
         public DbSet<DeviceAssociateSite> DeviceAssociateSite { get; set; }
 
         public DbSet<LocationData> LocationData { get; set; }
-        public DbSet<TrackMember> CheckMembers { get; set; }
+        public DbSet<TrackMember> TrackMember { get; set; }
         public DbSet<AppLog> AppLogs { get; set; }
+        public DbSet<TrackMacNotification> TrackMacNotification { get; set; }
+        
 
         public static ApplicationDbContext Create()
         {
@@ -41,6 +43,8 @@ namespace RTLS.Domains
             modelBuilder.Entity<DeviceAssociateSite>().ToTable("DeviceAssociateSite");
             modelBuilder.Entity<LocationData>().ToTable("LocationData");
             modelBuilder.Entity<AppLog>().ToTable("AppLog");
+            modelBuilder.Entity<TrackMacNotification>().ToTable("TrackMacNotification");
+            modelBuilder.Entity<TrackMember>().ToTable("TrackMember");
 
             modelBuilder.Entity<Site>()
            .HasOptional(f => f.RtlsConfiguration)

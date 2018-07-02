@@ -30,7 +30,7 @@ namespace RTLS.API
             {
                 using (MacAddressRepository objMacRepository = new MacAddressRepository())
                 {
-                    if (objMacRepository.CheckListExistOrNot(model.MacAddresses,model.RtlsConfigurationId))
+                    if (objMacRepository.CheckListExistOrNot(model.MacAddresses,model.SiteId))
                     {
                         objMacRepository.SaveMacAddress(model);
                     }
@@ -54,8 +54,33 @@ namespace RTLS.API
                
                 if(db.Device.Any(m=>m.MacAddress==model.Mac))
                 {
-                    var ObjMac = db.DeviceAssociateSite.First(m => m.Device.MacAddress == model.Mac && m.SiteId==model.SiteId);
+                    var ObjMac = db.DeviceAssociateSite.First(m => m.Device.MacAddress == model.Mac && m.SiteId==model.SiteId && m.IsDeviceRegisterInRtls==true);
                     ObjMac.IsTrackByRtls = model.IsDisplay;
+                    db.Entry(ObjMac).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                this.log.Error("Exception occur" + ex.InnerException.Message);
+                retResult = "Exception occur" + ex.InnerException.Message;
+            }
+            return Request.CreateResponse(HttpStatusCode.OK);
+        }
+
+        [Route("UpdateTrackByAdmin")]
+        [HttpPost]
+        public HttpResponseMessage UpdateTrackByAdmin(RequestLocationDataVM model)
+        {
+
+            string retResult = "";
+            try
+            {
+
+                if (db.Device.Any(m => m.MacAddress == model.Mac))
+                {
+                    var ObjMac = db.DeviceAssociateSite.First(m => m.Device.MacAddress == model.Mac && m.SiteId == model.SiteId);
+                    ObjMac.IsTrackByAdmin = model.IsTrackByAdmin;
                     db.Entry(ObjMac).State = EntityState.Modified;
                     db.SaveChanges();
                 }

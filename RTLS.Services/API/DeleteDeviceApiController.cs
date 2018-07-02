@@ -40,11 +40,11 @@ namespace RTLS.API
                     {
                         db.DeviceAssociateSite.Remove(deviceAssociateObject);
                         db.SaveChanges();
-                        retResult = string.Format("{0} Successfully Deleted from server", item);
+                        retResult += item + " Successfully Deleted from server. " + Environment.NewLine;
                     }
                     else
                     {
-                        retResult = string.Format("{0} is a Registered User So shouldn't Delete", item);
+                        retResult += item + " is a Registered User so shouldn't Delete. "  + Environment.NewLine;
 
                     }
                 }
@@ -55,10 +55,11 @@ namespace RTLS.API
                 retResult = "Exception occur" + ex.InnerException.Message;
                 objResult.returncode = -1;
             }
+             
             objResult.errmsg = retResult;
             return new HttpResponseMessage()
             {
-                Content = new StringContent(JsonConvert.SerializeObject(retResult))
+                Content = new StringContent(JsonConvert.SerializeObject(objResult), Encoding.UTF8, "application/json")
             };
         }
     }
