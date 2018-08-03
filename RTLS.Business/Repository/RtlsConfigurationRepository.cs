@@ -49,10 +49,7 @@ namespace RTLS.Repository
             }
             db.SaveChanges();
         }
-
-
-
-
+        
         /// <summary>
         /// 
         /// </summary>

@@ -66,6 +66,30 @@ namespace RTLS.API
             };
         }
 
+        [Route("IsRtlsConfigurationExist")]
+        [HttpPost]
+        public HttpResponseMessage IsRtlsConfigurationExistOrNot(int SiteId)
+        {
+            try
+            {
+                var res = objRtlsConfigurationRepository.CheckRtlsConfigExistOrNotAsPerSite(SiteId);
+                if (res)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK,"RtlsConfigExist");
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, "RtlsConfigNotExist");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError);
+            }
+
+        }
+
 
     }
 }
