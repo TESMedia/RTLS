@@ -111,7 +111,10 @@
     <Compile Include="ViewModels\RequestLocationDataVM.cs" />
     <Compile Include="ViewModels\Request\NotificationRequest.cs" />
     <Compile Include="ViewModels\Result.cs" />
+    <Compile Include="ViewModels\ReturnData.cs" />
     <Compile Include="ViewModels\RtlsAreaViewModel.cs" />
+    <Compile Include="ViewModels\SecomLogin.cs" />
+    <Compile Include="ViewModels\SecomRegisterDevice.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

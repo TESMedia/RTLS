@@ -177,11 +177,11 @@ namespace RTLS.API
                     CommonHeaderInitializeHttpClient(objSite.RtlsConfiguration.EngageBaseAddressUri);
                     HttpRequestMessage message = new HttpRequestMessage(new HttpMethod("DELETE"), "/api/engage/v1/device_monitors/");
                     var queryParams = new Dictionary<string, string>()
-                {
-                    { "sn",objSite.RtlsConfiguration.EngageSiteName },
-                    { "bn",objSite.RtlsConfiguration.EngageBuildingName },
-                    {"device_ids",String.Join(",",model.MacAddresses) }
-                };
+                      {
+                        { "sn",objSite.RtlsConfiguration.EngageSiteName },
+                        { "bn",objSite.RtlsConfiguration.EngageBuildingName },
+                        {"device_ids",String.Join(",",model.MacAddresses) }
+                      };
 
                     message.Content = new FormUrlEncodedContent(queryParams);
                     try
