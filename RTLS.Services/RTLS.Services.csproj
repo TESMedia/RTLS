@@ -254,6 +254,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\DeleteDeviceApiController.cs" />
+    <Compile Include="API\OmniEngineApiController.cs" />
     <Compile Include="API\RtlsAreaApiController.cs" />
     <Compile Include="API\RtlsConfigurationApiController.cs" />
     <Compile Include="API\SaveDeviceApiController.cs" />
