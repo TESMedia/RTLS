@@ -316,7 +316,7 @@
       <Name>RTLS.Business</Name>
     </ProjectReference>
     <ProjectReference Include="..\RTLS.Common\RTLS.Common.csproj">
-      <Project>{8585C24D-4933-4897-8DDD-4F58651B9A1A}</Project>
+      <Project>{8585c24d-4933-4897-8ddd-4f58651b9a1a}</Project>
       <Name>RTLS.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\RTLS.Domins\RTLS.Domins.csproj">

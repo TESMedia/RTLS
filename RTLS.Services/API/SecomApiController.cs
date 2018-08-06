@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RTLS.Common;
+using RTLS.Domains;
 using RTLS.Domins.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace RTLS.API
     [RoutePrefix("api")]
     public class SecomApiController : ApiController
     {
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         [HttpGet]
         [Route("secom/v1/login")]
@@ -28,17 +30,17 @@ namespace RTLS.API
             {
                 using (SecomClient objsecomClient = new SecomClient())
                 {
-                  
 
-                  var  _secomData = await objsecomClient.GetSecomLoginToken();
 
-                  return new HttpResponseMessage()
+                    var _secomData = await objsecomClient.GetSecomLoginToken();
+
+                    return new HttpResponseMessage()
                     {
                         Content = new StringContent(_secomData, Encoding.UTF8, "application/json")
                     };
                 }
 
-                   
+
             }
             catch (Exception ex)
             {
@@ -50,7 +52,7 @@ namespace RTLS.API
 
         [HttpPost]
         [Route("secom/v1/venues/RegisterDevice")]
-        public async Task<HttpResponseMessage>RegisterDevice(SecomRegisterDevice _objSecomRegisterDevice)
+        public async Task<HttpResponseMessage> RegisterDevice(SecomRegisterDevice _objSecomRegisterDevice)
         {
             string _registerSuccessData = null;
 
@@ -62,7 +64,7 @@ namespace RTLS.API
 
                 var token_details = JObject.Parse(_secomData);
                 var token = token_details["jwt"].ToString();
-               
+
 
                 //Calling register device
                 _registerSuccessData = await objsecomClient.RegisterDevice(_objSecomRegisterDevice, token);
@@ -70,11 +72,11 @@ namespace RTLS.API
             }
 
             return new HttpResponseMessage()
-          {
-            Content = new StringContent(_registerSuccessData, Encoding.UTF8,"application/json")
-          };
+            {
+                Content = new StringContent(_registerSuccessData, Encoding.UTF8, "application/json")
+            };
 
-        } 
+        }
 
 
 

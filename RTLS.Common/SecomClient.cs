@@ -12,6 +12,7 @@ using System.Web.Configuration;
 using RestSharp;
 using System.Net;
 using System.Web.Script.Serialization;
+using System.Threading;
 
 namespace RTLS.Common
 {
@@ -45,9 +46,8 @@ namespace RTLS.Common
             restRequest.AddHeader("Content-yType", "application/json");
             restRequest.AddHeader("Accept", "application/json");
             restRequest.AddParameter("application/json", _loginData, ParameterType.RequestBody);
-          
 
-            var response = restClient.Post(restRequest);
+            var response = await (Task.Run(() => restClient.Post(restRequest)));
             if(response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 _returnData = response.Content.ToString();
@@ -77,7 +77,7 @@ namespace RTLS.Common
             restRequest.AddParameter("application/json", _registerData, ParameterType.RequestBody);
 
 
-            var response = restClient.Post(restRequest);
+            var response = await (Task.Run(() => restClient.Post(restRequest)));
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 _returnData = response.Content.ToString();
