@@ -108,6 +108,7 @@
     <Compile Include="ViewModels\LocationsViewModel.cs" />
     <Compile Include="ViewModels\MonitorDevice.cs" />
     <Compile Include="ViewModels\Notification.cs" />
+    <Compile Include="ViewModels\OmniRequest\RequestOmniModel.cs" />
     <Compile Include="ViewModels\PagedResultsViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Record.cs" />
