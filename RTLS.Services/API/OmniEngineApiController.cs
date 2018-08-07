@@ -13,12 +13,18 @@ using Newtonsoft.Json.Linq;
 using RTLS.Domains;
 using System.Data.Entity;
 using RTLS.Domins.ViewModels.Request;
+using Newtonsoft.Json;
+using System.Text;
+using log4net;
 
 namespace RTLS.API
 {
     [RoutePrefix("api/OmniEngine")]
     public class OmniEngineApiController : ApiController,IDisposable
     {
+        private static log4net.ILog Log { get; set; }
+        ILog log = log4net.LogManager.GetLogger(typeof(OmniEngineApiController));
+
         public OmniEngineApiController()
         {
 
@@ -34,12 +40,12 @@ namespace RTLS.API
             //}
             //create the RequestModel for secom api
 
+            string result = null;
             try
             {
                 SecomRegisterDevice objSecomRegisterDevice = new SecomRegisterDevice();
                 objSecomRegisterDevice.mac = objRequestOmniModel.MacAddress;
                 objSecomRegisterDevice.station_info.device.id = objRequestOmniModel.MacAddress;
-
 
                 using (var objSecomClient = new SecomClient())
                 {
@@ -48,34 +54,38 @@ namespace RTLS.API
                     var token_details = JObject.Parse(jsonToken);
                     var token = token_details["jwt"].ToString();
 
-                    await objSecomClient.RegisterDevice(objSecomRegisterDevice, token);
-                }
-
-                using (ApplicationDbContext db = new ApplicationDbContext())
-                {
-                    if (db.Device.Any(m => m.MacAddress == objRequestOmniModel.MacAddress))
+                    if (await objSecomClient.RegisterDevice(objSecomRegisterDevice, token))
                     {
-                        var ObjDeviceAssociateSite = db.DeviceAssociateSite.First(m => m.Device.MacAddress == objRequestOmniModel.MacAddress && m.SiteId == objRequestOmniModel.SiteId);
-                        if (Convert.ToInt32(NotificationType.Approach) == objRequestOmniModel.NotificationTypeId)
+                        using (ApplicationDbContext db = new ApplicationDbContext())
                         {
-                            ObjDeviceAssociateSite.IsEntryNotify = true;
+                            if (db.Device.Any(m => m.MacAddress == objRequestOmniModel.MacAddress))
+                            {
+                                var ObjDeviceAssociateSite = db.DeviceAssociateSite.First(m => m.Device.MacAddress == objRequestOmniModel.MacAddress && m.SiteId == objRequestOmniModel.SiteId);
+                                if (objRequestOmniModel.NotificationTypeId==10)
+                                {
+                                    ObjDeviceAssociateSite.IsTrackByAdmin = true;
+                                }
+                                else if (objRequestOmniModel.NotificationTypeId==20)
+                                {
+                                    ObjDeviceAssociateSite.IsEntryNotify = true;
+                                }
+                                ObjDeviceAssociateSite.IsDeviceRegisterInRtls = true;
+                                db.Entry(ObjDeviceAssociateSite).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
                         }
-                        else if (Convert.ToInt32(NotificationType.Approach) == objRequestOmniModel.NotificationTypeId)
-                        {
-                            ObjDeviceAssociateSite.IsTrackByAdmin = true;
-                        }
-                        ObjDeviceAssociateSite.IsDeviceRegisterInRtls = true;
-                        db.Entry(ObjDeviceAssociateSite).State = EntityState.Modified;
-                        db.SaveChanges();
                     }
                 }
-                return Request.CreateResponse(HttpStatusCode.OK);
             }
             catch(Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError);
+                result = ex.Message;
+                log.Error(ex.Message);
             }
-            //Update the deviceAssociate Site
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(result), Encoding.UTF8, "application/json")
+            };
 
         }
     }

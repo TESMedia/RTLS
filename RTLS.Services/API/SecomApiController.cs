@@ -67,7 +67,7 @@ namespace RTLS.API
 
 
                 //Calling register device
-                _registerSuccessData = await objsecomClient.RegisterDevice(_objSecomRegisterDevice, token);
+                await objsecomClient.RegisterDevice(_objSecomRegisterDevice, token);
 
             }
 

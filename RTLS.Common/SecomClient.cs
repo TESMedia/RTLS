@@ -58,10 +58,10 @@ namespace RTLS.Common
 
 
         
-        public async Task<string> RegisterDevice(SecomRegisterDevice _objSecomRegisterDevice,string token)
+        public async Task<bool> RegisterDevice(SecomRegisterDevice _objSecomRegisterDevice,string token)
 
         {
-            string _returnData = null;
+            bool _returnData = false;
             
             //// Serialize our concrete class into a JSON String
             var _registerData = JsonConvert.SerializeObject(_objSecomRegisterDevice);
@@ -80,12 +80,9 @@ namespace RTLS.Common
             var response = await (Task.Run(() => restClient.Post(restRequest)));
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                _returnData = response.Content.ToString();
+                _returnData = true;
             }
-            else
-            {
-                _returnData = response.Content.ToString();
-            }
+
             return _returnData;
         }
 

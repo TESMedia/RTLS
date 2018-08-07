@@ -15,7 +15,7 @@ namespace RTLS.Domins.ViewModels
         }
 
         public string mac { get; set; }
-        public string type { get; set; }
+        public string type { get; set; } = "station";
         public StationInfo station_info { get; set; }
         public class StationInfo
         {
@@ -32,23 +32,23 @@ namespace RTLS.Domins.ViewModels
         public class Device
         {
             public string id { get; set; }
-            public string type { get; set; }
+            public string type { get; set; } = "";
         }
 
         public class User
         {
-            public string type { get; set; }
-            public string sub_type { get; set; }
-            public string part_code { get; set; }
-            public string label { get; set; }
-            public string icon { get; set; }
-            public string color { get; set; }
+            public string type { get; set; } = "visitor";
+            public string sub_type { get; set; } = "visitor";
+            public string part_code { get; set; } = " ";
+            public string label { get; set; } = "user 1";
+            public string icon { get; set; } = "test.png";
+            public string color { get; set; } = "";
         }
 
         public class BlackList
         {
-            public bool status { get; set; }
-            public string action { get; set; }
+            public bool status { get; set; } = true;
+            public string action { get; set; } = "";
         }
 
       }
