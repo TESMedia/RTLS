@@ -81,6 +81,7 @@
     <Compile Include="Device.cs" />
     <Compile Include="DeviceAssociateSite.cs" />
     <Compile Include="Enums\CutomEnum.cs" />
+    <Compile Include="Enums\RtlsEngine.cs" />
     <Compile Include="Identity\A8AdminDbContext.cs" />
     <Compile Include="Identity\AccountBindingModels.cs" />
     <Compile Include="Identity\AccountViewModels.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Site.cs" />
     <Compile Include="SiteFloor.cs" />
     <Compile Include="TrackMacNotification.cs" />
+    <Compile Include="ViewModels\EngageRegisterDevice.cs" />
     <Compile Include="ViewModels\jQueryDataTableParamModel.cs" />
     <Compile Include="LocationData.cs" />
     <Compile Include="ViewModels\JQueryDTRequestDeviceData.cs" />
