@@ -9,14 +9,22 @@ using RTLS.Domins.ViewModels;
 using RTLS.Common;
 using RTLS.Domains;
 using Newtonsoft.Json.Linq;
+using RTLS.Business.Repository;
 
 namespace RTLS.Business
 {
     public class OmniEngineBusiness : IOmniEngineBusiness
     {
-        public async Task<bool> regMacToOmniEngine(RequestOmniModel objRequestOmniModel)
+        private OmniDeviceMappingRepository objOmniDeviceMappingRepository = null;
+
+        public OmniEngineBusiness()
         {
-            bool result = false;
+            objOmniDeviceMappingRepository = new OmniDeviceMappingRepository();
+        }
+
+        public async Task<ReturnData> regMacToOmniEngine(RequestOmniModel objRequestOmniModel)
+        {
+            ReturnData result = new ReturnData();
             SecomRegisterDevice objSecomRegisterDevice = new SecomRegisterDevice();
             objSecomRegisterDevice.mac = objRequestOmniModel.MacAddress;
             objSecomRegisterDevice.station_info.device.id = objRequestOmniModel.MacAddress;
@@ -27,15 +35,13 @@ namespace RTLS.Business
 
                 var token_details = JObject.Parse(jsonToken);
                 var token = token_details["jwt"].ToString();
-
-                if (await objSecomClient.RegisterDevice(objSecomRegisterDevice, token))
+                var registerResult = await objSecomClient.RegisterDevice(objSecomRegisterDevice, token);
+                result.Status = registerResult.Status;
+                result.UniqueId = registerResult.UniqueId;  
+                if(registerResult.Status==true)
                 {
-                    result= true;
-                }
-                else
-                {
-                    result = false;
-                }
+                    objOmniDeviceMappingRepository.CreateMacUniqueId(objRequestOmniModel.MacAddress, registerResult.UniqueId);
+                }                             
             }
             return result;
         }

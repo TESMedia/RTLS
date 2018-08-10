@@ -19,6 +19,11 @@ namespace RTLS.Repository
             db = new ApplicationDbContext();
         }
 
+        public Device GetDevice(string Mac)
+        {
+            return db.Device.FirstOrDefault(m => m.MacAddress == Mac);
+        }
+
         /// <summary>
         /// 
         /// </summary>

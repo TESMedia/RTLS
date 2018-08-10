@@ -59,6 +59,7 @@
     <Compile Include="OmniEngineBusiness.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\MacAddressRepository.cs" />
+    <Compile Include="Repository\OmniDeviceMappingRepository.cs" />
     <Compile Include="Repository\RtlsAreaApiRepository.cs" />
     <Compile Include="Repository\RtlsConfigurationRepository.cs" />
     <Compile Include="Repository\SiteFloorRepository.cs" />

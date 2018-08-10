@@ -47,7 +47,8 @@ namespace RTLS.API
                     if (objSiteConfiguration.RtlsConfiguration.RtlsEngineType == RtlsEngine.OmniEngine)
                     {
                         OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
-                        if (await objOmniEngineBusiness.regMacToOmniEngine(objRequestOmniModel))
+                        var registerResult = await objOmniEngineBusiness.regMacToOmniEngine(objRequestOmniModel);
+                        if (registerResult.Status==true)
                         {
                             using (MacAddressRepository objMacAddressRepository = new MacAddressRepository())
                             {
