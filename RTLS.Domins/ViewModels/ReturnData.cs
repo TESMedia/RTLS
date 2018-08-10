@@ -9,7 +9,9 @@ namespace RTLS.Domins.ViewModels
    public class ReturnData
    {
 
-        public string Token { get; set; }
+        public bool Status { get; set; }  
+
+        public string UniqueId { get; set; }
 
    }
 }

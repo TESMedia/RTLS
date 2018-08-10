@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using RTLS.Domins;
 using RTLS.Domins.Enums;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,7 @@ namespace RTLS.Domains
 
         public ICollection<DeviceAssociateSite> DeviceAssociateSite { get; set; }
 
+        public virtual OmniDeviceMapping OmniDeviceMapping { get; set; }
         //[JsonIgnore]
         //[ForeignKey("WifiUserId")]
         //public virtual WifiUser WifiUser { get; set; }

@@ -28,7 +28,7 @@ namespace RTLS.Domains
         public DbSet<TrackMember> TrackMember { get; set; }
         public DbSet<AppLog> AppLogs { get; set; }
         public DbSet<TrackMacNotification> TrackMacNotification { get; set; }
-        
+        public DbSet<OmniDeviceMapping> OmniDeviceMapping { get; set; }
 
         public static ApplicationDbContext Create()
         {
@@ -47,10 +47,13 @@ namespace RTLS.Domains
             modelBuilder.Entity<AppLog>().ToTable("AppLog");
             modelBuilder.Entity<TrackMacNotification>().ToTable("TrackMacNotification");
             modelBuilder.Entity<TrackMember>().ToTable("TrackMember");
+            modelBuilder.Entity<OmniDeviceMapping>().ToTable("OmniDeviceMapping");
 
             modelBuilder.Entity<Site>()
            .HasOptional(f => f.RtlsConfiguration)
            .WithRequired(s => s.Site);
+
+            modelBuilder.Entity<Device>().HasOptional(g => g.OmniDeviceMapping).WithRequired(h => h.Device);
         }
     }
 }

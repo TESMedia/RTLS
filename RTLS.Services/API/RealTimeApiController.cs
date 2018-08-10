@@ -75,7 +75,8 @@ namespace RTLS.API
                             OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
                             RequestOmniModel objRequestOmniModel = new RequestOmniModel();
                             objRequestOmniModel.MacAddress = item;
-                            if (await objOmniEngineBusiness.regMacToOmniEngine(objRequestOmniModel))
+                            var retrnResult = await objOmniEngineBusiness.regMacToOmniEngine(objRequestOmniModel);
+                            if (retrnResult.Status==true)
                             {
                                 objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Success);
                                 using (MacAddressRepository objMacRepository = new MacAddressRepository())

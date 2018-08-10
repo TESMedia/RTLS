@@ -13,6 +13,7 @@ using RestSharp;
 using System.Net;
 using System.Web.Script.Serialization;
 using System.Threading;
+using Newtonsoft.Json.Linq;
 
 namespace RTLS.Common
 {
@@ -58,9 +59,9 @@ namespace RTLS.Common
 
 
         
-        public async Task<bool> RegisterDevice(SecomRegisterDevice _objSecomRegisterDevice,string token)
+        public async Task<ReturnData> RegisterDevice(SecomRegisterDevice _objSecomRegisterDevice,string token)
         {
-            bool _returnData = false;
+            ReturnData _returnData = new ReturnData();
             
             //// Serialize our concrete class into a JSON String
             var _registerData = JsonConvert.SerializeObject(_objSecomRegisterDevice);
@@ -77,9 +78,12 @@ namespace RTLS.Common
 
 
             var response = await (Task.Run(() => restClient.Post(restRequest)));
+            var registerResponse = JObject.Parse(response.Content);
+            var Unique_Id = registerResponse["_id"].ToString();
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
-                _returnData = true;
+                _returnData.Status = true;
+                _returnData.UniqueId = Unique_Id;
             }
 
             return _returnData;

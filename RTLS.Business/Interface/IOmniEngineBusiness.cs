@@ -1,4 +1,5 @@
-﻿using RTLS.Domins.ViewModels.OmniRequest;
+﻿using RTLS.Domins.ViewModels;
+using RTLS.Domins.ViewModels.OmniRequest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace RTLS.Business.Interface
 {
     public interface IOmniEngineBusiness
     {
-        Task<bool> regMacToOmniEngine(RequestOmniModel objRequestOmniModel);
+        Task<ReturnData> regMacToOmniEngine(RequestOmniModel objRequestOmniModel);
     }
 }
