@@ -5,6 +5,9 @@ using RTLS.ViewModel;
 using RTLS.Domains;
 using RTLS.Domins.Enums;
 using RTLS.ReturnModel;
+using RTLS.Domins.ViewModels.OmniRequest;
+using System.Data.Entity;
+
 namespace RTLS.Repository
 {
     public class MacAddressRepository : IDisposable
@@ -17,6 +20,32 @@ namespace RTLS.Repository
         }
 
         // <summary>
+        /// 
+        /// </summary>
+        /// <param name="MacAddress"></param>
+        /// <param name="LocationServiceType"></param>
+        /// <returns></returns>
+        public void UpdateLocationServiceTypeforMac(RequestOmniModel objRequestOmniModel)
+        {
+            if (db.Device.Any(m => m.MacAddress == objRequestOmniModel.MacAddress))
+            {
+                var ObjDeviceAssociateSite = db.DeviceAssociateSite.First(m => m.Device.MacAddress == objRequestOmniModel.MacAddress && m.SiteId == objRequestOmniModel.SiteId);
+                if (objRequestOmniModel.NotificationTypeId == 10)
+                {
+                    ObjDeviceAssociateSite.IsTrackByAdmin = true;
+                }
+                else if (objRequestOmniModel.NotificationTypeId == 20)
+                {
+                    ObjDeviceAssociateSite.IsEntryNotify = true;
+                }
+                ObjDeviceAssociateSite.IsDeviceRegisterInRtls = true;
+                db.Entry(ObjDeviceAssociateSite).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+        }
+
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="SiteId"></param>

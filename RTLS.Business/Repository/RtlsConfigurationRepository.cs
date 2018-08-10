@@ -27,6 +27,16 @@ namespace RTLS.Repository
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public Site GetAsPerSite(int SiteId)
+        {
+            return db.Site.Include("RtlsConfiguration").Include("RtlsConfiguration.Devices").FirstOrDefault(m => m.SiteId == SiteId);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="SiteId"></param>
         /// <returns></returns>
         public RtlsConfiguration GetAsPerSiteId(int SiteId)

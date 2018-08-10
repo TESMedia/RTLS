@@ -59,7 +59,6 @@ namespace RTLS.Common
 
         
         public async Task<bool> RegisterDevice(SecomRegisterDevice _objSecomRegisterDevice,string token)
-
         {
             bool _returnData = false;
             
@@ -78,7 +77,7 @@ namespace RTLS.Common
 
 
             var response = await (Task.Run(() => restClient.Post(restRequest)));
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
                 _returnData = true;
             }
@@ -87,6 +86,32 @@ namespace RTLS.Common
         }
 
 
+        public async Task<bool> DeRegisterDevice(SecomRegisterDevice _objSecomRegisterDevice, string token)
+        {
+            bool _returnData = false;
+            _objSecomRegisterDevice.station_info.black_list.status = false;
+            //// Serialize our concrete class into a JSON String
+            var _registerData = JsonConvert.SerializeObject(_objSecomRegisterDevice);
+
+            //Rest CLient Call
+            var restClient = new RestClient();
+            restClient.BaseUrl = new Uri(_uri);
+            var restRequest = new RestRequest("PATCH");
+            restRequest.Resource = "api/v1/venues/devices/d65a0df3269849e7a431efac946fa021";
+            restRequest.AddHeader("Content-yType", "application/json");
+            restRequest.AddHeader("Accept", "application/json");
+            restRequest.AddHeader("Authorization", "Bearer" + " " + token);
+            restRequest.AddParameter("application/json", _registerData, ParameterType.RequestBody);
+
+
+            var response = await (Task.Run(() => restClient.Patch(restRequest)));
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                _returnData = true;
+            }
+
+            return _returnData;
+        }
 
         protected virtual void Dispose(bool disposing)
         {

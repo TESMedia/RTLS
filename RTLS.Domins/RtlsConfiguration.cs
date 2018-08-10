@@ -1,4 +1,5 @@
 ﻿using RTLS.Domins;
+using RTLS.Domins.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -31,6 +32,8 @@ namespace RTLS.Domains
         [Required()]
         public string EngageBaseAddressUri { get; set; }
 
+        public string OmniBaseAddressUri { get; set; }
+
         public int Port { get; set; }
 
         public int ApproachNotification { get; set; }
@@ -50,5 +53,21 @@ namespace RTLS.Domains
 
         [ForeignKey("SiteId")]
         public virtual Site Site { get; set; }
+
+        [NotMapped]
+        [EnumDataType(typeof(RtlsEngine))]
+        public RtlsEngine RtlsEngineType { get; set; }
+
+        public virtual int RtlsEngineTypeId
+        {
+            get
+            {
+                return (int)this.RtlsEngineType;
+            }
+            set
+            {
+                RtlsEngineType = (RtlsEngine)value;
+            }
+        }
     }
 }
