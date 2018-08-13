@@ -20,6 +20,8 @@ using RTLS.Domins.Enums;
 using RTLS.Domins.ViewModels.Request;
 using System.Data.Entity;
 using RTLS.Business.Repository;
+using RTLS.Business;
+using RTLS.Domins.ViewModels.OmniRequest;
 
 namespace RTLS.API
 {
@@ -62,27 +64,43 @@ namespace RTLS.API
             Notification objNotifications = new Notification();
             using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
             {
-                Site objSite=objRtlsConfigurationRepository.GetAsPerSite(model.SiteId,model.SiteName);
-                CommonHeaderInitializeHttpClient(objSite.RtlsConfiguration.EngageBaseAddressUri);
+                Site objSite = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId);
+                
                 try
                 {
-                queryParams = new FormUrlEncodedContent(new Dictionary<string, string>()
-                {
-                    { "sn", objSite.RtlsConfiguration.EngageSiteName },
-                    { "bn",objSite.RtlsConfiguration.EngageBuildingName },
-                    {"device_ids",String.Join(",",model.MacAddresses) }
-                }).ReadAsStringAsync().Result;
-
-                    var result = await httpClient.PostAsync(completeFatiAPI, new StringContent(queryParams, Encoding.UTF8, "application/x-www-form-urlencoded"));
-                    if (result.IsSuccessStatusCode)
+                    if (objSite.RtlsConfiguration.RtlsEngineType == RtlsEngine.OmniEngine)
                     {
-                        string resultContent = await result.Content.ReadAsStringAsync();
-                        objNotifications = JsonConvert.DeserializeObject<Notification>(resultContent);
-                        if (objNotifications.result.returncode == Convert.ToInt32(FatiApiResult.Success))
+                        foreach (var item in model.MacAddresses)
                         {
-                            using (MacAddressRepository objMacRepository = new MacAddressRepository())
+                            OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
+                            RequestOmniModel objRequestOmniModel = new RequestOmniModel();
+                            objRequestOmniModel.MacAddress = item;
+                            var retrnResult = await objOmniEngineBusiness.regMacToOmniEngine(objRequestOmniModel);
+                            if (retrnResult.Status==true)
                             {
-                                objMacRepository.RegisterListOfMacAddresses(model);
+                                objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Success);
+                                using (MacAddressRepository objMacRepository = new MacAddressRepository())
+                                {
+                                    objMacRepository.RegisterListOfMacAddresses(model);
+                                }
+                            }
+                        }
+                    }
+                    if (objSite.RtlsConfiguration.RtlsEngineType == RtlsEngine.EngageEngine)
+                    {
+                        foreach (var item in model.MacAddresses)
+                        {
+                            EngageEngineBusiness objEngageEngineBusiness = new EngageEngineBusiness();
+                            RequestOmniModel objRequestOmniModel = new RequestOmniModel();
+                            objRequestOmniModel.SiteId = model.SiteId;
+                            objRequestOmniModel.MacAddress = item;
+                            if (await objEngageEngineBusiness.regMacToEngageEngine(objRequestOmniModel))
+                            {
+                                objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Success);
+                                using (MacAddressRepository objMacRepository = new MacAddressRepository())
+                                {
+                                    objMacRepository.RegisterListOfMacAddresses(model);
+                                }
                             }
                         }
                     }
@@ -94,11 +112,12 @@ namespace RTLS.API
                     objNotifications.result.errmsg = ex.InnerException.Message;
                 }
 
-            }
-            return new HttpResponseMessage()
-            {
-                Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
-            };
+            }                
+                return new HttpResponseMessage()
+                {
+                   
+                    Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
+                };
         }
 
 

@@ -38,6 +38,10 @@
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -49,13 +53,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EngageEngineBusiness.cs" />
+    <Compile Include="Interface\IEngageEngineBusiness.cs" />
+    <Compile Include="Interface\IOmniEngineBusiness.cs" />
+    <Compile Include="OmniEngineBusiness.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\MacAddressRepository.cs" />
+    <Compile Include="Repository\OmniDeviceMappingRepository.cs" />
     <Compile Include="Repository\RtlsAreaApiRepository.cs" />
     <Compile Include="Repository\RtlsConfigurationRepository.cs" />
     <Compile Include="Repository\SiteFloorRepository.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RTLS.Common\RTLS.Common.csproj">
+      <Project>{8585C24D-4933-4897-8DDD-4F58651B9A1A}</Project>
+      <Name>RTLS.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RTLS.Domins\RTLS.Domins.csproj">
       <Project>{D7B09E55-7CBD-4381-BFAC-46AD6930C4D8}</Project>
       <Name>RTLS.Domins</Name>
@@ -66,6 +79,9 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

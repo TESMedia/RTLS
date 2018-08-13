@@ -16,6 +16,8 @@ using RTLS.Domins.ViewModels.Request;
 using Newtonsoft.Json;
 using System.Text;
 using log4net;
+using RTLS.Domins.Enums;
+using RTLS.Business;
 
 namespace RTLS.API
 {
@@ -32,50 +34,42 @@ namespace RTLS.API
 
         [Route("RegisterDevice")]
         public async Task<HttpResponseMessage> AddDevice(RequestOmniModel objRequestOmniModel)
-        {
-            //using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
-            //{
-            //    //Get the EngageEngine Base Url as per SiteId
-            //    string EngineUrl = objRtlsConfigurationRepository.GetAsPerSiteId(objRequestOmniModel.SiteId).EngageBaseAddressUri;
-            //}
+        {            
+            //objRequestOmniModel.MacAddress= "7z:c5:37:c0:83:y3";
             //create the RequestModel for secom api
-
-            string result = null;
+            string result = null;            
             try
             {
-                SecomRegisterDevice objSecomRegisterDevice = new SecomRegisterDevice();
-                objSecomRegisterDevice.mac = objRequestOmniModel.MacAddress.ToLower();
-                objSecomRegisterDevice.station_info.device.id = objRequestOmniModel.MacAddress;
-
-                using (var objSecomClient = new SecomClient())
+                using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
                 {
-                    var jsonToken = await objSecomClient.GetSecomLoginToken();
-
-                    var token_details = JObject.Parse(jsonToken);
-                    var token = token_details["jwt"].ToString();
-
-                    if (await objSecomClient.RegisterDevice(objSecomRegisterDevice, token))
+                    //Get the EngageEngine Base Url as per SiteId
+                    Site objSiteConfiguration = objRtlsConfigurationRepository.GetAsPerSite(objRequestOmniModel.SiteId);
+                    if (objSiteConfiguration.RtlsConfiguration.RtlsEngineType == RtlsEngine.OmniEngine)
                     {
-                        using (ApplicationDbContext db = new ApplicationDbContext())
+                        OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
+                        var registerResult = await objOmniEngineBusiness.regMacToOmniEngine(objRequestOmniModel);
+                        if (registerResult.Status==true)
                         {
-                            if (db.Device.Any(m => m.MacAddress == objRequestOmniModel.MacAddress))
+                            using (MacAddressRepository objMacAddressRepository = new MacAddressRepository())
                             {
-                                var ObjDeviceAssociateSite = db.DeviceAssociateSite.First(m => m.Device.MacAddress == objRequestOmniModel.MacAddress && m.SiteId == objRequestOmniModel.SiteId);
-                                if (objRequestOmniModel.NotificationTypeId==10)
-                                {
-                                    ObjDeviceAssociateSite.IsTrackByAdmin = true;
-                                }
-                                else if (objRequestOmniModel.NotificationTypeId==20)
-                                {
-                                    ObjDeviceAssociateSite.IsEntryNotify = true;
-                                }
-                                ObjDeviceAssociateSite.IsDeviceRegisterInRtls = true;
-                                db.Entry(ObjDeviceAssociateSite).State = EntityState.Modified;
-                                db.SaveChanges();
-                            }
+                                objMacAddressRepository.UpdateLocationServiceTypeforMac(objRequestOmniModel);
+                            }                            
                         }
+                        //string OmniBaseAddressUri = objSiteConfiguration.RtlsConfiguration.OmniBaseAddressUri;
                     }
-                }
+                    if (objSiteConfiguration.RtlsConfiguration.RtlsEngineType == RtlsEngine.EngageEngine)
+                    {
+                        EngageEngineBusiness objEngageEngineBusiness = new EngageEngineBusiness();                        
+                        if (await objEngageEngineBusiness.regMacToEngageEngine(objRequestOmniModel))
+                        {
+                            using (MacAddressRepository objMacAddressRepository = new MacAddressRepository())
+                            {
+                                objMacAddressRepository.UpdateLocationServiceTypeforMac(objRequestOmniModel);
+                            }                            
+                        }
+                        //string EngageBaseAddressUri = objSiteConfiguration.RtlsConfiguration.EngageBaseAddressUri;
+                    }
+                }                
             }
             catch(Exception ex)
             {

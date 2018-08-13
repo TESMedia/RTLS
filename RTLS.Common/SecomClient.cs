@@ -13,6 +13,7 @@ using RestSharp;
 using System.Net;
 using System.Web.Script.Serialization;
 using System.Threading;
+using Newtonsoft.Json.Linq;
 
 namespace RTLS.Common
 {
@@ -58,10 +59,9 @@ namespace RTLS.Common
 
 
         
-        public async Task<bool> RegisterDevice(SecomRegisterDevice _objSecomRegisterDevice,string token)
-
+        public async Task<ReturnData> RegisterDevice(SecomRegisterDevice _objSecomRegisterDevice,string token)
         {
-            bool _returnData = false;
+            ReturnData _returnData = new ReturnData();
             
             //// Serialize our concrete class into a JSON String
             var _registerData = JsonConvert.SerializeObject(_objSecomRegisterDevice);
@@ -78,6 +78,37 @@ namespace RTLS.Common
 
 
             var response = await (Task.Run(() => restClient.Post(restRequest)));
+            var registerResponse = JObject.Parse(response.Content);
+            var Unique_Id = registerResponse["_id"].ToString();
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                _returnData.Status = true;
+                _returnData.UniqueId = Unique_Id;
+            }
+
+            return _returnData;
+        }
+
+
+        public async Task<bool> DeRegisterDevice(SecomRegisterDevice _objSecomRegisterDevice, string token)
+        {
+            bool _returnData = false;
+            _objSecomRegisterDevice.station_info.black_list.status = false;
+            //// Serialize our concrete class into a JSON String
+            var _registerData = JsonConvert.SerializeObject(_objSecomRegisterDevice);
+
+            //Rest CLient Call
+            var restClient = new RestClient();
+            restClient.BaseUrl = new Uri(_uri);
+            var restRequest = new RestRequest("PATCH");
+            restRequest.Resource = "api/v1/venues/devices/d65a0df3269849e7a431efac946fa021";
+            restRequest.AddHeader("Content-yType", "application/json");
+            restRequest.AddHeader("Accept", "application/json");
+            restRequest.AddHeader("Authorization", "Bearer" + " " + token);
+            restRequest.AddParameter("application/json", _registerData, ParameterType.RequestBody);
+
+
+            var response = await (Task.Run(() => restClient.Patch(restRequest)));
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 _returnData = true;
@@ -85,8 +116,6 @@ namespace RTLS.Common
 
             return _returnData;
         }
-
-
 
         protected virtual void Dispose(bool disposing)
         {
