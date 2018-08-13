@@ -35,7 +35,7 @@ namespace RTLS.API
         [Route("RegisterDevice")]
         public async Task<HttpResponseMessage> AddDevice(RequestOmniModel objRequestOmniModel)
         {            
-            objRequestOmniModel.MacAddress= "7z:c5:37:c0:83:y3";
+            //objRequestOmniModel.MacAddress= "7z:c5:37:c0:83:y3";
             //create the RequestModel for secom api
             string result = null;            
             try
