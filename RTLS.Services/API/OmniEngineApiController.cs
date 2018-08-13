@@ -44,7 +44,7 @@ namespace RTLS.API
             try
             {
                 SecomRegisterDevice objSecomRegisterDevice = new SecomRegisterDevice();
-                objSecomRegisterDevice.mac = objRequestOmniModel.MacAddress;
+                objSecomRegisterDevice.mac = objRequestOmniModel.MacAddress.ToLower();
                 objSecomRegisterDevice.station_info.device.id = objRequestOmniModel.MacAddress;
 
                 using (var objSecomClient = new SecomClient())
