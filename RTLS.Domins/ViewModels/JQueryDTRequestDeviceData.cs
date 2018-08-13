@@ -32,9 +32,11 @@ namespace RTLS.Domins.ViewModels
 
         public int RtlsConfigurationId { get; set; }
 
+        public int RtlsEngineType { get; set; }
+
         //-------------------Page Test---------------------
-        
-        
+
+
         public int RecordToDisply { get; set; }
 
         /// <summary>
