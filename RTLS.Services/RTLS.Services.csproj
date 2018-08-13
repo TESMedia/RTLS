@@ -319,6 +319,7 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Base\Index.cshtml" />
     <Content Include="Views\Web.config" />
+    <None Include="Properties\PublishProfiles\Rtls.Deployment.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RTLS.Business\RTLS.Business.csproj">

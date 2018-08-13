@@ -40,7 +40,11 @@ namespace RTLS.API
             string result = null;            
             try
             {
-                using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
+                SecomRegisterDevice objSecomRegisterDevice = new SecomRegisterDevice();
+                objSecomRegisterDevice.mac = objRequestOmniModel.MacAddress.ToLower();
+                objSecomRegisterDevice.station_info.device.id = objRequestOmniModel.MacAddress;
+
+                using (var objSecomClient = new SecomClient())
                 {
                     //Get the EngageEngine Base Url as per SiteId
                     Site objSiteConfiguration = objRtlsConfigurationRepository.GetAsPerSite(objRequestOmniModel.SiteId);
