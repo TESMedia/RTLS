@@ -63,112 +63,31 @@ namespace RTLS.API
 
             int pages = (SkipStart + FixedLength) / FixedLength;
             int TotalRecords = 0;
+            int TotalOmniRecords = 0;
+            int TotalEngageRecords = 0;
 
-            IEnumerable Maclist = null;
+            IEnumerable  OmniMaclist = null;
+            IEnumerable EngageMaclist = null;
             try
             {
                 if (db.RtlsConfiguration.Any(m => m.SiteId == model.SiteId))
                 {
-                    var row = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.IsDeviceRegisterInRtls == true).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList(); // IsDIsplay =m.IsDeviceRegisterInRtls
-
-                    TotalRecords = row.Count;
-
+                    var OmniRows = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.Device.OmniDeviceMapping.UniqueId != null).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), OmniUniqueId=m.Device.OmniDeviceMapping.UniqueId,IsTrackByAdmin = m.IsTrackByAdmin, IsEntryNotify=m.IsEntryNotify, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList(); // IsDIsplay =m.IsDeviceRegisterInRtls
+                    TotalOmniRecords = OmniRows.Count();
+                    //TotalRecords = row.Count;
+                    var EngageRows = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.Device.OmniDeviceMapping.UniqueId == null).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), OmniUniqueId = m.Device.OmniDeviceMapping.UniqueId, IsTrackByAdmin = m.IsTrackByAdmin, IsEntryNotify = m.IsEntryNotify, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList(); // IsDIsplay =m.IsDeviceRegisterInRtls
+                    TotalEngageRecords = EngageRows.Count();
                 }
-                var DeviceAssociateSite = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.IsDeviceRegisterInRtls == true).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin, m.IsEntryNotify }).ToList().Skip(SkipStart).Take(FixedLength);
-
+                var OmniRegMacAddress = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.Device.OmniDeviceMapping.UniqueId!=null).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), OmniUniqueId = m.Device.OmniDeviceMapping.UniqueId,IsTrackByAdmin = m.IsTrackByAdmin, IsEntryNotify = m.IsEntryNotify, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList().Skip(SkipStart).Take(FixedLength);
+                
+                var EngageRegMacAddress = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.Device.OmniDeviceMapping.UniqueId == null).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), OmniUniqueId = m.Device.OmniDeviceMapping.UniqueId, IsTrackByAdmin = m.IsTrackByAdmin, IsEntryNotify = m.IsEntryNotify, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList().Skip(SkipStart).Take(FixedLength);
+                
 
                 //var displayLocationData = DeviceAssociateSite;
-                Maclist = from c in DeviceAssociateSite
-                          select new { Id = c.Id, Mac = c.Mac, Status = c.StrStatus, IsTrackByAdmin = c.IsTrackByAdmin, IsDisplay = c.IsDisplay, IsCreatedByAdmin = c.IsCreatedByAdmin, IsEntryNotify = c.IsEntryNotify };
-
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.InnerException.Message);
-            }
-            return new HttpResponseMessage()
-            {
-                Content = new StringContent(JsonConvert.SerializeObject(new
-                {
-                    CurrentPage = pages,
-                    TotalRecords = TotalRecords,
-                    RecordToDisply = FixedLength,
-                    Maclist
-                }), Encoding.UTF8, "application/json")
-            };
-        }
-
-        [Route("GetLocationData")]
-        [HttpPost]
-        public HttpResponseMessage GetListOfLocationData(JQueryDTRequestDeviceData model)
-        {
-            int FixedLength = Convert.ToInt32(model.RecordToDisply);
-            int SkipStart = (Convert.ToInt32(model.CurrentPage) * FixedLength);
-
-            int pages = (SkipStart + FixedLength) / FixedLength;
-            int TotalRecords = 0;
-            int? timeframe = 0;
-
-
-            IEnumerable<LocationData> lstLocationData = null;
-            try
-            {
-                var objRtlsConfiguration= db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
-                var row = db.LocationData.Where(m=>m.sn == objRtlsConfiguration.EngageSiteName); // IsDIsplay =m.IsDeviceRegisterInRtls
-                TotalRecords = row.Count();
-                lstLocationData = db.LocationData.OrderByDescending(m => m.LastSeenDatetime).Where(m => m.sn == objRtlsConfiguration.EngageSiteName).ToList().Skip(SkipStart).Take(FixedLength);
-                var _rtlsDataAsPerSite = db.RtlsConfiguration.Where(m => m.SiteId == model.SiteId).FirstOrDefault();
-                timeframe = _rtlsDataAsPerSite.TimeFrame;
-
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.InnerException.Message);
-            }
-            return new HttpResponseMessage()
-            {
-                Content = new StringContent(JsonConvert.SerializeObject(new
-                {
-                    CurrentPage = pages,
-                    TotalRecords = TotalRecords,
-                    RecordToDisply = FixedLength,
-                    TimeFrame = timeframe,
-                    lstLocationData
-                }), Encoding.UTF8, "application/json")
-            };
-        }
-
-
-        [Route("FilterLocationData")]
-        [HttpPost]
-        public HttpResponseMessage FilterLocationData(FilterLocationData model)
-        {
-            int FixedLength = Convert.ToInt32(model.RecordToDisply);
-            int SkipStart = (Convert.ToInt32(model.CurrentPage) * FixedLength);
-            int pages = (SkipStart + FixedLength) / FixedLength;
-            int TotalRecords = 0;
-            IEnumerable<LocationData> lstLocationData = null;
-            try
-            {
-                var objRtlsConfiguration = db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
-                var row = db.LocationData.Where(m => m.sn == objRtlsConfiguration.EngageSiteName);
-                TotalRecords = row.Count();
-                if (model.MacAddress != null && model.AreaName != null)
-                {
-                    lstLocationData = db.LocationData.OrderByDescending(m => m.last_seen_ts).Where(m => m.mac == model.MacAddress).Where(m => m.AreaName == model.AreaName).Take(FixedLength).ToList();
-                }
-                else if (model.MacAddress != null)
-                {
-                    lstLocationData = db.LocationData.OrderByDescending(m => m.last_seen_ts).Where(m => m.mac == model.MacAddress).Take(FixedLength).ToList();
-                }
-                else if (model.AreaName != null)
-                {
-                    lstLocationData = db.LocationData.OrderByDescending(m => m.last_seen_ts).Where(m => m.AreaName == model.AreaName).Take(FixedLength).ToList();
-                }
-                //else
-                //{
-
-                //}
+                OmniMaclist = from c in OmniRegMacAddress
+                          select new { Id = c.Id, Mac = c.Mac, Status = c.StrStatus, IsTrackByAdmin = c.IsTrackByAdmin, IsDisplay = c.IsDisplay, IsCreatedByAdmin = c.IsCreatedByAdmin, IsEntryNotify=c.IsEntryNotify, OmniUniqueId = c.OmniUniqueId };
+                EngageMaclist = from c in EngageRegMacAddress
+                              select new { Id = c.Id, Mac = c.Mac, Status = c.StrStatus, IsTrackByAdmin = c.IsTrackByAdmin, IsDisplay = c.IsDisplay, IsCreatedByAdmin = c.IsCreatedByAdmin, IsEntryNotify = c.IsEntryNotify, OmniUniqueId = c.OmniUniqueId };
             }
             catch (Exception ex)
             {
@@ -181,8 +100,11 @@ namespace RTLS.API
                 {
                     CurrentPage = pages,
                     TotalRecords = TotalRecords,
+                    TotalOmniRecords= TotalOmniRecords,
+                    TotalEngageRecords=TotalEngageRecords,
                     RecordToDisply = FixedLength,
-                    lstLocationData
+                    OmniMaclist,
+                    EngageMaclist
                 }), Encoding.UTF8, "application/json")
             };
         }

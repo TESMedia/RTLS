@@ -21,15 +21,12 @@ namespace RTLS.Domains
         public int SiteId { get; set; }
 
         [MaxLength(50)]
-        [Required()]
         public string EngageSiteName { get; set; }
 
         [MaxLength(50)]
-        [Required()]
         public string EngageBuildingName { get; set; }
 
         [MaxLength(200)]
-        [Required()]
         public string EngageBaseAddressUri { get; set; }
 
         public string OmniBaseAddressUri { get; set; }
