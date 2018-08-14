@@ -56,7 +56,7 @@ namespace RTLS.API
                         {
                             using (MacAddressRepository objMacAddressRepository = new MacAddressRepository())
                             {
-                                objMacAddressRepository.UpdateLocationServiceTypeforMac(objRequestOmniModel);
+                                objMacAddressRepository.UpdateLocationServiceTypeforMac(objRequestOmniModel, objSiteConfiguration.RtlsConfiguration.RtlsEngineType);
                             }                            
                         }
                         //string OmniBaseAddressUri = objSiteConfiguration.RtlsConfiguration.OmniBaseAddressUri;
@@ -68,7 +68,7 @@ namespace RTLS.API
                         {
                             using (MacAddressRepository objMacAddressRepository = new MacAddressRepository())
                             {
-                                objMacAddressRepository.UpdateLocationServiceTypeforMac(objRequestOmniModel);
+                                objMacAddressRepository.UpdateLocationServiceTypeforMac(objRequestOmniModel, objSiteConfiguration.RtlsConfiguration.RtlsEngineType);
                             }                            
                         }
                         //string EngageBaseAddressUri = objSiteConfiguration.RtlsConfiguration.EngageBaseAddressUri;

@@ -89,6 +89,7 @@
     <Compile Include="Device.cs" />
     <Compile Include="DeviceAssociateSite.cs" />
     <Compile Include="Enums\CutomEnum.cs" />
+    <Compile Include="Enums\DeviceRegisteredInEngine.cs" />
     <Compile Include="Enums\RtlsEngine.cs" />
     <Compile Include="FilterLocationData.cs" />
     <Compile Include="Identity\A8AdminDbContext.cs" />

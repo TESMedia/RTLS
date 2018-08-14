@@ -1,6 +1,7 @@
 ﻿using RTLS.Domins.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -15,9 +16,7 @@ namespace RTLS.Domains
         public int DeviceId { get; set; }
 
         public int SiteId { get; set; }
-
-        public bool IsDeviceRegisterInRtls { get; set; } = true;
-
+        
         public bool IsRegisterInCaptivePortal { get; set; }
 
         public DeviceStatus status { get; set; }
@@ -36,6 +35,22 @@ namespace RTLS.Domains
         [ForeignKey("SiteId")]
         public virtual Site Site { get; set; }
 
+        [NotMapped]
+        [EnumDataType(typeof(DeviceRegisteredInEngine))]
+        public DeviceRegisteredInEngine DeviceRegisteredInEngineType { get; set; }
+
+        public virtual int DeviceRegisteredInEngineTypeId
+        {
+            get
+            {
+                return (int)this.DeviceRegisteredInEngineType;
+            }
+            set
+            {
+                DeviceRegisteredInEngineType = (DeviceRegisteredInEngine)value;
+            }
+        }
+
     }
-    
+
 }
