@@ -17,7 +17,7 @@ namespace RTLS.API
 {
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     [RoutePrefix("UIData")]
-    [Authorize]
+    //[Authorize]
     public class ViewDataApiController : ApiController
     {
         private static log4net.ILog Log { get; set; }

@@ -15,7 +15,7 @@ namespace RTLS.API
 {
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     [RoutePrefix("Device")]
-    [Authorize]
+   // [Authorize]
     public class SaveDeviceApiController : ApiController
     {
         private static log4net.ILog Log { get; set; }

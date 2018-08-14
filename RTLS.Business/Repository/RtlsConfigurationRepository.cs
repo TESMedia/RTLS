@@ -69,6 +69,16 @@ namespace RTLS.Repository
         {
             return db.RtlsConfiguration.Any(m => m.SiteId == SiteId);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="DeviceId"></param>
+        /// <returns></returns>
+        public DeviceAssociateSite DeviceAssociateSiteStatus(int DeviceId)
+        {
+            return db.DeviceAssociateSite.FirstOrDefault(m => m.DeviceId == DeviceId);
+           
+        }
 
         public void Dispose()
         {
