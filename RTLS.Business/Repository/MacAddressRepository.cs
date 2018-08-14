@@ -200,6 +200,41 @@ namespace RTLS.Repository
             return true;
         }
 
+        //Returns uniqueId for Reregister
+        public string ReregisterGetUniqueId(int DeviceId)
+        {
+            //Status modified to DeviceStatus.Registered(value=1) in deviceassociateSite table
+            var objMac = db.DeviceAssociateSite.FirstOrDefault(m => m.DeviceId == DeviceId);
+            objMac.status = DeviceStatus.Registered;
+            db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
+            db.SaveChanges();
+
+            //return UniqueId
+            var _objDeviceUniqueId = GetUniqueId(DeviceId);
+            return _objDeviceUniqueId; 
+        }
+
+        //Returns uniqueId for Deregister
+        public string DeregisterGetUniqueId(int DeviceId)  
+        {
+            //Status modified to DeviceStatus.Registered(value=2) in deviceassociateSite table
+            var objMac = db.DeviceAssociateSite.FirstOrDefault(m => m.DeviceId ==DeviceId);
+            objMac.status = DeviceStatus.DeRegistered;
+            db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
+            db.SaveChanges();
+            //return UniqueId
+            var objDeviceUniqueID = GetUniqueId(DeviceId);
+            return objDeviceUniqueID;
+           
+        }
+
+        //Get UniqueId
+        public string GetUniqueId(int deviceId)
+        {
+            var objDevice = db.OmniDeviceMapping.FirstOrDefault(m => m.DeviceId == deviceId);
+            return objDevice.UniqueId;
+        }
+
         public bool CheckListExistOrNot(string[] lstMac,int SiteId)
         {
             var difference = lstMac.Except(db.DeviceAssociateSite.Where(m=>m.SiteId == SiteId).Select(m => m.Device.MacAddress));

@@ -1,5 +1,6 @@
 ﻿using RTLS.Domains;
 using RTLS.Domins;
+using RTLS.Domins.Enums;
 using RTLS.Repository;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,6 @@ namespace RTLS.Business.Repository
             {
                 var Device = _MacAddressRepository.GetDevice(Mac);
                 OmniDeviceMapping objOmniDeviceMapping = new OmniDeviceMapping();
-                //objOmniDeviceMapping.Device = Device;
                 objOmniDeviceMapping.DeviceId = Device.DeviceId;
                 objOmniDeviceMapping.UniqueId = UniqueId;
                 db.OmniDeviceMapping.Add(objOmniDeviceMapping);
@@ -36,6 +36,56 @@ namespace RTLS.Business.Repository
             {
                 throw ex;
             }
-        } 
+        }
+
+        //Return UniqueId for Re-Register
+        public string ReregisterGetUniqueId(string Mac)
+        {
+          
+            try
+            {
+                var DeviceId = GetDeviceId(Mac);
+
+                return  _MacAddressRepository.ReregisterGetUniqueId(DeviceId);
+                
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        //Return deviceId for Macaddress
+        public int GetDeviceId(string Mac)
+        {
+            try
+            {
+                var Device = _MacAddressRepository.GetDevice(Mac);
+
+               
+                return Device.DeviceId;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+        //Return UniqueId for Device
+        public string GetUniqueId(string Mac)
+        {
+            try
+            {
+                var Device = _MacAddressRepository.GetDevice(Mac);
+
+                string UniqueId = _MacAddressRepository.DeregisterGetUniqueId(Device.DeviceId);
+                return UniqueId;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+           
+        }
     }
 }

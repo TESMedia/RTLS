@@ -45,5 +45,51 @@ namespace RTLS.Business
             }
             return result;
         }
+        //Reregister in OmniEngiene
+        public async Task<bool> ReRegister(RequestOmniModel objRequestOmniModel)
+        {
+            ReturnData result = new ReturnData();
+            SecomRegisterDevice objSecomRegisterDevice = new SecomRegisterDevice();
+            objSecomRegisterDevice.mac = objRequestOmniModel.MacAddress;
+            objSecomRegisterDevice.station_info.device.id = objRequestOmniModel.MacAddress;
+
+            using (var objSecomClient = new SecomClient())
+            {
+                //Get Token Through login
+                var jsonToken = await objSecomClient.GetSecomLoginToken();
+
+                var token_details = JObject.Parse(jsonToken);
+                var token = token_details["jwt"].ToString();
+                //Get Unique Id from OmniMapping Table
+                var UniqueId = objOmniDeviceMappingRepository.ReregisterGetUniqueId(objRequestOmniModel.MacAddress);
+                //call for deregister mac 
+                var _reriegister = await objSecomClient.ReRegisterDevice(objSecomRegisterDevice, token, UniqueId);
+                return true;
+            }
+
+        }
+        //Deregister Mac FromOmniEngine
+        public async Task<bool> DeregisterMacFromOmniEngine(RequestOmniModel objRequestOmniModel)
+        {
+            ReturnData result = new ReturnData();
+            SecomRegisterDevice objSecomRegisterDevice = new SecomRegisterDevice();
+            objSecomRegisterDevice.mac = objRequestOmniModel.MacAddress;
+            objSecomRegisterDevice.station_info.device.id = objRequestOmniModel.MacAddress;
+
+            using (var objSecomClient = new SecomClient())
+            {
+                //Get Token Through login
+                var jsonToken = await objSecomClient.GetSecomLoginToken();
+
+                var token_details = JObject.Parse(jsonToken);
+                var token = token_details["jwt"].ToString();
+                //Get Unique Id from OmniMapping Table
+                var UniqueId=objOmniDeviceMappingRepository.GetUniqueId(objRequestOmniModel.MacAddress); 
+               //call for deregister mac 
+               var _deriegister=await objSecomClient.DeRegisterDevice(objSecomRegisterDevice, token,UniqueId);
+                return true;
+            }
+            
+        }
     }
 }

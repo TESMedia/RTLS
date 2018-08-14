@@ -90,22 +90,22 @@ namespace RTLS.Common
         }
 
 
-        public async Task<bool> DeRegisterDevice(SecomRegisterDevice _objSecomRegisterDevice, string token)
+        public async Task<bool> DeRegisterDevice(SecomRegisterDevice _objSecomRegisterDevice, string token,string UniqueId)
         {
             bool _returnData = false;
             _objSecomRegisterDevice.station_info.black_list.status = false;
             //// Serialize our concrete class into a JSON String
-            var _registerData = JsonConvert.SerializeObject(_objSecomRegisterDevice);
+            var _deregisterData = JsonConvert.SerializeObject(_objSecomRegisterDevice);
 
             //Rest CLient Call
             var restClient = new RestClient();
             restClient.BaseUrl = new Uri(_uri);
             var restRequest = new RestRequest("PATCH");
-            restRequest.Resource = "api/v1/venues/devices/d65a0df3269849e7a431efac946fa021";
+            restRequest.Resource = "api/v1/venues/devices/"+ UniqueId;
             restRequest.AddHeader("Content-yType", "application/json");
             restRequest.AddHeader("Accept", "application/json");
             restRequest.AddHeader("Authorization", "Bearer" + " " + token);
-            restRequest.AddParameter("application/json", _registerData, ParameterType.RequestBody);
+            restRequest.AddParameter("application/json", _deregisterData, ParameterType.RequestBody);
 
 
             var response = await (Task.Run(() => restClient.Patch(restRequest)));
@@ -116,7 +116,32 @@ namespace RTLS.Common
 
             return _returnData;
         }
+        public async Task<bool> ReRegisterDevice(SecomRegisterDevice _objSecomRegisterDevice, string token, string UniqueId)
+        {
+            bool _returnData = false;
+            _objSecomRegisterDevice.station_info.black_list.status = true;
+            //// Serialize our concrete class into a JSON String
+            var _reregisterData = JsonConvert.SerializeObject(_objSecomRegisterDevice);
 
+            //Rest CLient Call
+            var restClient = new RestClient();
+            restClient.BaseUrl = new Uri(_uri);
+            var restRequest = new RestRequest("PATCH");
+            restRequest.Resource = "api/v1/venues/devices/" + UniqueId;
+            restRequest.AddHeader("Content-yType", "application/json");
+            restRequest.AddHeader("Accept", "application/json");
+            restRequest.AddHeader("Authorization", "Bearer" + " " + token);
+            restRequest.AddParameter("application/json", _reregisterData, ParameterType.RequestBody);
+
+
+            var response = await (Task.Run(() => restClient.Patch(restRequest)));
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                _returnData = true;
+            }
+
+            return _returnData;
+        }
         protected virtual void Dispose(bool disposing)
         {
             if (!disposed)
