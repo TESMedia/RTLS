@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RTLS.Domins.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -23,6 +24,10 @@ namespace RTLS.ViewModel
 
         public string EngageBaseAddressUri { get; set; }
 
+        public string OmniBaseAddressUri { get; set; }
+
+        public RtlsEngine RtlsEngineType { get; set; }
+
         public bool IscreatedByAdmin { get; set; }
 
         public bool IsDisplay { get; set; }
@@ -30,6 +35,7 @@ namespace RTLS.ViewModel
         public bool IsTrackByAdmin { get; set; }
 
         public bool IsEntryNotify { get; set; }
+
         public int RtlsConfigurationId { get; set; }
 
     }
