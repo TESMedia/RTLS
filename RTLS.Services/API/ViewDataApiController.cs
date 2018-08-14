@@ -1,6 +1,7 @@
 ﻿using log4net;
 using Newtonsoft.Json;
 using RTLS.Domains;
+using RTLS.Domins.Enums;
 using RTLS.Domins.ViewModels;
 using RTLS.ViewModel;
 using System;
@@ -53,27 +54,36 @@ namespace RTLS.API
         {
             int FixedLength = Convert.ToInt32(model.RecordToDisply);
             int SkipStart = (Convert.ToInt32(model.CurrentPage)* FixedLength);
-           
+            var OmniEngine = (Convert.ToInt32(DeviceRegisteredInEngine.OmniEngine));
+            var EngageEngine = (Convert.ToInt32(DeviceRegisteredInEngine.EngageEngine));
             int pages = (SkipStart + FixedLength) / FixedLength;
             int TotalRecords = 0;
+            int TotalOmniRecords = 0;
+            int TotalEngageRecords = 0;
             
-            IEnumerable  Maclist = null;
+            IEnumerable  OmniMaclist = null;
+            IEnumerable EngageMaclist = null;
             try
             {
                 if (db.RtlsConfiguration.Any(m => m.SiteId == model.SiteId))
                 {
-                    var row = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsEntryNotify=m.IsEntryNotify, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList(); // IsDIsplay =m.IsDeviceRegisterInRtls
-
-                    TotalRecords = row.Count;
                     
+                    var OmniRows = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.DeviceRegisteredInEngineTypeId==OmniEngine).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), OmniUniqueId=m.Device.OmniDeviceMapping.UniqueId,IsTrackByAdmin = m.IsTrackByAdmin, IsEntryNotify=m.IsEntryNotify, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList(); // IsDIsplay =m.IsDeviceRegisterInRtls
+                    TotalOmniRecords = OmniRows.Count();
+                    //TotalRecords = row.Count;
+                    var EngageRows = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.DeviceRegisteredInEngineTypeId == EngageEngine).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), OmniUniqueId = m.Device.OmniDeviceMapping.UniqueId, IsTrackByAdmin = m.IsTrackByAdmin, IsEntryNotify = m.IsEntryNotify, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList(); // IsDIsplay =m.IsDeviceRegisterInRtls
+                    TotalEngageRecords = EngageRows.Count();
                 }
-                var DeviceAssociateSite = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsEntryNotify = m.IsEntryNotify, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList().Skip(SkipStart).Take(FixedLength);
-
+                var OmniRegMacAddress = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.DeviceRegisteredInEngineTypeId == OmniEngine).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), OmniUniqueId = m.Device.OmniDeviceMapping.UniqueId,IsTrackByAdmin = m.IsTrackByAdmin, IsEntryNotify = m.IsEntryNotify, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList().Skip(SkipStart).Take(FixedLength);
+                
+                var EngageRegMacAddress = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.DeviceRegisteredInEngineTypeId == EngageEngine).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), OmniUniqueId = m.Device.OmniDeviceMapping.UniqueId, IsTrackByAdmin = m.IsTrackByAdmin, IsEntryNotify = m.IsEntryNotify, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList().Skip(SkipStart).Take(FixedLength);
+                
 
                 //var displayLocationData = DeviceAssociateSite;
-                Maclist = from c in DeviceAssociateSite
-                          select new { Id = c.Id, Mac = c.Mac, Status = c.StrStatus, IsTrackByAdmin = c.IsTrackByAdmin, IsDisplay = c.IsDisplay, IsCreatedByAdmin = c.IsCreatedByAdmin, IsEntryNotify=c.IsEntryNotify };
-                
+                OmniMaclist = from c in OmniRegMacAddress
+                          select new { Id = c.Id, Mac = c.Mac, Status = c.StrStatus, IsTrackByAdmin = c.IsTrackByAdmin, IsDisplay = c.IsDisplay, IsCreatedByAdmin = c.IsCreatedByAdmin, IsEntryNotify=c.IsEntryNotify, OmniUniqueId = c.OmniUniqueId };
+                EngageMaclist = from c in EngageRegMacAddress
+                              select new { Id = c.Id, Mac = c.Mac, Status = c.StrStatus, IsTrackByAdmin = c.IsTrackByAdmin, IsDisplay = c.IsDisplay, IsCreatedByAdmin = c.IsCreatedByAdmin, IsEntryNotify = c.IsEntryNotify, OmniUniqueId = c.OmniUniqueId };
             }
             catch (Exception ex)
             {
@@ -85,8 +95,12 @@ namespace RTLS.API
                 {
                     CurrentPage = pages,
                     TotalRecords = TotalRecords,
+                    TotalOmniRecords= TotalOmniRecords,
+                    TotalEngageRecords=TotalEngageRecords,
                     RecordToDisply = FixedLength,
-                    Maclist }), Encoding.UTF8, "application/json")
+                    OmniMaclist,
+                    EngageMaclist
+                }), Encoding.UTF8, "application/json")
             };
         }
     }
