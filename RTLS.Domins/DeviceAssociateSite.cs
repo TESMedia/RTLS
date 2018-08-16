@@ -1,6 +1,7 @@
 ﻿using RTLS.Domins.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -37,6 +38,7 @@ namespace RTLS.Domains
 
         [NotMapped]
         [EnumDataType(typeof(DeviceRegisteredInEngine))]
+        [DefaultValue(DeviceRegisteredInEngine.None)]
         public DeviceRegisteredInEngine DeviceRegisteredInEngineType { get; set; }
 
         public virtual int DeviceRegisteredInEngineTypeId
