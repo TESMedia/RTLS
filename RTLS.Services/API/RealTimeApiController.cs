@@ -37,6 +37,7 @@ namespace RTLS.API
         private static log4net.ILog Log { get; set; }
         OmniDeviceMappingRepository _OmniDeviceMappingRepository = new OmniDeviceMappingRepository();
         ILog log = log4net.LogManager.GetLogger(typeof(RealTimeApiController));
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         public RealTimeApiController()
         {
@@ -144,6 +145,57 @@ namespace RTLS.API
                     Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
                 };
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [Route("DeleteDevices")]
+        [HttpDelete]
+        public async Task<HttpResponseMessage> DeleteDevices(RequestLocationDataVM model)
+        {
+
+            Notification objNotifications = new Notification();
+            DeviceAssociateSite deviceid = null;
+            using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
+            {
+                Site objSite = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId);
+
+                foreach (var item in model.MacAddresses)
+                {
+                    // When Device is coming for reregister in OmniEngiene
+                    int deviceId = _OmniDeviceMappingRepository.GetDeviceId(item);
+                    deviceid = objRtlsConfigurationRepository.DeviceAssociateSiteStatus(deviceId);
+                    if (deviceid.status == DeviceStatus.Registered || deviceid.status == DeviceStatus.DeRegistered)
+                    {
+
+                        OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
+                        RequestOmniModel objRequestOmniModel = new RequestOmniModel();
+                        objRequestOmniModel.MacAddress = item;
+                        var returnStatus=await objOmniEngineBusiness.DeleteDevices(objRequestOmniModel);
+                        if(returnStatus==true)
+                        {
+                            Device _objDevice = db.Device.FirstOrDefault(m=>m.MacAddress==item);
+                            db.Device.Remove(_objDevice);
+                            db.SaveChanges();
+
+                        }
+                    }
+
+
+                }
+            }
+
+             return new HttpResponseMessage()
+            {
+
+                Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
+            };
+        }
+
+
+
 
 
         /// <summary>
