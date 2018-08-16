@@ -68,6 +68,28 @@ namespace RTLS.Business
             }
 
         }
+
+        //DeleteDevices in OmniEngiene
+        public async Task<bool> DeleteDevices(RequestOmniModel objRequestOmniModel)
+        {
+            ReturnData result = new ReturnData();
+     
+
+            using (var objSecomClient = new SecomClient())
+            {
+                //Get Token Through login
+                var jsonToken = await objSecomClient.GetSecomLoginToken();
+
+                var token_details = JObject.Parse(jsonToken);
+                var token = token_details["jwt"].ToString();
+                //Get Unique Id from OmniMapping Table
+                var UniqueId = objOmniDeviceMappingRepository.ReregisterGetUniqueId(objRequestOmniModel.MacAddress);
+                //call for Delete device 
+                var _deleteDevice = await objSecomClient.DeleteDevice(token, UniqueId);
+                return true;
+            }
+
+        }
         //Deregister Mac FromOmniEngine
         public async Task<bool> DeregisterMacFromOmniEngine(RequestOmniModel objRequestOmniModel)
         {

@@ -142,6 +142,35 @@ namespace RTLS.Common
 
             return _returnData;
         }
+
+
+        
+
+        public async Task<bool> DeleteDevice(string token, string UniqueId)
+        {
+            bool _returnData = false;
+            
+            //Rest CLient Call
+            var restClient = new RestClient();
+            restClient.BaseUrl = new Uri(_uri);
+            var restRequest = new RestRequest("DELETE");
+            restRequest.Resource = "api/v1/venues/devices/" + UniqueId;
+            restRequest.AddHeader("Content-yType", "application/json");
+            restRequest.AddHeader("Accept", "application/json");
+            restRequest.AddHeader("Authorization", "Bearer" + " " + token);
+           // restRequest.AddParameter("application/json", _reregisterData, ParameterType.RequestBody);
+
+
+            var response = await (Task.Run(() => restClient.Patch(restRequest)));
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                _returnData = true;
+            }
+
+            return _returnData;
+        }
+
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposed)
