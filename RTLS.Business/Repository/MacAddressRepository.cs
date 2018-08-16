@@ -67,32 +67,37 @@ namespace RTLS.Repository
         {
             try
             {
+                Device objDevice = new Device();
+                DeviceAssociateSite objDeviceAssociate = new DeviceAssociateSite();
                 foreach (var MacAddress in model.MacAddresses)
                 {
-                    if (!(db.DeviceAssociateSite.Any(m => m.Device.MacAddress == MacAddress && m.SiteId==model.SiteId)))
+                    if (!(db.Device.Any(m => m.MacAddress == MacAddress)))
                     {
-                        Device objDevice = new Device();
-                        if (!(db.Device.Any(m => m.MacAddress == MacAddress)))
-                        {
-                            objDevice.MacAddress = MacAddress;
-                            db.Device.Add(objDevice);
-                            db.SaveChanges();
-                        }
-                        else
-                        {
-                            objDevice = db.Device.FirstOrDefault(m => m.MacAddress == MacAddress);
-                        }
-                    DeviceAssociateSite objDeviceAssociate = new DeviceAssociateSite();
+                        objDevice.MacAddress = MacAddress;
+                        db.Device.Add(objDevice);
+                        db.SaveChanges();
+                    }
+                    if (!(db.DeviceAssociateSite.Any(m => m.Device.MacAddress == MacAddress && m.SiteId == model.SiteId)))
+                    {
+                       
                         objDeviceAssociate.SiteId = model.SiteId;
                         objDeviceAssociate.DeviceId = objDevice.DeviceId;
-                        objDeviceAssociate.CreatedDateTime= DateTime.Now;
-                        objDeviceAssociate.IsCreatedByAdmin = true;                        
+                        objDeviceAssociate.CreatedDateTime = DateTime.Now;
+                        objDeviceAssociate.IsCreatedByAdmin = true;
                         objDeviceAssociate.DeviceRegisteredInEngineType = (DeviceRegisteredInEngine)model.RtlsEngineType;
                         //objDeviceAssociate.RtlsConfigureId = model.RtlsConfigurationId;
                         //objDeviceAssociate.IsCreatedByAdmin = true;
                         db.DeviceAssociateSite.Add(objDeviceAssociate);
-                        db.SaveChanges();
                     }
+                    else
+                    {
+                        objDeviceAssociate = db.DeviceAssociateSite.FirstOrDefault(m => m.Device.MacAddress == MacAddress && m.SiteId == model.SiteId);
+                        objDeviceAssociate.DeviceRegisteredInEngineType = (DeviceRegisteredInEngine)model.RtlsEngineType;
+                        objDeviceAssociate.CreatedDateTime = DateTime.Now;
+                        objDeviceAssociate.IsCreatedByAdmin = true;
+                        db.Entry(objDeviceAssociate).State = EntityState.Modified;
+                    }
+                    db.SaveChanges();
                 }
                 return true;
             }
