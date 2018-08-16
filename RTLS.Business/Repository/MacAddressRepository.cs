@@ -77,6 +77,11 @@ namespace RTLS.Repository
                         db.Device.Add(objDevice);
                         db.SaveChanges();
                     }
+                    else
+                    {
+                        objDevice = db.Device.FirstOrDefault(m => m.MacAddress == MacAddress);
+                    }
+
                     if (!(db.DeviceAssociateSite.Any(m => m.Device.MacAddress == MacAddress && m.SiteId == model.SiteId)))
                     {
                        
