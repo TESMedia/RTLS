@@ -59,7 +59,7 @@ namespace RTLS.Common
 
 
         
-        public async Task<ReturnData> RegisterDevice(SecomRegisterDevice _objSecomRegisterDevice,string token)
+        public async Task<string> RegisterDevice(SecomRegisterDevice _objSecomRegisterDevice,string token)
         {
             ReturnData _returnData = new ReturnData();
             
@@ -78,15 +78,8 @@ namespace RTLS.Common
 
 
             var response = await (Task.Run(() => restClient.Post(restRequest)));
-            var registerResponse = JObject.Parse(response.Content);
-            var Unique_Id = registerResponse["_id"].ToString();
-            if (response.StatusCode == System.Net.HttpStatusCode.Created)
-            {
-                _returnData.Status = true;
-                _returnData.UniqueId = Unique_Id;
-            }
 
-            return _returnData;
+            return response.Content.ToString();
         }
 
 

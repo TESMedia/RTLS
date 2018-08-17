@@ -79,14 +79,11 @@ namespace RTLS.API
                      deviceid = objRtlsConfigurationRepository.DeviceAssociateSiteStatus(deviceId);
                     if (deviceid.status == DeviceStatus.DeRegistered)
                     {
-              
-                            OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
-                            RequestOmniModel objRequestOmniModel = new RequestOmniModel();
-                            objRequestOmniModel.MacAddress = item;
-                            await objOmniEngineBusiness.ReRegister(objRequestOmniModel);
-                     }
-
-
+                        OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
+                        RequestOmniModel objRequestOmniModel = new RequestOmniModel();
+                        objRequestOmniModel.MacAddress = item;
+                        await objOmniEngineBusiness.ReRegister(objRequestOmniModel);
+                    }
                 }
                 //First time devive will store
                 if (deviceid.status == DeviceStatus.None)
@@ -100,7 +97,10 @@ namespace RTLS.API
                                 OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
                                 RequestOmniModel objRequestOmniModel = new RequestOmniModel();
                                 objRequestOmniModel.MacAddress = item;
+
                                 var retrnResult = await objOmniEngineBusiness.regMacToOmniEngine(objRequestOmniModel);
+
+
                                 if (retrnResult.Status == true)
                                 {
                                     objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Success);
