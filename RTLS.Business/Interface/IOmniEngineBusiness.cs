@@ -10,6 +10,6 @@ namespace RTLS.Business.Interface
 {
     public interface IOmniEngineBusiness
     {
-        Task<ReturnData> regMacToOmniEngine(RequestOmniModel objRequestOmniModel);
+        Task regMacToOmniEngine(RequestOmniModel objRequestOmniModel);
     }
 }

@@ -14,6 +14,7 @@ using System.Net;
 using System.Web.Script.Serialization;
 using System.Threading;
 using Newtonsoft.Json.Linq;
+using System.Xml.Linq;
 
 namespace RTLS.Common
 {
@@ -24,6 +25,7 @@ namespace RTLS.Common
         private string _password = ConfigurationManager.AppSettings["SecomLoginPassword"].ToString();
         private string _uri = ConfigurationManager.AppSettings["SecomAPI"].ToString();
         private bool disposed;
+
 
         public async Task<string> GetSecomLoginToken()
             
@@ -61,8 +63,7 @@ namespace RTLS.Common
         
         public async Task<string> RegisterDevice(SecomRegisterDevice _objSecomRegisterDevice,string token)
         {
-            ReturnData _returnData = new ReturnData();
-            
+            string retData = null;
             //// Serialize our concrete class into a JSON String
             var _registerData = JsonConvert.SerializeObject(_objSecomRegisterDevice);
              
@@ -78,8 +79,13 @@ namespace RTLS.Common
 
 
             var response = await (Task.Run(() => restClient.Post(restRequest)));
-
-            return response.Content.ToString();
+         
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                var responseContent = JObject.Parse(response.Content.ToString());
+                retData = responseContent["_id"].ToString(); 
+            }
+            return retData;
         }
 
 
@@ -109,6 +115,8 @@ namespace RTLS.Common
 
             return _returnData;
         }
+
+
         public async Task<bool> ReRegisterDevice(SecomRegisterDevice _objSecomRegisterDevice, string token, string UniqueId)
         {
             bool _returnData = false;
@@ -161,6 +169,27 @@ namespace RTLS.Common
             }
 
             return _returnData;
+        }
+
+
+        public async Task<string> GetDevice(string MacAdress,string token)
+        {
+            ReturnData _returnData = new ReturnData();
+            //Rest CLient Call
+            var restClient = new RestClient();
+            restClient.BaseUrl = new Uri(_uri);
+            var restRequest = new RestRequest("Get");
+            var url= "/api/v1/venues/devices?where={'type':'station','station_info.device.id':"+'"'+ MacAdress+'"' +"}&projection={'station_info.user':1}";
+            restRequest.Resource = url;
+            restRequest.AddHeader("Content-yType", "application/json");
+            restRequest.AddHeader("Accept", "application/json");
+            restRequest.AddHeader("Authorization", "Bearer" + " " + token);
+
+            var response = await (Task.Run(() => restClient.Get(restRequest)));
+
+            var jsonresponse = JObject.Parse(response.Content.ToString());
+            var uniquId = jsonresponse["_items"][0]["_id"].ToString();
+            return uniquId;
         }
 
 

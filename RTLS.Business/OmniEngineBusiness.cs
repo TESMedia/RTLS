@@ -25,9 +25,9 @@ namespace RTLS.Business
             objMacAddressRepository = new MacAddressRepository();
         }
 
-        public async Task<ReturnData> regMacToOmniEngine(RequestOmniModel objRequestOmniModel)
+        public async Task regMacToOmniEngine(RequestOmniModel objRequestOmniModel)
         {
-            ReturnData result = new ReturnData();
+            //ReturnData result = new ReturnData();
             SecomRegisterDevice objSecomRegisterDevice = new SecomRegisterDevice();
             objSecomRegisterDevice.mac = objRequestOmniModel.MacAddress;
             objSecomRegisterDevice.station_info.device.id = objRequestOmniModel.MacAddress;
@@ -41,23 +41,29 @@ namespace RTLS.Business
 
                 var registerResult = await objSecomClient.RegisterDevice(objSecomRegisterDevice, token);
 
-                var registerResponse = JObject.Parse(registerResult);
-                if (registerResponse["_status"].ToString() == "Ok")
+                if(!string.IsNullOrEmpty(registerResult))
                 {
-                    var Unique_Id = registerResponse["_id"].ToString();
-                    objOmniDeviceMappingRepository.CreateMacUniqueId(objRequestOmniModel.MacAddress, Unique_Id);
-                    result.Status = true;
-                    return result;
+                   await objOmniDeviceMappingRepository.CreateMacUniqueId(objRequestOmniModel.MacAddress, registerResult);
                 }
+                ////var registerResponse = JObject.Parse(registerResult);
+                //if (registerResponse["_status"].ToString() == "Ok")
+                //{
+                //    var Unique_Id = registerResponse["_id"].ToString();
+                //    objOmniDeviceMappingRepository.CreateMacUniqueId(objRequestOmniModel.MacAddress, Unique_Id);
+                //    result.Status = true;
+                //    return result;
+                //}
 
-                if (registerResponse["_error"]["code"].ToString() == "422")
-                {
-                    result.Status = true;
-                    return result;
-                }
+                //if (registerResponse["_error"]["code"].ToString() == "422")
+                //{
+                //    var Unique_Id = await objSecomClient.GetDevice(objRequestOmniModel.MacAddress, token);
+                //    objOmniDeviceMappingRepository.CreateMacUniqueId(objRequestOmniModel.MacAddress, Unique_Id);
+                //    //Means the situation 
+                //    result.Status = true;
+                //    return result;
+                //}
 
-                result.Status = false;
-                return result;
+                //result.Status = false;
             }                         
             
         }
