@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Configuration;
@@ -13,7 +12,6 @@ using log4net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
-using System.Web;
 using RTLS.Domins.ViewModels;
 using RTLS.Domains;
 using RTLS.Domins.Enums;
@@ -22,8 +20,6 @@ using System.Data.Entity;
 using RTLS.Business.Repository;
 using RTLS.Business;
 using RTLS.Domins.ViewModels.OmniRequest;
-using RTLS.Common;
-using Newtonsoft.Json.Linq;
 using RTLS.Domins;
 
 namespace RTLS.API
@@ -180,17 +176,20 @@ namespace RTLS.API
                         {
                             //DeviceAssociateSite Status and DeviceRegisteredInEngineType should be false
                             DeviceAssociateSite _DeviceAssociateSite = db.DeviceAssociateSite.FirstOrDefault(k => k.DeviceId == deviceId);
-                            if(_DeviceAssociateSite.IsRegisterInCaptivePortal==true)
+                            Device _Device = db.Device.FirstOrDefault(p => p.DeviceId == deviceId);
+                           // WifiUserLoginCredential _WifiUserLoginCredential = db.WifiUserLoginCredential.FirstOrDefault(p=>p.DeviceId==deviceId);
+                            if (_DeviceAssociateSite.IsRegisterInCaptivePortal==true)
                             {
                                 _DeviceAssociateSite.DeviceRegisteredInEngineType = DeviceRegisteredInEngine.None;
                                 _DeviceAssociateSite.status = DeviceStatus.None;
                                 db.Entry(_DeviceAssociateSite).State = EntityState.Modified;
-                                db.SaveChanges();
+                               
                             }
                             else
                             {
                                 db.DeviceAssociateSite.Remove(_DeviceAssociateSite);
-                                db.SaveChanges();
+                                db.Device.Remove(_Device);
+                               // db.WifiUserLoginCredential.Remove(_WifiUserLoginCredential);
                             }
                             
 

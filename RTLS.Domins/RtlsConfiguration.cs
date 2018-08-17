@@ -37,6 +37,8 @@ namespace RTLS.Domains
 
         public int AreaNotification { get; set; }
 
+        public int? TimeFrame { get; set; }
+
         [MaxLength(200)]
         public string EndPointUrl { get; set; }
 
