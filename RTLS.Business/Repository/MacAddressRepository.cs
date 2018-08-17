@@ -7,6 +7,7 @@ using RTLS.Domins.Enums;
 using RTLS.ReturnModel;
 using RTLS.Domins.ViewModels.OmniRequest;
 using System.Data.Entity;
+using System.Threading.Tasks;
 
 namespace RTLS.Repository
 {
@@ -19,9 +20,9 @@ namespace RTLS.Repository
             db = new ApplicationDbContext();
         }
 
-        public Device GetDevice(string Mac)
+        public async Task<Device> GetDevice(string Mac)
         {
-            return db.Device.FirstOrDefault(m => m.MacAddress == Mac);
+            return await db.Device.FirstAsync(m => m.MacAddress == Mac);
         }
 
         /// <summary>

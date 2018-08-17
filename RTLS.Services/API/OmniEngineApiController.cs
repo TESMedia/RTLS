@@ -47,13 +47,10 @@ namespace RTLS.API
                     if (objSiteConfiguration.RtlsConfiguration.RtlsEngineType == RtlsEngine.OmniEngine)
                     {
                         OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
-                        var registerResult = await objOmniEngineBusiness.regMacToOmniEngine(objRequestOmniModel);
-                        if (registerResult.Status==true)
+                        await objOmniEngineBusiness.regMacToOmniEngine(objRequestOmniModel);
+                        using (MacAddressRepository objMacAddressRepository = new MacAddressRepository())
                         {
-                            using (MacAddressRepository objMacAddressRepository = new MacAddressRepository())
-                            {
-                                objMacAddressRepository.UpdateLocationServiceTypeforMac(objRequestOmniModel, objSiteConfiguration.RtlsConfiguration.RtlsEngineType);
-                            }                            
+                            objMacAddressRepository.UpdateLocationServiceTypeforMac(objRequestOmniModel, objSiteConfiguration.RtlsConfiguration.RtlsEngineType);
                         }
                         //string OmniBaseAddressUri = objSiteConfiguration.RtlsConfiguration.OmniBaseAddressUri;
                     }
