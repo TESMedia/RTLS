@@ -115,15 +115,17 @@ namespace RTLS.API
             int TotalRecords = 0;
             int? timeframe = 0;
 
-            IEnumerable<LocationData> lstLocationData = null;
+            //IEnumerable<LocationData> lstLocationData = null;
+            IEnumerable<RtlsNotificationData> lstLocationData = null;
             try
             {
-                var objRtlsConfiguration = db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
-                var row = db.LocationData.Where(m => m.sn == objRtlsConfiguration.EngageSiteName); // IsDIsplay =m.IsDeviceRegisterInRtls
-                TotalRecords = row.Count();
-                lstLocationData = db.LocationData.OrderByDescending(m => m.last_seen_ts).Where(m => m.sn == objRtlsConfiguration.EngageSiteName).ToList().Skip(SkipStart).Take(FixedLength);
-                var _rtlsDataAsPerSite = db.RtlsConfiguration.Where(m => m.SiteId == model.SiteId).FirstOrDefault();
-                timeframe = _rtlsDataAsPerSite.TimeFrame;
+                //var objRtlsConfiguration = db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
+                //var row = db.LocationData.Where(m => m.sn == objRtlsConfiguration.EngageSiteName); // IsDIsplay =m.IsDeviceRegisterInRtls
+                lstLocationData = db.RtlsNotificationData;
+                TotalRecords = lstLocationData.Count();
+                lstLocationData = db.RtlsNotificationData.OrderByDescending(m => m.NotifyDateTime).ToList().Skip(SkipStart).Take(FixedLength);
+                //var _rtlsDataAsPerSite = db.RtlsConfiguration.Where(m => m.SiteId == model.SiteId).FirstOrDefault();
+                //timeframe = _rtlsDataAsPerSite.TimeFrame;
             }
             catch (Exception ex)
             {
@@ -151,28 +153,25 @@ namespace RTLS.API
             int SkipStart = (Convert.ToInt32(model.CurrentPage) * FixedLength);
             int pages = (SkipStart + FixedLength) / FixedLength;
             int TotalRecords = 0;
-            IEnumerable<LocationData> lstLocationData = null;
+            IEnumerable<RtlsNotificationData> lstLocationData = null;
             try
             {
-                var objRtlsConfiguration = db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
-                var row = db.LocationData.Where(m => m.sn == objRtlsConfiguration.EngageSiteName);
-                TotalRecords = row.Count();
+                //var objRtlsConfiguration = db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
+                //var row = db.LocationData.Where(m => m.sn == objRtlsConfiguration.EngageSiteName);
+                lstLocationData=db.RtlsNotificationData;
+                TotalRecords = lstLocationData.Count();
                 if (model.MacAddress != null && model.AreaName != null)
                 {
-                    lstLocationData = db.LocationData.OrderByDescending(m => m.last_seen_ts).Where(m => m.mac == model.MacAddress).Where(m => m.AreaName == model.AreaName).Take(FixedLength).ToList();
+                    lstLocationData = db.RtlsNotificationData.OrderByDescending(m => m.NotifyDateTime).Where(m => m.MacAddress == model.MacAddress).Take(FixedLength).ToList();
                 }
                 else if (model.MacAddress != null)
                 {
-                    lstLocationData = db.LocationData.OrderByDescending(m => m.last_seen_ts).Where(m => m.mac == model.MacAddress).Take(FixedLength).ToList();
+                    lstLocationData = db.RtlsNotificationData.OrderByDescending(m => m.NotifyDateTime).Where(m => m.MacAddress == model.MacAddress).Take(FixedLength).ToList();
                 }
                 else if (model.AreaName != null)
                 {
-                    lstLocationData = db.LocationData.OrderByDescending(m => m.last_seen_ts).Where(m => m.AreaName == model.AreaName).Take(FixedLength).ToList();
+                    lstLocationData = db.RtlsNotificationData.OrderByDescending(m => m.NotifyDateTime).Take(FixedLength).ToList();
                 }
-                //else
-                //{
-
-                //}
             }
             catch (Exception ex)
             {
