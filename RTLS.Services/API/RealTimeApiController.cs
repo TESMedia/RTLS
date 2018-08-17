@@ -98,16 +98,12 @@ namespace RTLS.API
                                 RequestOmniModel objRequestOmniModel = new RequestOmniModel();
                                 objRequestOmniModel.MacAddress = item;
 
-                                var retrnResult = await objOmniEngineBusiness.regMacToOmniEngine(objRequestOmniModel);
+                                await objOmniEngineBusiness.regMacToOmniEngine(objRequestOmniModel);
 
-
-                                if (retrnResult.Status == true)
+                                objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Success);
+                                using (MacAddressRepository objMacRepository = new MacAddressRepository())
                                 {
-                                    objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Success);
-                                    using (MacAddressRepository objMacRepository = new MacAddressRepository())
-                                    {
-                                        objMacRepository.RegisterListOfMacAddresses(model);
-                                    }
+                                    objMacRepository.RegisterListOfMacAddresses(model);
                                 }
                             }
                         }

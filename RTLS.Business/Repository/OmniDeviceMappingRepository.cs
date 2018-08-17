@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Entity;
 
 namespace RTLS.Business.Repository
 {
@@ -21,16 +22,16 @@ namespace RTLS.Business.Repository
             _MacAddressRepository = new MacAddressRepository();
         }
            
-        public void CreateMacUniqueId(string Mac,string UniqueId)
+        public async Task CreateMacUniqueId(string Mac,string UniqueId)
         {
             try
             {
-                var Device = _MacAddressRepository.GetDevice(Mac);
+                var Device = await _MacAddressRepository.GetDevice(Mac);
                 OmniDeviceMapping objOmniDeviceMapping = new OmniDeviceMapping();
                 objOmniDeviceMapping.DeviceId = Device.DeviceId;
                 objOmniDeviceMapping.UniqueId = UniqueId;
                 db.OmniDeviceMapping.Add(objOmniDeviceMapping);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
             catch(Exception ex)
             {
@@ -63,7 +64,7 @@ namespace RTLS.Business.Repository
                 var Device = _MacAddressRepository.GetDevice(Mac);
 
                
-                return Device.DeviceId;
+                return Device.Result.DeviceId;
             }
             catch (Exception ex)
             {
@@ -78,7 +79,7 @@ namespace RTLS.Business.Repository
             {
                 var Device = _MacAddressRepository.GetDevice(Mac);
 
-                string UniqueId = _MacAddressRepository.DeregisterGetUniqueId(Device.DeviceId);
+                string UniqueId = _MacAddressRepository.DeregisterGetUniqueId(Device.Result.DeviceId);
                 return UniqueId;
             }
             catch (Exception ex)
