@@ -115,6 +115,7 @@
     <Compile Include="SiteFloor.cs" />
     <Compile Include="TrackMacNotification.cs" />
     <Compile Include="ViewModels\EngageRegisterDevice.cs" />
+    <Compile Include="ViewModels\FilterLocationData.cs" />
     <Compile Include="ViewModels\jQueryDataTableParamModel.cs" />
     <Compile Include="LocationData.cs" />
     <Compile Include="ViewModels\JQueryDTRequestDeviceData.cs" />

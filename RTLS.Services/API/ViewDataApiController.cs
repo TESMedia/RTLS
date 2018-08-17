@@ -25,7 +25,6 @@ namespace RTLS.API
     {
         private static log4net.ILog Log { get; set; }
         ILog log = log4net.LogManager.GetLogger(typeof(ViewDataApiController));
-
         private ApplicationDbContext db = new ApplicationDbContext();
         private MySqlConnection connection;
         string query = null;
@@ -98,9 +97,137 @@ namespace RTLS.API
                     TotalOmniRecords= TotalOmniRecords,
                     TotalEngageRecords=TotalEngageRecords,
                     RecordToDisply = FixedLength,
-                    Maclist }), Encoding.UTF8, "application/json")
+                    OmniMaclist,
+                    EngageMaclist
+                }), Encoding.UTF8, "application/json")
             };
         }
+
+
+        [Route("GetLocationData")] 
+        [HttpPost]
+        public HttpResponseMessage GetListOfLocationData(JQueryDTRequestDeviceData model)
+        {
+            int FixedLength = Convert.ToInt32(model.RecordToDisply);
+            int SkipStart = (Convert.ToInt32(model.CurrentPage) * FixedLength);
+
+            int pages = (SkipStart + FixedLength) / FixedLength;
+            int TotalRecords = 0;
+            int? timeframe = 0;
+
+            IEnumerable<LocationData> lstLocationData = null;
+            try
+            {
+                var objRtlsConfiguration = db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
+                var row = db.LocationData.Where(m => m.sn == objRtlsConfiguration.EngageSiteName); // IsDIsplay =m.IsDeviceRegisterInRtls
+                TotalRecords = row.Count();
+                lstLocationData = db.LocationData.OrderByDescending(m => m.last_seen_ts).Where(m => m.sn == objRtlsConfiguration.EngageSiteName).ToList().Skip(SkipStart).Take(FixedLength);
+                var _rtlsDataAsPerSite = db.RtlsConfiguration.Where(m => m.SiteId == model.SiteId).FirstOrDefault();
+                timeframe = _rtlsDataAsPerSite.TimeFrame;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.InnerException.Message);
+            }
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(new
+                {
+                    CurrentPage = pages,
+                    TotalRecords = TotalRecords,
+                    RecordToDisply = FixedLength,
+                    TimeFrame = timeframe,
+                    lstLocationData
+                }), Encoding.UTF8, "application/json")
+            };
+        }
+
+
+        [Route("FilterLocationData")]
+        [HttpPost]
+        public HttpResponseMessage FilterLocationData(FilterLocationData model)
+        {
+            int FixedLength = Convert.ToInt32(model.RecordToDisply);
+            int SkipStart = (Convert.ToInt32(model.CurrentPage) * FixedLength);
+            int pages = (SkipStart + FixedLength) / FixedLength;
+            int TotalRecords = 0;
+            IEnumerable<LocationData> lstLocationData = null;
+            try
+            {
+                var objRtlsConfiguration = db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
+                var row = db.LocationData.Where(m => m.sn == objRtlsConfiguration.EngageSiteName);
+                TotalRecords = row.Count();
+                if (model.MacAddress != null && model.AreaName != null)
+                {
+                    lstLocationData = db.LocationData.OrderByDescending(m => m.last_seen_ts).Where(m => m.mac == model.MacAddress).Where(m => m.AreaName == model.AreaName).Take(FixedLength).ToList();
+                }
+                else if (model.MacAddress != null)
+                {
+                    lstLocationData = db.LocationData.OrderByDescending(m => m.last_seen_ts).Where(m => m.mac == model.MacAddress).Take(FixedLength).ToList();
+                }
+                else if (model.AreaName != null)
+                {
+                    lstLocationData = db.LocationData.OrderByDescending(m => m.last_seen_ts).Where(m => m.AreaName == model.AreaName).Take(FixedLength).ToList();
+                }
+                //else
+                //{
+
+                //}
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                log.Error(ex.InnerException.Message);
+            }
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(new
+                {
+                    CurrentPage = pages,
+                    TotalRecords = TotalRecords,
+                    RecordToDisply = FixedLength,
+                    lstLocationData
+                }), Encoding.UTF8, "application/json")
+            };
+        }
+
+
+        [Route("UpdateRTLSDataDelete")]
+        [HttpPost]
+        public HttpResponseMessage UpdateRTLSDataDelete(FilterLocationData model)
+        {
+            var _rtlsDataAccordingtoSite = db.RtlsConfiguration.Where(m => m.SiteId == model.SiteId).FirstOrDefault();
+            _rtlsDataAccordingtoSite.TimeFrame = model.TimeFrame;
+            db.SaveChanges();
+            // ConnectionString
+            connection = new MySqlConnection(ConnectionString);
+            if (model.TimeFrame != 0 && model.TimeFrame != 1)
+            {
+                query = "DROP EVENT IF EXISTS ClearRTLSData; CREATE EVENT ClearRTLSData ON SCHEDULE EVERY " + " " + model.TimeFrame + " " + " HOUR COMMENT 'Clear RTLS Data as per Admin Configuration' DO CALL ArchiveRTLSData(" + "'" + _rtlsDataAccordingtoSite.EngageSiteName + "'" + ")";
+
+            }
+            else
+            {
+                query = "DROP EVENT IF EXISTS ClearRTLSData";
+            }
+
+            //open connection
+            connection.Open();
+            //create command and assign the query and connection from the constructor
+            MySqlCommand cmd = new MySqlCommand(query, connection);
+
+            //Execute command
+            cmd.ExecuteNonQuery();
+
+            //close connection
+            connection.Close();
+
+            return new HttpResponseMessage()
+            {
+
+            };
+        }
+    }
 
 
 
