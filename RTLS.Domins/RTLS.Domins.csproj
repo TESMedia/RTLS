@@ -102,6 +102,7 @@
     <Compile Include="Identity\SmsService.cs" />
     <Compile Include="OmniDeviceMapping.cs" />
     <Compile Include="RtlsArea.cs" />
+    <Compile Include="RtlsNotificationData.cs" />
     <Compile Include="Site.cs" />
     <Compile Include="SiteFloor.cs" />
     <Compile Include="TrackMacNotification.cs" />
