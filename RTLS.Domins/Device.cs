@@ -17,11 +17,9 @@ namespace RTLS.Domains
         [Required(ErrorMessage = "Please send MacAddress")]
         [Display(Name = "MacAddress")]
         //[Index(IsUnique = true)]
-        //[RegularExpression("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$",ErrorMessage ="MacAddress format not valid"]
+        //[RegularExpression("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$",ErrorMessage ="MacAddress format not valid")]
         public string MacAddress { get; set; }
-
-        public int? WifiUserId { get; set; }
-
+        
         [MaxLength(100)]
         public string BrowserName { get; set; }
 
@@ -36,9 +34,7 @@ namespace RTLS.Domains
         public ICollection<DeviceAssociateSite> DeviceAssociateSite { get; set; }
 
         public virtual OmniDeviceMapping OmniDeviceMapping { get; set; }
-        //[JsonIgnore]
-        //[ForeignKey("WifiUserId")]
-        //public virtual WifiUser WifiUser { get; set; }
+
     }
 
 }
