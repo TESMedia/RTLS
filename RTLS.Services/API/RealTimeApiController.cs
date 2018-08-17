@@ -24,6 +24,7 @@ using RTLS.Business;
 using RTLS.Domins.ViewModels.OmniRequest;
 using RTLS.Common;
 using Newtonsoft.Json.Linq;
+using RTLS.Domins;
 
 namespace RTLS.API
 {
@@ -157,27 +158,45 @@ namespace RTLS.API
         {
 
             Notification objNotifications = new Notification();
-            DeviceAssociateSite deviceid = null;
+            DeviceAssociateSite deviceStatus = null;
             using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
             {
                 Site objSite = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId);
 
                 foreach (var item in model.MacAddresses)
                 {
-                    // When Device is coming for reregister in OmniEngiene
+                    // When Device is coming to delete in OmniEngiene
                     int deviceId = _OmniDeviceMappingRepository.GetDeviceId(item);
-                    deviceid = objRtlsConfigurationRepository.DeviceAssociateSiteStatus(deviceId);
-                    if (deviceid.status == DeviceStatus.Registered || deviceid.status == DeviceStatus.DeRegistered)
+                    deviceStatus = objRtlsConfigurationRepository.DeviceAssociateSiteStatus(deviceId);
+                    if (deviceStatus.status == DeviceStatus.DeRegistered)
                     {
 
                         OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
                         RequestOmniModel objRequestOmniModel = new RequestOmniModel();
                         objRequestOmniModel.MacAddress = item;
                         var returnStatus=await objOmniEngineBusiness.DeleteDevices(objRequestOmniModel);
-                        if(returnStatus==true)
+
+                        if(returnStatus==true)  
                         {
-                            Device _objDevice = db.Device.FirstOrDefault(m=>m.MacAddress==item);
-                            db.Device.Remove(_objDevice);
+                            //DeviceAssociateSite Status and DeviceRegisteredInEngineType should be false
+                            DeviceAssociateSite _DeviceAssociateSite = db.DeviceAssociateSite.FirstOrDefault(k => k.DeviceId == deviceId);
+                            if(_DeviceAssociateSite.IsRegisterInCaptivePortal==true)
+                            {
+                                _DeviceAssociateSite.DeviceRegisteredInEngineType = DeviceRegisteredInEngine.None;
+                                _DeviceAssociateSite.status = DeviceStatus.None;
+                                db.Entry(_DeviceAssociateSite).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
+                            else
+                            {
+                                db.DeviceAssociateSite.Remove(_DeviceAssociateSite);
+                                db.SaveChanges();
+                            }
+                            
+
+                            //Remove Device from OmniDeviceMapping
+                            OmniDeviceMapping _OmniDeviceMapping = db.OmniDeviceMapping.FirstOrDefault(k=>k.DeviceId==deviceId);
+                            db.OmniDeviceMapping.Remove(_OmniDeviceMapping);
                             db.SaveChanges();
 
                         }
