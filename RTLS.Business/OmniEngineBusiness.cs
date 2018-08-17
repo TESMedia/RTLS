@@ -10,16 +10,19 @@ using RTLS.Common;
 using RTLS.Domains;
 using Newtonsoft.Json.Linq;
 using RTLS.Business.Repository;
+using RTLS.Repository;
 
 namespace RTLS.Business
 {
     public class OmniEngineBusiness : IOmniEngineBusiness
     {
-        private OmniDeviceMappingRepository objOmniDeviceMappingRepository = null;
+        private readonly OmniDeviceMappingRepository objOmniDeviceMappingRepository = null;
+        private readonly MacAddressRepository objMacAddressRepository=null;
 
         public OmniEngineBusiness()
         {
             objOmniDeviceMappingRepository = new OmniDeviceMappingRepository();
+            objMacAddressRepository = new MacAddressRepository();
         }
 
         public async Task<ReturnData> regMacToOmniEngine(RequestOmniModel objRequestOmniModel)
@@ -35,15 +38,28 @@ namespace RTLS.Business
 
                 var token_details = JObject.Parse(jsonToken);
                 var token = token_details["jwt"].ToString();
+
                 var registerResult = await objSecomClient.RegisterDevice(objSecomRegisterDevice, token);
-                result.Status = registerResult.Status;
-                result.UniqueId = registerResult.UniqueId;  
-                if(registerResult.Status==true)
+
+                var registerResponse = JObject.Parse(registerResult);
+                if (registerResponse["_status"].ToString() == "Ok")
                 {
-                    objOmniDeviceMappingRepository.CreateMacUniqueId(objRequestOmniModel.MacAddress, registerResult.UniqueId);
-                }                             
-            }
-            return result;
+                    var Unique_Id = registerResponse["_id"].ToString();
+                    objOmniDeviceMappingRepository.CreateMacUniqueId(objRequestOmniModel.MacAddress, Unique_Id);
+                    result.Status = true;
+                    return result;
+                }
+
+                if (registerResponse["_error"]["code"].ToString() == "422")
+                {
+                    result.Status = true;
+                    return result;
+                }
+
+                result.Status = false;
+                return result;
+            }                         
+            
         }
         //Reregister in OmniEngiene
         public async Task<bool> ReRegister(RequestOmniModel objRequestOmniModel)

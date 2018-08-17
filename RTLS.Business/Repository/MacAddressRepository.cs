@@ -50,7 +50,8 @@ namespace RTLS.Repository
                 else if(EngineType == RtlsEngine.EngageEngine)
                 {
                     ObjDeviceAssociateSite.DeviceRegisteredInEngineType = DeviceRegisteredInEngine.EngageEngine;
-                }              
+                }
+                ObjDeviceAssociateSite.status = DeviceStatus.Registered;
                 db.Entry(ObjDeviceAssociateSite).State = EntityState.Modified;
                 db.SaveChanges();
             }
