@@ -28,6 +28,7 @@ namespace RTLS.Business
         public async Task regMacToOmniEngine(RequestOmniModel objRequestOmniModel)
         {
             //ReturnData result = new ReturnData();
+            string retResult = null;
             SecomRegisterDevice objSecomRegisterDevice = new SecomRegisterDevice();
             objSecomRegisterDevice.mac = objRequestOmniModel.MacAddress;
             objSecomRegisterDevice.station_info.device.id = objRequestOmniModel.MacAddress;
@@ -39,34 +40,21 @@ namespace RTLS.Business
                 var token_details = JObject.Parse(jsonToken);
                 var token = token_details["jwt"].ToString();
 
-                var registerResult = await objSecomClient.RegisterDevice(objSecomRegisterDevice, token);
+                //Register the Mac
+                retResult = await objSecomClient.RegisterDevice(objSecomRegisterDevice, token);
 
-                if(!string.IsNullOrEmpty(registerResult))
+                //If the uniqueId is not retured try with GetDevice to get the uniqueId
+                if (string.IsNullOrEmpty(retResult))
                 {
-                   await objOmniDeviceMappingRepository.CreateMacUniqueId(objRequestOmniModel.MacAddress, registerResult);
+                    retResult = await objSecomClient.GetDevice(objRequestOmniModel.MacAddress, token);
                 }
-                ////var registerResponse = JObject.Parse(registerResult);
-                //if (registerResponse["_status"].ToString() == "Ok")
-                //{
-                //    var Unique_Id = registerResponse["_id"].ToString();
-                //    objOmniDeviceMappingRepository.CreateMacUniqueId(objRequestOmniModel.MacAddress, Unique_Id);
-                //    result.Status = true;
-                //    return result;
-                //}
-
-                //if (registerResponse["_error"]["code"].ToString() == "422")
-                //{
-                //    var Unique_Id = await objSecomClient.GetDevice(objRequestOmniModel.MacAddress, token);
-                //    objOmniDeviceMappingRepository.CreateMacUniqueId(objRequestOmniModel.MacAddress, Unique_Id);
-                //    //Means the situation 
-                //    result.Status = true;
-                //    return result;
-                //}
-
-                //result.Status = false;
-            }                         
-            
+                if (!string.IsNullOrEmpty(retResult))
+                {
+                    await objOmniDeviceMappingRepository.CreateMacUniqueId(objRequestOmniModel.MacAddress, retResult);
+                }
+            }
         }
+
         //Reregister in OmniEngiene
         public async Task<bool> ReRegister(RequestOmniModel objRequestOmniModel)
         {
@@ -111,7 +99,8 @@ namespace RTLS.Business
                 return true;
             }
 
-        }
+        }   
+
         //Deregister Mac FromOmniEngine
         public async Task<bool> DeregisterMacFromOmniEngine(RequestOmniModel objRequestOmniModel)
         {
