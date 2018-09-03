@@ -168,31 +168,32 @@ namespace RTLS.API
                         objRequestOmniModel.MacAddress = item;
                         var returnStatus=await objOmniEngineBusiness.DeleteDevices(objRequestOmniModel);
 
-                        if(returnStatus==true)  
+                        if(returnStatus==true)
                         {
-                            //DeviceAssociateSite Status and DeviceRegisteredInEngineType should be false
-                            DeviceAssociateSite _DeviceAssociateSite = db.DeviceAssociateSite.FirstOrDefault(k => k.DeviceId == deviceId);
-                            Device _Device = db.Device.FirstOrDefault(p => p.DeviceId == deviceId);
-                           // WifiUserLoginCredential _WifiUserLoginCredential = db.WifiUserLoginCredential.FirstOrDefault(p=>p.DeviceId==deviceId);
-                            if (_DeviceAssociateSite.IsRegisterInCaptivePortal==true)
+                            try
                             {
-                                _DeviceAssociateSite.DeviceRegisteredInEngineType = DeviceRegisteredInEngine.None;
-                                _DeviceAssociateSite.status = DeviceStatus.None;
-                                db.Entry(_DeviceAssociateSite).State = EntityState.Modified;
-                               
-                            }
-                            else
-                            {
+                                //Delete Device ralated data 
+                                DeviceAssociateSite _DeviceAssociateSite = db.DeviceAssociateSite.FirstOrDefault(k => k.DeviceId == deviceId);
+                                Device _Device = db.Device.FirstOrDefault(p => p.DeviceId == deviceId);
+                                NetWorkOfSite _NetworkOfSite = db.NetWorkOfSite.Where(p => p.SiteId == model.SiteId).Where(q => q.LocServiceTypeId != 0).FirstOrDefault();
+                                OmniDeviceMapping _OmniDeviceMapping = db.OmniDeviceMapping.FirstOrDefault(k => k.DeviceId == deviceId);
+                                WifiUserLoginCredential _WifiUserLoginCredential = db.WifiUserLoginCredential.Where(p => p.Device.DeviceId == deviceId).Where(q => q.NetWorkOfSiteId == _NetworkOfSite.NetWorkOfSiteId).FirstOrDefault();
+                                WifiUser _WifiUser = db.WifiUser.Where(p => p.UserId == _WifiUserLoginCredential.WifiUserId).FirstOrDefault();
+                                UsersAddress _UsersAddress = db.UsersAddress.Where(p => p.UserId == _WifiUser.UserId).FirstOrDefault();
+
                                 db.DeviceAssociateSite.Remove(_DeviceAssociateSite);
-                                db.Device.Remove(_Device);
-                               // db.WifiUserLoginCredential.Remove(_WifiUserLoginCredential);
+                                db.OmniDeviceMapping.Remove(_OmniDeviceMapping);
+                                db.UsersAddress.Remove(_UsersAddress);
+                                db.WifiUser.Remove(_WifiUser);
+                                db.WifiUserLoginCredential.Remove(_WifiUserLoginCredential);
+                                db.SaveChanges();
+
+                            }
+                            catch(Exception ex)
+                            {
+                                log.Error(ex.Message);
                             }
                             
-
-                            //Remove Device from OmniDeviceMapping
-                            OmniDeviceMapping _OmniDeviceMapping = db.OmniDeviceMapping.FirstOrDefault(k=>k.DeviceId==deviceId);
-                            db.OmniDeviceMapping.Remove(_OmniDeviceMapping);
-                            db.SaveChanges();
 
                         }
                     }

@@ -168,7 +168,7 @@ namespace RTLS.Common
                 _returnData = true;
             }
 
-            return _returnData;
+            return true;
         }
 
 
