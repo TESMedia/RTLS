@@ -1,5 +1,6 @@
 ﻿using log4net;
 using Newtonsoft.Json;
+using RTLS.Business.Repository;
 using RTLS.Domains;
 using RTLS.Repository;
 using System;
@@ -21,9 +22,11 @@ namespace RTLS.API
         private static log4net.ILog Log { get; set; }
         ILog log = log4net.LogManager.GetLogger(typeof(ViewDataApiController));
         private RtlsConfigurationRepository objRtlsConfigurationRepository;
+        private NetworkConfigurationRepository objNetworkConfigurationRepository;
         public RtlsConfigurationApiController()
         {
             objRtlsConfigurationRepository = new RtlsConfigurationRepository();
+            objNetworkConfigurationRepository = new NetworkConfigurationRepository();
         }
 
         [Route("GetRtlsConfiguration")]
@@ -90,6 +93,28 @@ namespace RTLS.API
 
         }
 
+        [Route("IsSelfExclusionExist")]
+        [HttpPost]
+        public HttpResponseMessage IsSelfExclusionExist(int SiteId) 
+        {
+            try
+            {
+                var res = objNetworkConfigurationRepository.CheckSelfExcusionExistOrNotAsPerSite(SiteId);
+                if (res)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, "SelfExclusionExist");
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, "SelfExclusionNotExist");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError);
+            }
 
+        }
     }
 }
