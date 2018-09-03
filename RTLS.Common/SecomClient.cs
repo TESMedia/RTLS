@@ -172,24 +172,28 @@ namespace RTLS.Common
         }
 
 
-        public async Task<string> GetDevice(string MacAdress,string token)
+        public async Task<string> GetDevice(string MacAdress, string token)
         {
-            ReturnData _returnData = new ReturnData();
+            string retData = null;
+            //ReturnData _returnData = new ReturnData();
             //Rest CLient Call
             var restClient = new RestClient();
             restClient.BaseUrl = new Uri(_uri);
             var restRequest = new RestRequest("Get");
-            var url= "/api/v1/venues/devices?where={'type':'station','station_info.device.id':"+'"'+ MacAdress+'"' +"}&projection={'station_info.user':1}";
-            restRequest.Resource = url;
+            restRequest.Resource = "api/v1/venues/devices?where=" + "{\"type\":\"station\",\"station_info.device.id\":" + "\"" + MacAdress + "\"" + "}&projection={\"station_info.user\":1}"; 
             restRequest.AddHeader("Content-yType", "application/json");
             restRequest.AddHeader("Accept", "application/json");
             restRequest.AddHeader("Authorization", "Bearer" + " " + token);
 
-            var response = await (Task.Run(() => restClient.Get(restRequest)));
+            var response = await (Task.Run(() => restClient.Execute(restRequest)));
 
             var jsonresponse = JObject.Parse(response.Content.ToString());
-            var uniquId = jsonresponse["_items"][0]["_id"].ToString();
-            return uniquId;
+            var objItem = jsonresponse["_items"];
+            if(objItem.Count()>0)
+            {
+                retData= objItem[0]["_id"].ToString();
+            }
+            return retData;
         }
 
 

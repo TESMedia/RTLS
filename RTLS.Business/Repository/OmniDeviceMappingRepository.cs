@@ -26,12 +26,15 @@ namespace RTLS.Business.Repository
         {
             try
             {
-                var Device = await _MacAddressRepository.GetDevice(Mac);
-                OmniDeviceMapping objOmniDeviceMapping = new OmniDeviceMapping();
-                objOmniDeviceMapping.DeviceId = Device.DeviceId;
-                objOmniDeviceMapping.UniqueId = UniqueId;
-                db.OmniDeviceMapping.Add(objOmniDeviceMapping);
-                await db.SaveChangesAsync();
+                if (!db.OmniDeviceMapping.Any(m=>m.Device.MacAddress == Mac))
+                {
+                    var Device = await _MacAddressRepository.GetDevice(Mac);
+                    OmniDeviceMapping objOmniDeviceMapping = new OmniDeviceMapping();
+                    objOmniDeviceMapping.DeviceId = Device.DeviceId;
+                    objOmniDeviceMapping.UniqueId = UniqueId;
+                    db.OmniDeviceMapping.Add(objOmniDeviceMapping);
+                    await db.SaveChangesAsync();
+                }
             }
             catch(Exception ex)
             {
