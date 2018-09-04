@@ -16,7 +16,7 @@ namespace RTLS.Business.Repository
         }
         public bool CheckSelfExcusionExistOrNotAsPerSite(int SiteId) 
         {
-            var _objNetwork = db.NetWorkOfSite.Where(p => p.SiteId == SiteId).Where(q => q.LocServiceTypeId != 0).FirstOrDefault();
+            var _objNetwork = db.NetWorkOfSite.Where(p => p.SiteId == SiteId).Where(q => q.LocServiceTypeId != 0).Where(m=>m.LocServiceTypeId!=null).FirstOrDefault();
             if(_objNetwork==null)
             {
                 return false;
