@@ -145,7 +145,7 @@ namespace RTLS.API
         /// <param name="model"></param>
         /// <returns></returns>
         [Route("DeleteDevices")]
-        [HttpDelete]
+        [HttpPost]
         public async Task<HttpResponseMessage> DeleteDevices(RequestLocationDataVM model)
         {
 
