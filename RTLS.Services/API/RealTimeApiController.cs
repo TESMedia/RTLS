@@ -177,15 +177,22 @@ namespace RTLS.API
                                 Device _Device = db.Device.FirstOrDefault(p => p.DeviceId == deviceId);
                                 NetWorkOfSite _NetworkOfSite = db.NetWorkOfSite.Where(p => p.SiteId == model.SiteId).Where(q => q.LocServiceTypeId != 0).FirstOrDefault();
                                 OmniDeviceMapping _OmniDeviceMapping = db.OmniDeviceMapping.FirstOrDefault(k => k.DeviceId == deviceId);
-                                WifiUserLoginCredential _WifiUserLoginCredential = db.WifiUserLoginCredential.Where(p => p.Device.DeviceId == deviceId).Where(q => q.NetWorkOfSiteId == _NetworkOfSite.NetWorkOfSiteId).FirstOrDefault();
-                                WifiUser _WifiUser = db.WifiUser.Where(p => p.UserId == _WifiUserLoginCredential.WifiUserId).FirstOrDefault();
-                                UsersAddress _UsersAddress = db.UsersAddress.Where(p => p.UserId == _WifiUser.UserId).FirstOrDefault();
+                               
+                                //If User registered from CaptivePortal
+                                if (_DeviceAssociateSite.IsRegisterInCaptivePortal==true)
+                                {
+                                    WifiUserLoginCredential _WifiUserLoginCredential = db.WifiUserLoginCredential.Where(p => p.Device.DeviceId == deviceId).Where(q => q.NetWorkOfSiteId == _NetworkOfSite.NetWorkOfSiteId).FirstOrDefault();
+                                    WifiUser _WifiUser = db.WifiUser.Where(p => p.UserId == _WifiUserLoginCredential.WifiUserId).FirstOrDefault();
+                                    UsersAddress _UsersAddress = db.UsersAddress.Where(p => p.UserId == _WifiUser.UserId).FirstOrDefault();
+                                    db.UsersAddress.Remove(_UsersAddress);
+                                    db.WifiUser.Remove(_WifiUser);
+                                    db.WifiUserLoginCredential.Remove(_WifiUserLoginCredential);
+                                }
 
+                                
                                 db.DeviceAssociateSite.Remove(_DeviceAssociateSite);
                                 db.OmniDeviceMapping.Remove(_OmniDeviceMapping);
-                                db.UsersAddress.Remove(_UsersAddress);
-                                db.WifiUser.Remove(_WifiUser);
-                                db.WifiUserLoginCredential.Remove(_WifiUserLoginCredential);
+                                db.Device.Remove(_Device);
                                 db.SaveChanges();
 
                             }
