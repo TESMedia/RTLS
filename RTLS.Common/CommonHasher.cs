@@ -76,20 +76,12 @@ namespace RTLS.Common
                 string key = (string)settingsReader.GetValue("SecurityKey",
                                                              typeof(String));
 
-                if (useHashing)
-                {
-                    //if hashing was used get the hash code with regards to your key
-                    MD5CryptoServiceProvider hashmd5 = new MD5CryptoServiceProvider();
-                    keyArray = hashmd5.ComputeHash(Encoding.ASCII.GetBytes(key));
-                    //release any resource held by the MD5CryptoServiceProvider
+                //if hashing was used get the hash code with regards to your key
+                MD5CryptoServiceProvider hashmd5 = new MD5CryptoServiceProvider();
+                keyArray = hashmd5.ComputeHash(Encoding.ASCII.GetBytes(key));
+                //release any resource held by the MD5CryptoServiceProvider
 
-                    hashmd5.Clear();
-                }
-                else
-                {
-                    //if hashing was not implemented get the byte code of the key
-                    keyArray = Encoding.ASCII.GetBytes(key);
-                }
+                hashmd5.Clear();
 
                 TripleDESCryptoServiceProvider tdes = new TripleDESCryptoServiceProvider();
                 //set the secret key for the tripleDES algorithm
