@@ -64,7 +64,7 @@ namespace RTLS.Common
         public static string Decrypt(string cipherString, bool useHashing)
         {
             byte[] keyArray;
-            if (!string.IsNullOrEmpty(cipherString) || IsBase64(cipherString))
+            if (!string.IsNullOrEmpty(cipherString))
             {
                 //get the byte code of the string
 
