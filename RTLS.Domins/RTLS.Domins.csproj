@@ -129,6 +129,7 @@
     <Compile Include="ViewModels\Result.cs" />
     <Compile Include="ViewModels\ReturnData.cs" />
     <Compile Include="ViewModels\RtlsAreaViewModel.cs" />
+    <Compile Include="ViewModels\RTLSSetUpReturnDto.cs" />
     <Compile Include="ViewModels\SecomLogin.cs" />
     <Compile Include="ViewModels\SecomRegisterDevice.cs" />
     <Compile Include="WifiUser.cs" />
