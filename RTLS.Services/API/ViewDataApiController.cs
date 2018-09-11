@@ -90,17 +90,17 @@ namespace RTLS.API
                                        FirstName = wifiCred.WifiUser.FirstName,
                                        LastName = wifiCred.WifiUser.LastName,
                                        Status=dvcAssociate.status.ToString()
-                                   }).ToList();
+                                   });
+
+                    TotalOmniRecords = OmniMaclist.Count();
+
+                    OmniMaclist = OmniMaclist.ToList().Skip(SkipStart).Take(FixedLength);
 
                     foreach (var item in OmniMaclist)
                     {
                         item.FirstName = CommonHasher.Decrypt(item.FirstName, true);
                         item.LastName = CommonHasher.Decrypt(item.LastName, true);
                     }
-
-                    TotalOmniRecords = OmniMaclist.Count();
-
-                    OmniMaclist = OmniMaclist.Skip(SkipStart).Take(FixedLength);
                 }
 
             }
