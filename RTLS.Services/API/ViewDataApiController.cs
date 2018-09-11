@@ -97,11 +97,11 @@ namespace RTLS.API
 
                     OmniMaclist = OmniMaclist.ToList().Skip(SkipStart).Take(FixedLength);
 
-                    foreach (var item in OmniMaclist)
-                    {
-                        item.FirstName = CommonHasher.Decrypt(item.FirstName, true);
-                        item.LastName = CommonHasher.Decrypt(item.LastName, true);
-                    }
+                    //foreach (var item in OmniMaclist)
+                    //{
+                    //    item.FirstName = CommonHasher.Decrypt(item.FirstName, true);
+                    //    item.LastName = CommonHasher.Decrypt(item.LastName, true);
+                    //}
                 }
 
             }
