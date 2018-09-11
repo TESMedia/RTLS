@@ -1,6 +1,7 @@
 ﻿using log4net;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
+using RTLS.Common;
 using RTLS.Domains;
 using RTLS.Domins;
 using RTLS.Domins.ViewModels;
@@ -9,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -65,23 +67,42 @@ namespace RTLS.API
             int TotalOmniRecords = 0;
             int TotalEngageRecords = 0;
 
-            IEnumerable  OmniMaclist = null;
+            IEnumerable<RTLSSetUpReturnDto> OmniMaclist = null;
             IEnumerable EngageMaclist = null;
             try
             {
                 if (db.RtlsConfiguration.Any(m => m.SiteId == model.SiteId))
                 {
-                    var row = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsEntryNotify=m.IsEntryNotify, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList(); // IsDIsplay =m.IsDeviceRegisterInRtls
+                    OmniMaclist = (from dvcAssociate in db.DeviceAssociateSite.Where(m => m.SiteId == model.SiteId && m.DeviceRegisteredInEngineTypeId != 0)
+                                   join wifiCred in db.WifiUserLoginCredential.Where(m => m.SiteId == model.SiteId)
+                                   on dvcAssociate.DeviceId equals wifiCred.DeviceId into dvc_Cred_Joined
+                                   from wifiCred in dvc_Cred_Joined.DefaultIfEmpty()
+                                   select new RTLSSetUpReturnDto
+                                   {
+                                       Id = dvcAssociate.SiteId,
+                                       Mac = dvcAssociate.Device.MacAddress,
+                                       omniUniqueId = dvcAssociate.Device.OmniDeviceMapping.UniqueId,
+                                       IsTrackByAdmin = dvcAssociate.IsTrackByAdmin,
+                                       IsEntryNotify = dvcAssociate.IsEntryNotify,
+                                       IsDisplay = dvcAssociate.IsTrackByRtls,
+                                       IsCreatedByAdmin = dvcAssociate.IsCreatedByAdmin,
+                                       Email = wifiCred.WifiUser.UserName,
+                                       FirstName = wifiCred.WifiUser.FirstName,
+                                       LastName = wifiCred.WifiUser.LastName,
+                                       Status=dvcAssociate.status.ToString()
+                                   }).ToList();
 
-                    TotalRecords = row.Count;
-                    
+                    foreach (var item in OmniMaclist)
+                    {
+                        item.FirstName = CommonHasher.Decrypt(item.FirstName, true);
+                        item.LastName = CommonHasher.Decrypt(item.LastName, true);
+                    }
+
+                    TotalOmniRecords = OmniMaclist.Count();
+
+                    OmniMaclist = OmniMaclist.Skip(SkipStart).Take(FixedLength);
                 }
-                var DeviceAssociateSite = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsEntryNotify = m.IsEntryNotify, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList().Skip(SkipStart).Take(FixedLength);
 
-                //var displayLocationData = DeviceAssociateSite;
-                Maclist = from c in DeviceAssociateSite
-                          select new { Id = c.Id, Mac = c.Mac, Status = c.StrStatus, IsTrackByAdmin = c.IsTrackByAdmin, IsDisplay = c.IsDisplay, IsCreatedByAdmin = c.IsCreatedByAdmin, IsEntryNotify=c.IsEntryNotify };
-                
             }
             catch (Exception ex)
             {
