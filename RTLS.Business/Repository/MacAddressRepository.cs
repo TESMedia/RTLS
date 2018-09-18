@@ -31,7 +31,7 @@ namespace RTLS.Repository
         /// <param name="MacAddress"></param>
         /// <param name="LocationServiceType"></param>
         /// <returns></returns>
-        public void UpdateLocationServiceTypeforMac(RequestOmniModel objRequestOmniModel,RtlsEngine EngineType)
+        public void UpdateLocationServiceTypeforMac(RequestOmniModel objRequestOmniModel, RtlsEngine EngineType)
         {
             if (db.Device.Any(m => m.MacAddress == objRequestOmniModel.MacAddress))
             {
@@ -44,11 +44,11 @@ namespace RTLS.Repository
                 {
                     ObjDeviceAssociateSite.IsEntryNotify = true;
                 }
-                if(EngineType==RtlsEngine.OmniEngine)
+                if (EngineType == RtlsEngine.OmniEngine)
                 {
                     ObjDeviceAssociateSite.DeviceRegisteredInEngineType = DeviceRegisteredInEngine.OmniEngine;
-                }  
-                else if(EngineType == RtlsEngine.EngageEngine)
+                }
+                else if (EngineType == RtlsEngine.EngageEngine)
                 {
                     ObjDeviceAssociateSite.DeviceRegisteredInEngineType = DeviceRegisteredInEngine.EngageEngine;
                 }
@@ -70,6 +70,7 @@ namespace RTLS.Repository
             try
             {
                 Device objDevice = new Device();
+                DeviceAssociateSite objDeviceAssociate = new DeviceAssociateSite();
                 foreach (var MacAddress in model.MacAddresses)
                 {
                     if (!(db.Device.Any(m => m.MacAddress == MacAddress)))
@@ -85,7 +86,7 @@ namespace RTLS.Repository
 
                     if (!(db.DeviceAssociateSite.Any(m => m.Device.MacAddress == MacAddress && m.SiteId == model.SiteId)))
                     {
-                       
+
                         objDeviceAssociate.SiteId = model.SiteId;
                         objDeviceAssociate.DeviceId = objDevice.DeviceId;
                         objDeviceAssociate.CreatedDateTime = DateTime.Now;
@@ -112,7 +113,6 @@ namespace RTLS.Repository
                 throw ex;
             }
         }
-
 
         /// <summary>
         /// 
@@ -145,8 +145,8 @@ namespace RTLS.Repository
                         db.SaveChanges();
                         UpdateStatusToRegister(objMac.DeviceId);
                     }
-                    
-                    
+
+
                 }
             }
             catch (Exception ex)
@@ -168,7 +168,7 @@ namespace RTLS.Repository
             try
             {
                 var ObjDevice = db.DeviceAssociateSite.FirstOrDefault(m => m.DeviceId == deviceId);
-                ObjDevice.status = DeviceStatus.Registered;                
+                ObjDevice.status = DeviceStatus.Registered;
                 db.Entry(ObjDevice).State = System.Data.Entity.EntityState.Modified;
                 db.SaveChanges();
             }
@@ -187,14 +187,21 @@ namespace RTLS.Repository
                 {
                     if (db.Device.Any(m => m.MacAddress == item))
                     {
-
+                        //var ObjDevice = db.DeviceAssociateSite.FirstOrDefault(m => m.Device.MacAddress == item);
+                        //ObjDevice.status = DeviceStatus.DeRegistered;
                         var ObjDevice = db.Device.FirstOrDefault(m => m.MacAddress == item);
+
+                        //db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
+                        //db.SaveChanges();
+                        //UpdateStatusToRegister(objMac.DeviceId);
                         var objMac = db.DeviceAssociateSite.FirstOrDefault(m => m.DeviceId == ObjDevice.DeviceId);
                         //objMac.status = DeviceStatus.DeRegistered;
                         objMac.status = DeviceStatus.None;
-                        objMac.IsDeviceRegisterInRtls = false;
-                    db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
-                    db.SaveChanges();
+                        //change
+                        objMac.DeviceRegisteredInEngineType = DeviceRegisteredInEngine.None;
+                        //objMac.IsDeviceRegisterInRtls = false;
+                        db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
+                        db.SaveChanges();
                     }
                 }
             }
@@ -216,21 +223,21 @@ namespace RTLS.Repository
 
             //return UniqueId
             var _objDeviceUniqueId = GetUniqueId(DeviceId);
-            return _objDeviceUniqueId; 
+            return _objDeviceUniqueId;
         }
 
         //Returns uniqueId for Deregister
-        public string DeregisterGetUniqueId(int DeviceId)  
+        public string DeregisterGetUniqueId(int DeviceId)
         {
             //Status modified to DeviceStatus.Registered(value=2) in deviceassociateSite table
-            var objMac = db.DeviceAssociateSite.FirstOrDefault(m => m.DeviceId ==DeviceId);
+            var objMac = db.DeviceAssociateSite.FirstOrDefault(m => m.DeviceId == DeviceId);
             objMac.status = DeviceStatus.DeRegistered;
             db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
             db.SaveChanges();
             //return UniqueId
             var objDeviceUniqueID = GetUniqueId(DeviceId);
             return objDeviceUniqueID;
-           
+
         }
 
         //Get UniqueId
@@ -240,21 +247,9 @@ namespace RTLS.Repository
             return objDevice.UniqueId;
         }
 
-        public bool CheckListExistOrNot(string[] lstMac,int SiteId)
+        public bool CheckListExistOrNot(string[] lstMac, int SiteId)
         {
-            var difference = lstMac.Except(db.DeviceAssociateSite.Where(m=>m.SiteId == SiteId).Select(m => m.Device.MacAddress));
-            if (difference.Count() > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-
-        public bool CheckListExistOrNot(string[] lstMac,int SiteId)
-        {
-            var difference = lstMac.Except(db.DeviceAssociateSite.Where(m=>m.SiteId == SiteId).Select(m => m.Device.MacAddress));
+            var difference = lstMac.Except(db.DeviceAssociateSite.Where(m => m.SiteId == SiteId).Select(m => m.Device.MacAddress));
             if (difference.Count() > 0)
             {
                 return true;
@@ -275,7 +270,7 @@ namespace RTLS.Repository
             return new[] { db.Device.FirstOrDefault(m => m.DeviceId == MacId).MacAddress };
         }
 
-        public string CheckDeviceRegisted(MonitorDevices model,int siteid)
+        public string CheckDeviceRegisted(MonitorDevices model, int siteid)
         {
             string adminMessage = "";
             try
@@ -327,7 +322,7 @@ namespace RTLS.Repository
                         //change
                         //objDeviceAssociate.IsDeviceRegisterInRtls = true;
                         objDeviceAssociate.DeviceRegisteredInEngineType = DeviceRegisteredInEngine.EngageEngine;
-                        objDeviceAssociate.status= DeviceStatus.Registered;
+                        objDeviceAssociate.status = DeviceStatus.Registered;
                         db.DeviceAssociateSite.Add(objDeviceAssociate);
                         db.SaveChanges();
                         adminMessage += "[ " + rec.device_id + " ]  Added to Device & Associate Site Mapping." +
@@ -336,7 +331,7 @@ namespace RTLS.Repository
 
 
                 }
-                if(string.IsNullOrEmpty(adminMessage))
+                if (string.IsNullOrEmpty(adminMessage))
                     adminMessage += "All Device Validated for Registration . Status OK ." +
                                     Environment.NewLine;
             }

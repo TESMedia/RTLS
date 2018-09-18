@@ -33,7 +33,6 @@ namespace RTLS.API
         string query = null;
         string ConnectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
-
         [Route("ListOfMacAddress")]
         [HttpPost]
         public HttpResponseMessage GetListOfMacAddress(RequestLocationDataVM model)
@@ -43,7 +42,7 @@ namespace RTLS.API
             {
                 if (db.RtlsConfiguration.Any(m => m.SiteId == model.SiteId))
                 {
-                    Maclist = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId && m.IsDeviceRegisterInRtls == true).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsTrackByAdmin = m.IsTrackByAdmin, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList(); // IsDIsplay =m.IsDeviceRegisterInRtls
+                    Maclist = db.DeviceAssociateSite.Where(m => m.Site.SiteId == model.SiteId).Select(m => new { Id = m.Id, Mac = m.Device.MacAddress, StrStatus = m.status.ToString(), IsEntryNotify = m.IsEntryNotify, IsTrackByAdmin = m.IsTrackByAdmin, IsDisplay = m.IsTrackByRtls, m.IsCreatedByAdmin }).ToList(); // IsDIsplay =m.IsDeviceRegisterInRtls
                 }
             }
             catch (Exception ex)
@@ -61,7 +60,7 @@ namespace RTLS.API
         public HttpResponseMessage AjaxGetListOfMacAddress(JQueryDTRequestDeviceData model)
         {
             int FixedLength = Convert.ToInt32(model.RecordToDisply);
-            int SkipStart = (Convert.ToInt32(model.CurrentPage)* FixedLength);
+            int SkipStart = (Convert.ToInt32(model.CurrentPage) * FixedLength);
             var OmniEngine = (Convert.ToInt32(DeviceRegisteredInEngine.OmniEngine));
             var EngageEngine = (Convert.ToInt32(DeviceRegisteredInEngine.EngageEngine));
             int pages = (SkipStart + FixedLength) / FixedLength;
@@ -91,7 +90,7 @@ namespace RTLS.API
                                        Email = wifiCred.WifiUser.UserName,
                                        FirstName = wifiCred.WifiUser.FirstName,
                                        LastName = wifiCred.WifiUser.LastName,
-                                       Status=dvcAssociate.status.ToString()
+                                       Status = dvcAssociate.status.ToString()
                                    });
 
                     TotalOmniRecords = OmniMaclist.Count();
@@ -108,7 +107,6 @@ namespace RTLS.API
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message);
                 log.Error(ex.InnerException.Message);
             }
             return new HttpResponseMessage()
@@ -117,8 +115,8 @@ namespace RTLS.API
                 {
                     CurrentPage = pages,
                     TotalRecords = TotalRecords,
-                    TotalOmniRecords= TotalOmniRecords,
-                    TotalEngageRecords=TotalEngageRecords,
+                    TotalOmniRecords = TotalOmniRecords,
+                    TotalEngageRecords = TotalEngageRecords,
                     RecordToDisply = FixedLength,
                     OmniMaclist,
                     EngageMaclist
@@ -126,36 +124,8 @@ namespace RTLS.API
             };
         }
 
-            //IEnumerable<LocationData> lstLocationData = null;
-            IEnumerable<RtlsNotificationData> lstLocationData = null;
-            try
-            {
-                //var objRtlsConfiguration = db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
-                //var row = db.LocationData.Where(m => m.sn == objRtlsConfiguration.EngageSiteName); // IsDIsplay =m.IsDeviceRegisterInRtls
-                lstLocationData = db.RtlsNotificationData;
-                TotalRecords = lstLocationData.Count();
-                lstLocationData = db.RtlsNotificationData.OrderByDescending(m => m.NotifyDateTime).ToList().Skip(SkipStart).Take(FixedLength);
-                //var _rtlsDataAsPerSite = db.RtlsConfiguration.Where(m => m.SiteId == model.SiteId).FirstOrDefault();
-                //timeframe = _rtlsDataAsPerSite.TimeFrame;
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.InnerException.Message);
-            }
-            return new HttpResponseMessage()
-            {
-                Content = new StringContent(JsonConvert.SerializeObject(new
-                {
-                    CurrentPage = pages,
-                    TotalRecords = TotalRecords,
-                    RecordToDisply = FixedLength,
-                    TimeFrame = timeframe,
-                    lstLocationData
-                }), Encoding.UTF8, "application/json")
-            };
-        }
 
-        [Route("GetLocationData")] 
+        [Route("GetLocationData")]
         [HttpPost]
         public HttpResponseMessage GetListOfLocationData(JQueryDTRequestDeviceData model)
         {
@@ -198,7 +168,7 @@ namespace RTLS.API
 
         [Route("FilterLocationData")]
         [HttpPost]
-        public HttpResponseMessage FilterLocationData(FilterLocationData model)
+        public HttpResponseMessage FilterLocationData(Domins.ViewModels.FilterLocationData model)
         {
             int FixedLength = Convert.ToInt32(model.RecordToDisply);
             int SkipStart = (Convert.ToInt32(model.CurrentPage) * FixedLength);
@@ -209,7 +179,7 @@ namespace RTLS.API
             {
                 //var objRtlsConfiguration = db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
                 //var row = db.LocationData.Where(m => m.sn == objRtlsConfiguration.EngageSiteName);
-                lstLocationData=db.RtlsNotificationData;
+                lstLocationData = db.RtlsNotificationData;
                 TotalRecords = lstLocationData.Count();
                 if (model.MacAddress != null && model.AreaName != null)
                 {
@@ -244,7 +214,7 @@ namespace RTLS.API
 
         [Route("UpdateRTLSDataDelete")]
         [HttpPost]
-        public HttpResponseMessage UpdateRTLSDataDelete(FilterLocationData model)
+        public HttpResponseMessage UpdateRTLSDataDelete(Domins.ViewModels.FilterLocationData model)
         {
             var _rtlsDataAccordingtoSite = db.RtlsConfiguration.Where(m => m.SiteId == model.SiteId).FirstOrDefault();
             _rtlsDataAccordingtoSite.TimeFrame = model.TimeFrame;
@@ -280,43 +250,4 @@ namespace RTLS.API
     }
 
 
-
-
-        [Route("UpdateRTLSDataDelete")]
-        [HttpPost]
-        public HttpResponseMessage UpdateRTLSDataDelete(FilterLocationData model)
-        {
-            var _rtlsDataAccordingtoSite = db.RtlsConfiguration.Where(m => m.SiteId == model.SiteId).FirstOrDefault();
-            _rtlsDataAccordingtoSite.TimeFrame = model.TimeFrame;
-            db.SaveChanges();
-            // ConnectionString
-            connection = new MySqlConnection(ConnectionString);
-            if (model.TimeFrame != 0 && model.TimeFrame != 1)
-            {
-                query = "DROP EVENT IF EXISTS ClearRTLSData; CREATE EVENT ClearRTLSData ON SCHEDULE EVERY " + " " + model.TimeFrame + " " + " HOUR COMMENT 'Clear RTLS Data as per Admin Configuration' DO CALL ArchiveRTLSData(" + "'" + _rtlsDataAccordingtoSite.EngageSiteName + "'" + ")";
-
-            }
-            else
-            {
-                query = "DROP EVENT IF EXISTS ClearRTLSData";
-            }
-
-            //open connection
-            connection.Open();
-            //create command and assign the query and connection from the constructor
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-
-            //Execute command
-            cmd.ExecuteNonQuery();
-
-            //close connection
-            connection.Close();
-
-            return new HttpResponseMessage()
-            {
-
-            };
-        }
-
-    }
 }
