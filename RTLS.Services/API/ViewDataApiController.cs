@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using RTLS.Common;
 using RTLS.Domains;
 using RTLS.Domins;
+using RTLS.Domins.Enums;
 using RTLS.Domins.ViewModels;
 using RTLS.ViewModel;
 using System;
@@ -22,7 +23,7 @@ namespace RTLS.API
 {
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     [RoutePrefix("UIData")]
-    [Authorize]
+    //[Authorize]
     public class ViewDataApiController : ApiController
     {
         private static log4net.ILog Log { get; set; }
@@ -60,8 +61,9 @@ namespace RTLS.API
         public HttpResponseMessage AjaxGetListOfMacAddress(JQueryDTRequestDeviceData model)
         {
             int FixedLength = Convert.ToInt32(model.RecordToDisply);
-            int SkipStart = (Convert.ToInt32(model.CurrentPage) * FixedLength);
-
+            int SkipStart = (Convert.ToInt32(model.CurrentPage)* FixedLength);
+            var OmniEngine = (Convert.ToInt32(DeviceRegisteredInEngine.OmniEngine));
+            var EngageEngine = (Convert.ToInt32(DeviceRegisteredInEngine.EngageEngine));
             int pages = (SkipStart + FixedLength) / FixedLength;
             int TotalRecords = 0;
             int TotalOmniRecords = 0;
@@ -124,6 +126,34 @@ namespace RTLS.API
             };
         }
 
+            //IEnumerable<LocationData> lstLocationData = null;
+            IEnumerable<RtlsNotificationData> lstLocationData = null;
+            try
+            {
+                //var objRtlsConfiguration = db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
+                //var row = db.LocationData.Where(m => m.sn == objRtlsConfiguration.EngageSiteName); // IsDIsplay =m.IsDeviceRegisterInRtls
+                lstLocationData = db.RtlsNotificationData;
+                TotalRecords = lstLocationData.Count();
+                lstLocationData = db.RtlsNotificationData.OrderByDescending(m => m.NotifyDateTime).ToList().Skip(SkipStart).Take(FixedLength);
+                //var _rtlsDataAsPerSite = db.RtlsConfiguration.Where(m => m.SiteId == model.SiteId).FirstOrDefault();
+                //timeframe = _rtlsDataAsPerSite.TimeFrame;
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.InnerException.Message);
+            }
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(new
+                {
+                    CurrentPage = pages,
+                    TotalRecords = TotalRecords,
+                    RecordToDisply = FixedLength,
+                    TimeFrame = timeframe,
+                    lstLocationData
+                }), Encoding.UTF8, "application/json")
+            };
+        }
 
         [Route("GetLocationData")] 
         [HttpPost]
