@@ -27,6 +27,16 @@ namespace RTLS.Repository
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public Site GetAsPerSite(int SiteId)
+        {
+            return db.Site.Include("RtlsConfiguration").Include("RtlsConfiguration.Devices").FirstOrDefault(m => m.SiteId == SiteId);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="SiteId"></param>
         /// <returns></returns>
         public RtlsConfiguration GetAsPerSiteId(int SiteId)
@@ -49,10 +59,7 @@ namespace RTLS.Repository
             }
             db.SaveChanges();
         }
-
-
-
-
+        
         /// <summary>
         /// 
         /// </summary>
@@ -61,6 +68,16 @@ namespace RTLS.Repository
         public bool CheckRtlsConfigExistOrNotAsPerSite(int SiteId)
         {
             return db.RtlsConfiguration.Any(m => m.SiteId == SiteId);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="DeviceId"></param>
+        /// <returns></returns>
+        public DeviceAssociateSite DeviceAssociateSiteStatus(int DeviceId)
+        {
+            return db.DeviceAssociateSite.FirstOrDefault(m => m.DeviceId == DeviceId);
+           
         }
 
         public void Dispose()

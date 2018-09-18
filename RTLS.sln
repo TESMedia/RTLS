@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTLS.Business", "RTLS.Busin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTLS.Services", "RTLS.Services\RTLS.Services.csproj", "{8394C5F6-B19B-4C04-BA39-664A53A61066}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTLS.Common", "RTLS.Common\RTLS.Common.csproj", "{8585C24D-4933-4897-8DDD-4F58651B9A1A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{8394C5F6-B19B-4C04-BA39-664A53A61066}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8394C5F6-B19B-4C04-BA39-664A53A61066}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8394C5F6-B19B-4C04-BA39-664A53A61066}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8585C24D-4933-4897-8DDD-4F58651B9A1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8585C24D-4933-4897-8DDD-4F58651B9A1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8585C24D-4933-4897-8DDD-4F58651B9A1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8585C24D-4933-4897-8DDD-4F58651B9A1A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

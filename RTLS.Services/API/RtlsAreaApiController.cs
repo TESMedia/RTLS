@@ -18,7 +18,7 @@ namespace RTLS.API
 {
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     [RoutePrefix("api")]
-    [Authorize]
+    //[Authorize]
     public class RtlsAreaApiController:ApiController
     {
         private static log4net.ILog Log { get; set; }

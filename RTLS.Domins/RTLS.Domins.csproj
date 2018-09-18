@@ -89,6 +89,9 @@
     <Compile Include="Device.cs" />
     <Compile Include="DeviceAssociateSite.cs" />
     <Compile Include="Enums\CutomEnum.cs" />
+    <Compile Include="Enums\LocationServicesType.cs" />
+    <Compile Include="Enums\DeviceRegisteredInEngine.cs" />
+    <Compile Include="Enums\RtlsEngine.cs" />
     <Compile Include="FilterLocationData.cs" />
     <Compile Include="Identity\A8AdminDbContext.cs" />
     <Compile Include="Identity\AccountBindingModels.cs" />
@@ -107,16 +110,24 @@
     <Compile Include="Identity\EmailService.cs" />
     <Compile Include="Identity\IdentityModels.cs" />
     <Compile Include="Identity\SmsService.cs" />
+    <Compile Include="JsonIgnoreAttribute.cs" />
+    <Compile Include="NetWorkOfSite.cs" />
+    <Compile Include="OmniDeviceMapping.cs" />
     <Compile Include="RtlsArea.cs" />
+    <Compile Include="RtlsNotificationData.cs" />
     <Compile Include="Site.cs" />
     <Compile Include="SiteFloor.cs" />
     <Compile Include="TrackMacNotification.cs" />
+    <Compile Include="UsersAddress.cs" />
+    <Compile Include="ViewModels\EngageRegisterDevice.cs" />
+    <Compile Include="ViewModels\FilterLocationData.cs" />
     <Compile Include="ViewModels\jQueryDataTableParamModel.cs" />
     <Compile Include="LocationData.cs" />
     <Compile Include="ViewModels\JQueryDTRequestDeviceData.cs" />
     <Compile Include="ViewModels\LocationsViewModel.cs" />
     <Compile Include="ViewModels\MonitorDevice.cs" />
     <Compile Include="ViewModels\Notification.cs" />
+    <Compile Include="ViewModels\OmniRequest\RequestOmniModel.cs" />
     <Compile Include="ViewModels\PagedResultsViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Record.cs" />
@@ -125,7 +136,13 @@
     <Compile Include="ViewModels\RequestLocationDataVM.cs" />
     <Compile Include="ViewModels\Request\NotificationRequest.cs" />
     <Compile Include="ViewModels\Result.cs" />
+    <Compile Include="ViewModels\ReturnData.cs" />
     <Compile Include="ViewModels\RtlsAreaViewModel.cs" />
+    <Compile Include="ViewModels\RTLSSetUpReturnDto.cs" />
+    <Compile Include="ViewModels\SecomLogin.cs" />
+    <Compile Include="ViewModels\SecomRegisterDevice.cs" />
+    <Compile Include="WifiUser.cs" />
+    <Compile Include="WifiUserLoginCredential.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

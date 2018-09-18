@@ -17,6 +17,7 @@ namespace RTLS.Domains
         }
 
         public DbSet<Site> Site { get; set; }
+        public DbSet<NetWorkOfSite> NetWorkOfSite { get; set; }
         public DbSet<RtlsConfiguration> RtlsConfiguration { get; set; }
         public DbSet<RtlsArea> RtlsArea { get; set; }
         public DbSet<SiteFloor> SiteFloor { get; set; }
@@ -28,6 +29,11 @@ namespace RTLS.Domains
         public DbSet<TrackMember> TrackMember { get; set; }
         public DbSet<AppLog> AppLogs { get; set; }
         public DbSet<TrackMacNotification> TrackMacNotification { get; set; }
+        public DbSet<OmniDeviceMapping> OmniDeviceMapping { get; set; }
+        public DbSet<RtlsNotificationData> RtlsNotificationData { get; set; }
+        public DbSet<WifiUserLoginCredential> WifiUserLoginCredential { get; set; }
+        public DbSet<WifiUser> WifiUser { get; set; }    
+        public DbSet<UsersAddress> UsersAddress { get; set; }
         
 
         public static ApplicationDbContext Create()
@@ -37,20 +43,30 @@ namespace RTLS.Domains
 
         protected override void OnModelCreating(System.Data.Entity.DbModelBuilder modelBuilder)
         {
+            modelBuilder.Conventions.Remove<System.Data.Entity.ModelConfiguration.Conventions.PluralizingTableNameConvention>();
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Site>().ToTable("Site");
+            modelBuilder.Entity<WifiUser>().ToTable("WifiUser");
+            modelBuilder.Entity<WifiUserLoginCredential>().ToTable("WifiUserLoginCredential");
+            modelBuilder.Entity<UsersAddress>().ToTable("UsersAddress");
             modelBuilder.Entity<RtlsConfiguration>().ToTable("RtlsConfiguration");
             modelBuilder.Entity<RtlsArea>().ToTable("RtlsArea").HasKey(m=>m.Id);
-            modelBuilder.Entity<SiteFloor>().ToTable("SiteFloor");
+            modelBuilder.Entity<SiteFloor>().ToTable("SiteFloor"); 
             modelBuilder.Entity<Device>().ToTable("Device");
             modelBuilder.Entity<DeviceAssociateSite>().ToTable("DeviceAssociateSite");
             modelBuilder.Entity<LocationData>().ToTable("LocationData");
             modelBuilder.Entity<AppLog>().ToTable("AppLog");
             modelBuilder.Entity<TrackMacNotification>().ToTable("TrackMacNotification");
             modelBuilder.Entity<TrackMember>().ToTable("TrackMember");
+            modelBuilder.Entity<OmniDeviceMapping>().ToTable("OmniDeviceMapping");
+            modelBuilder.Entity<RtlsNotificationData>().ToTable("RtlsNotificationData");
+            modelBuilder.Entity<NetWorkOfSite>().ToTable("NetWorkOfSite");
 
             modelBuilder.Entity<Site>()
            .HasOptional(f => f.RtlsConfiguration)
            .WithRequired(s => s.Site);
+
+            modelBuilder.Entity<Device>().HasOptional(g => g.OmniDeviceMapping).WithRequired(h => h.Device);
         }
     }
 }

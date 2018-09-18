@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Configuration;
@@ -13,13 +12,15 @@ using log4net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
-using System.Web;
 using RTLS.Domins.ViewModels;
 using RTLS.Domains;
 using RTLS.Domins.Enums;
 using RTLS.Domins.ViewModels.Request;
 using System.Data.Entity;
 using RTLS.Business.Repository;
+using RTLS.Business;
+using RTLS.Domins.ViewModels.OmniRequest;
+using RTLS.Domins;
 
 namespace RTLS.API
 {
@@ -31,7 +32,9 @@ namespace RTLS.API
         private string completeFatiAPI = ConfigurationManager.AppSettings["FatiDeviceApi"].ToString();
         private RtlsConfigurationRepository objRtlsConfigurationRepository = null;
         private static log4net.ILog Log { get; set; }
+        OmniDeviceMappingRepository _OmniDeviceMappingRepository = new OmniDeviceMappingRepository();
         ILog log = log4net.LogManager.GetLogger(typeof(RealTimeApiController));
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         public RealTimeApiController()
         {
@@ -60,46 +63,161 @@ namespace RTLS.API
         public async Task<HttpResponseMessage> AddDevices(RequestLocationDataVM model)
         {
             Notification objNotifications = new Notification();
+            DeviceAssociateSite deviceid = null;
             using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
             {
-                Site objSite=objRtlsConfigurationRepository.GetAsPerSite(model.SiteId,model.SiteName);
-                CommonHeaderInitializeHttpClient(objSite.RtlsConfiguration.EngageBaseAddressUri);
-                try
-                {
-                queryParams = new FormUrlEncodedContent(new Dictionary<string, string>()
-                {
-                    { "sn", objSite.RtlsConfiguration.EngageSiteName },
-                    { "bn",objSite.RtlsConfiguration.EngageBuildingName },
-                    {"device_ids",String.Join(",",model.MacAddresses) }
-                }).ReadAsStringAsync().Result;
+                Site objSite = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId);
 
-                    var result = await httpClient.PostAsync(completeFatiAPI, new StringContent(queryParams, Encoding.UTF8, "application/x-www-form-urlencoded"));
-                    if (result.IsSuccessStatusCode)
+                foreach (var item in model.MacAddresses)
+                {
+                    // When Device is coming for reregister in OmniEngiene
+                    int deviceId = _OmniDeviceMappingRepository.GetDeviceId(item);
+                     deviceid = objRtlsConfigurationRepository.DeviceAssociateSiteStatus(deviceId);
+                    if (deviceid.status == DeviceStatus.DeRegistered)
                     {
-                        string resultContent = await result.Content.ReadAsStringAsync();
-                        objNotifications = JsonConvert.DeserializeObject<Notification>(resultContent);
-                        if (objNotifications.result.returncode == Convert.ToInt32(FatiApiResult.Success))
+                        OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
+                        RequestOmniModel objRequestOmniModel = new RequestOmniModel();
+                        objRequestOmniModel.MacAddress = item;
+                        await objOmniEngineBusiness.ReRegister(objRequestOmniModel);
+                    }
+                }
+                //First time devive will store
+                if (deviceid.status == DeviceStatus.None)
+                {
+                    try
+                    {
+                        if(objSite.RtlsConfiguration.RtlsEngineType == RtlsEngine.OmniEngine)
                         {
-                            using (MacAddressRepository objMacRepository = new MacAddressRepository())
+                            foreach (var item in model.MacAddresses)
                             {
-                                objMacRepository.RegisterListOfMacAddresses(model);
+                                OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
+                                RequestOmniModel objRequestOmniModel = new RequestOmniModel();
+                                objRequestOmniModel.MacAddress = item;
+
+                                await objOmniEngineBusiness.regMacToOmniEngine(objRequestOmniModel);
+
+                                objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Success);
+                                using (MacAddressRepository objMacRepository = new MacAddressRepository())
+                                {
+                                    objMacRepository.RegisterListOfMacAddresses(model);
+                                }
+                            }
+                        }
+                        if (objSite.RtlsConfiguration.RtlsEngineType == RtlsEngine.EngageEngine)
+                        {
+                            foreach (var item in model.MacAddresses)
+                            {
+                                EngageEngineBusiness objEngageEngineBusiness = new EngageEngineBusiness();
+                                RequestOmniModel objRequestOmniModel = new RequestOmniModel();
+                                objRequestOmniModel.SiteId = model.SiteId;
+                                objRequestOmniModel.MacAddress = item;
+                                if (await objEngageEngineBusiness.regMacToEngageEngine(objRequestOmniModel))
+                                {
+                                    objNotifications.result.returncode = Convert.ToInt32(FatiApiResult.Success);
+                                    using (MacAddressRepository objMacRepository = new MacAddressRepository())
+                                    {
+                                        objMacRepository.RegisterListOfMacAddresses(model);
+                                    }
+                                }
                             }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    log.Error(ex.InnerException.Message);
-                    objNotifications.result.returncode = -1;
-                    objNotifications.result.errmsg = ex.InnerException.Message;
-                }
+                    catch (Exception ex)
+                    {
+                        log.Error(ex.InnerException.Message);
+                        objNotifications.result.returncode = -1;
+                        objNotifications.result.errmsg = ex.InnerException.Message;
+                    }
 
-            }
-            return new HttpResponseMessage()
+
+                }
+            }                
+                return new HttpResponseMessage()
+                {
+                   
+                    Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
+                };
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [Route("DeleteDevices")]
+        [HttpPost]
+        public async Task<HttpResponseMessage> DeleteDevices(RequestLocationDataVM model)
+        {
+
+            Notification objNotifications = new Notification();
+            DeviceAssociateSite deviceStatus = null;
+            using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
             {
+                Site objSite = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId);
+
+                foreach (var item in model.MacAddresses)
+                {
+                    // When Device is coming to delete in OmniEngiene
+                    int deviceId = _OmniDeviceMappingRepository.GetDeviceId(item);
+                    deviceStatus = objRtlsConfigurationRepository.DeviceAssociateSiteStatus(deviceId);
+                    if (deviceStatus.status == DeviceStatus.DeRegistered)
+                    {
+
+                        OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
+                        RequestOmniModel objRequestOmniModel = new RequestOmniModel();
+                        objRequestOmniModel.MacAddress = item;
+                        var returnStatus=await objOmniEngineBusiness.DeleteDevices(objRequestOmniModel);
+
+                        if(returnStatus==true)
+                        {
+                            try
+                            {
+                                //Delete Device ralated data 
+                                DeviceAssociateSite _DeviceAssociateSite = db.DeviceAssociateSite.FirstOrDefault(k => k.DeviceId == deviceId);
+                                Device _Device = db.Device.FirstOrDefault(p => p.DeviceId == deviceId);
+                                NetWorkOfSite _NetworkOfSite = db.NetWorkOfSite.Where(p => p.SiteId == model.SiteId).Where(q => q.LocServiceTypeId != 0).FirstOrDefault();
+                                OmniDeviceMapping _OmniDeviceMapping = db.OmniDeviceMapping.FirstOrDefault(k => k.DeviceId == deviceId);
+                               
+                                //If User registered from CaptivePortal
+                                if (_DeviceAssociateSite.IsRegisterInCaptivePortal==true)
+                                {
+                                    WifiUserLoginCredential _WifiUserLoginCredential = db.WifiUserLoginCredential.Where(p => p.Device.DeviceId == deviceId).Where(q => q.NetWorkOfSiteId == _NetworkOfSite.NetWorkOfSiteId).FirstOrDefault();
+                                    WifiUser _WifiUser = db.WifiUser.Where(p => p.UserId == _WifiUserLoginCredential.WifiUserId).FirstOrDefault();
+                                    UsersAddress _UsersAddress = db.UsersAddress.Where(p => p.UserId == _WifiUser.UserId).FirstOrDefault();
+                                    db.UsersAddress.Remove(_UsersAddress);
+                                    db.WifiUser.Remove(_WifiUser);
+                                    db.WifiUserLoginCredential.Remove(_WifiUserLoginCredential);
+                                }
+
+                                
+                                db.DeviceAssociateSite.Remove(_DeviceAssociateSite);
+                                db.OmniDeviceMapping.Remove(_OmniDeviceMapping);
+                                db.Device.Remove(_Device);
+                                db.SaveChanges();
+
+                            }
+                            catch(Exception ex)
+                            {
+                                log.Error(ex.Message);
+                            }
+                            
+
+                        }
+                    }
+
+
+                }
+            }
+
+             return new HttpResponseMessage()
+            {
+
                 Content = new StringContent(JsonConvert.SerializeObject(objNotifications), Encoding.UTF8, "application/json")
             };
         }
+
+
+
 
 
         /// <summary>
@@ -112,6 +230,7 @@ namespace RTLS.API
         public async Task<HttpResponseMessage> GetDevices(RequestLocationDataVM model)
         {
              MonitorDevices objMonitorDevice = new MonitorDevices();
+
             //Notification objNotifications = new Notification();
             using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
             {
@@ -169,48 +288,67 @@ namespace RTLS.API
         public async Task<HttpResponseMessage> DeRegisterDevices(RequestLocationDataVM model)
         {
             Notification objNotifications = new Notification();
+            HttpRequestMessage message = new HttpRequestMessage();
+            OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
+            RequestOmniModel objRequestOmniModel = new RequestOmniModel();
             try
             {
                 using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
                 {
                     Site objSite = objRtlsConfigurationRepository.GetAsPerSite(model.SiteId, model.SiteName);
-                    CommonHeaderInitializeHttpClient(objSite.RtlsConfiguration.EngageBaseAddressUri);
-                    HttpRequestMessage message = new HttpRequestMessage(new HttpMethod("DELETE"), "/api/engage/v1/device_monitors/");
-                    var queryParams = new Dictionary<string, string>()
-                {
-                    { "sn",objSite.RtlsConfiguration.EngageSiteName },
-                    { "bn",objSite.RtlsConfiguration.EngageBuildingName },
-                    {"device_ids",String.Join(",",model.MacAddresses) }
-                };
-
-                    message.Content = new FormUrlEncodedContent(queryParams);
-                    try
+                    if(objSite.RtlsConfiguration.RtlsEngineType == RtlsEngine.OmniEngine)
                     {
-                        HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(message);
-                        if (httpResponseMessage.EnsureSuccessStatusCode().IsSuccessStatusCode)
+                        foreach (var item in model.MacAddresses)
                         {
-                            string resultContent = await httpResponseMessage.Content.ReadAsStringAsync();
-                            objNotifications = JsonConvert.DeserializeObject<Notification>(resultContent);
-                            if (objNotifications.result.returncode == Convert.ToInt32(FatiApiResult.Success))
+                            
+                            objRequestOmniModel.MacAddress = item;
+                            var deregisterData= await objOmniEngineBusiness.DeregisterMacFromOmniEngine(objRequestOmniModel);
+
+                        }
+
+                    }
+                    else if(objSite.RtlsConfiguration.RtlsEngineType == RtlsEngine.EngageEngine)
+                    {
+                        CommonHeaderInitializeHttpClient(objSite.RtlsConfiguration.EngageBaseAddressUri);
+                        message = new HttpRequestMessage(new HttpMethod("DELETE"), "/api/engage/v1/device_monitors/");
+                        var queryParams = new Dictionary<string, string>()
+                      {
+                        { "sn",objSite.RtlsConfiguration.EngageSiteName },
+                        { "bn",objSite.RtlsConfiguration.EngageBuildingName },
+                        {"device_ids",String.Join(",",model.MacAddresses) }
+                      };
+
+                        message.Content = new FormUrlEncodedContent(queryParams);
+                        try
+                        {
+                            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(message);
+                            if (httpResponseMessage.EnsureSuccessStatusCode().IsSuccessStatusCode)
                             {
-                                using (MacAddressRepository objMacRepository = new MacAddressRepository())
+                                string resultContent = await httpResponseMessage.Content.ReadAsStringAsync();
+                                objNotifications = JsonConvert.DeserializeObject<Notification>(resultContent);
+                                if (objNotifications.result.returncode == Convert.ToInt32(FatiApiResult.Success))
                                 {
-                                    objMacRepository.DeRegisterListOfMacs(model.MacAddresses);
+                                    using (MacAddressRepository objMacRepository = new MacAddressRepository())
+                                    {
+                                        objMacRepository.DeRegisterListOfMacs(model.MacAddresses);
+                                    }
                                 }
                             }
+                            else
+                            {
+                                objNotifications.result.returncode = Convert.ToInt32(httpResponseMessage.StatusCode.ToString());
+                                objNotifications.result.errmsg = "Some Problem Occured";
+                            }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            objNotifications.result.returncode = Convert.ToInt32(httpResponseMessage.StatusCode.ToString());
-                            objNotifications.result.errmsg = "Some Problem Occured";
+                            string errorType = ex.GetType().ToString();
+                            string errorMessage = errorType + ": " + ex.Message;
+                            throw new Exception(errorMessage, ex.InnerException);
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        string errorType = ex.GetType().ToString();
-                        string errorMessage = errorType + ": " + ex.Message;
-                        throw new Exception(errorMessage, ex.InnerException);
-                    }
+                   
+                   
                 }
             }
             catch (Exception ex)
