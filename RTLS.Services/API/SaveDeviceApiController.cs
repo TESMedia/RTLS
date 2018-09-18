@@ -15,7 +15,7 @@ namespace RTLS.API
 {
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     [RoutePrefix("Device")]
-   // [Authorize]
+    // [Authorize]
     public class SaveDeviceApiController : ApiController
     {
         private static log4net.ILog Log { get; set; }
@@ -31,15 +31,10 @@ namespace RTLS.API
             {
                 using (MacAddressRepository objMacRepository = new MacAddressRepository())
                 {
-                    if (objMacRepository.CheckListExistOrNot(model.MacAddresses, model.SiteId))
+                    if (objMacRepository.CheckListExistOrNot(model.MacAddresses, model.RtlsConfigurationId))
                     {
                         objMacRepository.SaveMacAddress(model);
                     }
-                    else
-                    {
-
-                    }
-
                 }
             }
             catch (Exception ex)
@@ -57,10 +52,10 @@ namespace RTLS.API
             string retResult = "";
             try
             {
-               
-                if(db.Device.Any(m=>m.MacAddress==model.Mac))
+
+                if (db.Device.Any(m => m.MacAddress == model.Mac))
                 {
-                    var ObjMac = db.DeviceAssociateSite.First(m => m.Device.MacAddress == model.Mac && m.SiteId==model.SiteId && m.IsDeviceRegisterInRtls==true);
+                    var ObjMac = db.DeviceAssociateSite.First(m => m.Device.MacAddress == model.Mac && m.SiteId == model.SiteId);
                     ObjMac.IsTrackByRtls = model.IsDisplay;
                     db.Entry(ObjMac).State = EntityState.Modified;
                     db.SaveChanges();

@@ -22,7 +22,7 @@ using RTLS.Business;
 namespace RTLS.API
 {
     [RoutePrefix("api/OmniEngine")]
-    public class OmniEngineApiController : ApiController,IDisposable
+    public class OmniEngineApiController : ApiController, IDisposable
     {
         private static log4net.ILog Log { get; set; }
         ILog log = log4net.LogManager.GetLogger(typeof(OmniEngineApiController));
@@ -34,17 +34,13 @@ namespace RTLS.API
 
         [Route("RegisterDevice")]
         public async Task<HttpResponseMessage> AddDevice(RequestOmniModel objRequestOmniModel)
-        {            
+        {
             //objRequestOmniModel.MacAddress= "7z:c5:37:c0:83:y3";
             //create the RequestModel for secom api
-            string result = null;            
+            string result = null;
             try
             {
-                SecomRegisterDevice objSecomRegisterDevice = new SecomRegisterDevice();
-                objSecomRegisterDevice.mac = objRequestOmniModel.MacAddress.ToLower();
-                objSecomRegisterDevice.station_info.device.id = objRequestOmniModel.MacAddress;
-
-                using (var objSecomClient = new SecomClient())
+                using (RtlsConfigurationRepository objRtlsConfigurationRepository = new RtlsConfigurationRepository())
                 {
                     //Get the EngageEngine Base Url as per SiteId
                     Site objSiteConfiguration = objRtlsConfigurationRepository.GetAsPerSite(objRequestOmniModel.SiteId);
@@ -60,19 +56,19 @@ namespace RTLS.API
                     }
                     if (objSiteConfiguration.RtlsConfiguration.RtlsEngineType == RtlsEngine.EngageEngine)
                     {
-                        EngageEngineBusiness objEngageEngineBusiness = new EngageEngineBusiness();                        
+                        EngageEngineBusiness objEngageEngineBusiness = new EngageEngineBusiness();
                         if (await objEngageEngineBusiness.regMacToEngageEngine(objRequestOmniModel))
                         {
                             using (MacAddressRepository objMacAddressRepository = new MacAddressRepository())
                             {
                                 objMacAddressRepository.UpdateLocationServiceTypeforMac(objRequestOmniModel, objSiteConfiguration.RtlsConfiguration.RtlsEngineType);
-                            }                            
+                            }
                         }
                         //string EngageBaseAddressUri = objSiteConfiguration.RtlsConfiguration.EngageBaseAddressUri;
                     }
-                }                
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 result = ex.Message;
                 log.Error(ex.Message);
