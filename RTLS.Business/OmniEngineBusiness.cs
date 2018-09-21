@@ -32,6 +32,7 @@ namespace RTLS.Business
             SecomRegisterDevice objSecomRegisterDevice = new SecomRegisterDevice();
             objSecomRegisterDevice.mac = objRequestOmniModel.MacAddress;
             objSecomRegisterDevice.station_info.device.id = objRequestOmniModel.MacAddress;
+            objSecomRegisterDevice.station_info.user.label = objRequestOmniModel.UserName;
 
             using (var objSecomClient = new SecomClient())
             {
