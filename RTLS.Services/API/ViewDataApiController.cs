@@ -248,38 +248,5 @@ namespace RTLS.API
             };
         }
 
-        [Route("GetLocationData")]
-        [HttpPost]
-        public HttpResponseMessage GetListOfLocationData(JQueryDTRequestDeviceData model)
-        {
-            int FixedLength = Convert.ToInt32(model.RecordToDisply);
-            int SkipStart = (Convert.ToInt32(model.CurrentPage) * FixedLength);
-
-            int pages = (SkipStart + FixedLength) / FixedLength;
-            int TotalRecords = 0;
-
-            IEnumerable<LocationData> lstLocationData = null;
-            try
-            {
-                var objRtlsConfiguration = db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
-                var row = db.LocationData.Where(m => m.sn == objRtlsConfiguration.EngageSiteName); // IsDIsplay =m.IsDeviceRegisterInRtls
-                TotalRecords = row.Count();
-                lstLocationData = db.LocationData.OrderByDescending(m=>m.last_seen_ts).Where(m => m.sn == objRtlsConfiguration.EngageSiteName).ToList().Skip(SkipStart).Take(FixedLength);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex.InnerException.Message);
-            }
-            return new HttpResponseMessage()
-            {
-                Content = new StringContent(JsonConvert.SerializeObject(new
-                {
-                    CurrentPage = pages,
-                    TotalRecords = TotalRecords,
-                    RecordToDisply = FixedLength,
-                    lstLocationData
-                }), Encoding.UTF8, "application/json")
-            };
-        }
     }
 }

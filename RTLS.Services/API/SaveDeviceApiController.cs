@@ -31,14 +31,10 @@ namespace RTLS.API
             {
                 using (MacAddressRepository objMacRepository = new MacAddressRepository())
                 {
-<<<<<<< HEAD
-                    if (objMacRepository.CheckListExistOrNot(model.MacAddresses, model.RtlsConfigurationId))
-=======
-                    if (objMacRepository.CheckListExistOrNot(model.MacAddresses,model.SiteId))
->>>>>>> Added the changes to fix some of the issues while testing
-                    {
+                  if (objMacRepository.CheckListExistOrNot(model.MacAddresses,model.SiteId))
+                 {
                         objMacRepository.SaveMacAddress(model);
-                    }
+                 }
                 }
             }
             catch (Exception ex)
