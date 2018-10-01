@@ -166,50 +166,50 @@ namespace RTLS.API
         }
 
 
-        //[Route("FilterLocationData")]
-        //[HttpPost]
-        //public HttpResponseMessage FilterLocationData(Domins.ViewModels.FilterLocationData model)
-        //{
-        //    int FixedLength = Convert.ToInt32(model.RecordToDisply);
-        //    int SkipStart = (Convert.ToInt32(model.CurrentPage) * FixedLength);
-        //    int pages = (SkipStart + FixedLength) / FixedLength;
-        //    int TotalRecords = 0;
-        //    IEnumerable<RtlsNotificationData> lstLocationData = null;
-        //    try
-        //    {
-        //        //var objRtlsConfiguration = db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
-        //        //var row = db.LocationData.Where(m => m.sn == objRtlsConfiguration.EngageSiteName);
-        //        lstLocationData = db.RtlsNotificationData;
-        //        TotalRecords = lstLocationData.Count();
-        //        if (model.MacAddress != null && model.AreaName != null)
-        //        {
-        //            lstLocationData = db.RtlsNotificationData.OrderByDescending(m => m.NotifyDateTime).Where(m => m.MacAddress == model.MacAddress).Take(FixedLength).ToList();
-        //        }
-        //        else if (model.MacAddress != null)
-        //        {
-        //            lstLocationData = db.RtlsNotificationData.OrderByDescending(m => m.NotifyDateTime).Where(m => m.MacAddress == model.MacAddress).Take(FixedLength).ToList();
-        //        }
-        //        else if (model.AreaName != null)
-        //        {
-        //            lstLocationData = db.RtlsNotificationData.OrderByDescending(m => m.NotifyDateTime).Take(FixedLength).ToList();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        log.Error(ex.Message);
-        //        log.Error(ex.InnerException.Message);
-        //    }
-        //    return new HttpResponseMessage()
-        //    {
-        //        Content = new StringContent(JsonConvert.SerializeObject(new
-        //        {
-        //            CurrentPage = pages,
-        //            TotalRecords = TotalRecords,
-        //            RecordToDisply = FixedLength,
-        //            lstLocationData
-        //        }), Encoding.UTF8, "application/json")
-        //    };
-        //}
+        [Route("FilterLocationData")]
+        [HttpPost]
+        public HttpResponseMessage FilterLocationData(Domins.ViewModels.FilterLocationData model)
+        {
+            int FixedLength = Convert.ToInt32(model.RecordToDisply);
+            int SkipStart = (Convert.ToInt32(model.CurrentPage) * FixedLength);
+            int pages = (SkipStart + FixedLength) / FixedLength;
+            int TotalRecords = 0;
+            IEnumerable<RtlsNotificationData> lstLocationData = null;
+            try
+            {
+                //var objRtlsConfiguration = db.RtlsConfiguration.FirstOrDefault(m => m.SiteId == model.SiteId);
+                //var row = db.LocationData.Where(m => m.sn == objRtlsConfiguration.EngageSiteName);
+                lstLocationData = db.RtlsNotificationData;
+                TotalRecords = lstLocationData.Count();
+                if (model.MacAddress != null && model.AreaName != null)
+                {
+                    lstLocationData = db.RtlsNotificationData.OrderByDescending(m => m.NotifyDateTime).Where(m => m.MacAddress == model.MacAddress).Take(FixedLength).ToList();
+                }
+                else if (model.MacAddress != null)
+                {
+                    lstLocationData = db.RtlsNotificationData.OrderByDescending(m => m.NotifyDateTime).Where(m => m.MacAddress == model.MacAddress).Take(FixedLength).ToList();
+                }
+                else if (model.AreaName != null)
+                {
+                    lstLocationData = db.RtlsNotificationData.OrderByDescending(m => m.NotifyDateTime).Take(FixedLength).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message);
+                log.Error(ex.InnerException.Message);
+            }
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(new
+                {
+                    CurrentPage = pages,
+                    TotalRecords = TotalRecords,
+                    RecordToDisply = FixedLength,
+                    lstLocationData
+                }), Encoding.UTF8, "application/json")
+            };
+        }
 
 
         [Route("UpdateRTLSDataDelete")]
