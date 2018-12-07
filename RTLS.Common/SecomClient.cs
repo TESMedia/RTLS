@@ -15,6 +15,7 @@ using System.Web.Script.Serialization;
 using System.Threading;
 using Newtonsoft.Json.Linq;
 using System.Xml.Linq;
+using RTLS.Domins.ViewModels.OmniRequest;
 
 namespace RTLS.Common
 {
@@ -88,6 +89,63 @@ namespace RTLS.Common
             return retData;
         }
 
+        public async Task<string> MapCPUserWithGuestId(RequestOmniModel objRequestOmniModel, string guest_id, string token)
+        {
+            string retData = null;
+            CPUserGuestIdMapping objCPUserGuestIdMapping = new CPUserGuestIdMapping();
+            objCPUserGuestIdMapping.mac = objRequestOmniModel.MacAddress;
+            objCPUserGuestIdMapping.user.id = guest_id;
+
+            //// Serialize our concrete class into a JSON String
+            var _addCpUserData = JsonConvert.SerializeObject(objCPUserGuestIdMapping);
+            //Rest CLient Call
+            var restClient = new RestClient();
+            restClient.BaseUrl = new Uri(_uri);
+            var restRequest = new RestRequest("POST");
+            restRequest.Resource = "api/v1/venues/e2c39ffc741a4d179a541085e838c49d/devices";
+            restRequest.AddHeader("Content-yType", "application/json");
+            restRequest.AddHeader("Accept", "application/json");
+            restRequest.AddHeader("Authorization", "Bearer" + " " + token);
+            restRequest.AddParameter("application/json", _addCpUserData, ParameterType.RequestBody);
+
+
+            var response = await (Task.Run(() => restClient.Post(restRequest)));
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                var responseContent = JObject.Parse(response.Content.ToString());
+                retData = responseContent["_id"].ToString();
+            }
+            return retData;
+        }
+
+        public async Task<string> AddCpUsers(string username, string token)
+        {
+            string retData = null;
+            OmniAddUsers objOmniAddUsers = new OmniAddUsers();
+            objOmniAddUsers.user_name = username;
+            //// Serialize our concrete class into a JSON String
+            var _addCpUserData = JsonConvert.SerializeObject(objOmniAddUsers);
+            //Rest CLient Call
+            var restClient = new RestClient();
+            restClient.BaseUrl = new Uri(_uri);
+            var restRequest = new RestRequest("POST");
+            restRequest.Resource = "api/v1/venues/e2c39ffc741a4d179a541085e838c49d/guests";
+            restRequest.AddHeader("Content-yType", "application/json");
+            restRequest.AddHeader("Accept", "application/json");
+            restRequest.AddHeader("Authorization", "Bearer" + " " + token);
+            restRequest.AddParameter("application/json", _addCpUserData, ParameterType.RequestBody);
+
+
+            var response = await (Task.Run(() => restClient.Post(restRequest)));
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                var responseContent = JObject.Parse(response.Content.ToString());
+                retData = responseContent["_id"].ToString();
+            }
+            return retData;
+        }
 
         public async Task<bool> DeRegisterDevice(SecomRegisterDevice _objSecomRegisterDevice, string token,string UniqueId)
         {
@@ -170,6 +228,31 @@ namespace RTLS.Common
 
             return true;
         }
+
+        //getBlacklistDevices
+        public async Task<List<string>> getBlacklistDevices(string token)
+        {
+            List<string> retData = new List<string>();
+            //ReturnData _returnData = new ReturnData();
+            //Rest CLient Call
+            var restClient = new RestClient();
+            restClient.BaseUrl = new Uri(_uri);
+            var restRequest = new RestRequest("Get");
+            restRequest.Resource = "api/v1/venues/devices?where=" + "{\"station_info.black_list.status\":true}";
+            restRequest.AddHeader("Content-yType", "application/json");
+            restRequest.AddHeader("Accept", "application/json");
+            restRequest.AddHeader("Authorization", "Bearer" + " " + token);
+            var response = await (Task.Run(() => restClient.Execute(restRequest)));
+            var jsonresponse = JObject.Parse(response.Content.ToString());
+            var objItem = jsonresponse["_items"];
+            //int i = 0;
+            foreach (var item in objItem)
+            {
+                retData.Add(item["mac"].ToString());
+            }
+            return retData;
+        }
+
 
 
         public async Task<string> GetDevice(string MacAdress, string token)

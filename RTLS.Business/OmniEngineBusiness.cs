@@ -32,7 +32,10 @@ namespace RTLS.Business
             SecomRegisterDevice objSecomRegisterDevice = new SecomRegisterDevice();
             objSecomRegisterDevice.mac = objRequestOmniModel.MacAddress;
             objSecomRegisterDevice.station_info.device.id = objRequestOmniModel.MacAddress;
-            objSecomRegisterDevice.station_info.user.label = objRequestOmniModel.UserName;
+            //objSecomRegisterDevice.station_info.user.label = objRequestOmniModel.UserName;
+            string guest_id = await SaveUserNameToOmniEngine(objRequestOmniModel.UserName);
+
+            string _id = await MapDeviceWithGuestId(objRequestOmniModel, guest_id);
 
             using (var objSecomClient = new SecomClient())
             {
@@ -55,6 +58,49 @@ namespace RTLS.Business
                 }
             }
         }
+
+
+        public async Task<List<string>> GetBlacklistDevicesFromOmniEngine()
+        {
+            //List<string> MacAddressList = null;
+            using (var objSecomClient = new SecomClient())
+            {
+                var jsonToken = await objSecomClient.GetSecomLoginToken();
+                var token_details = JObject.Parse(jsonToken);
+                var token = token_details["jwt"].ToString();
+                var MacAddressList = await objSecomClient.getBlacklistDevices(token);
+                return MacAddressList;
+            }
+        }
+
+        public async Task<string> SaveUserNameToOmniEngine(string UserName)
+        {
+            string returnResult = null;
+            using (var objSecomClient = new SecomClient())
+            {
+                //Get Token Through login
+                var jsonToken = await objSecomClient.GetSecomLoginToken();
+                var token_details = JObject.Parse(jsonToken);
+                var token = token_details["jwt"].ToString();
+                returnResult = await objSecomClient.AddCpUsers(UserName, token);
+                return returnResult;
+            }
+        }
+
+        public async Task<string> MapDeviceWithGuestId(RequestOmniModel objRequestOmniModel, string guest_id)
+        {
+            string returnResult = null;
+            using (var objSecomClient = new SecomClient())
+            {
+                //Get Token Through login
+                var jsonToken = await objSecomClient.GetSecomLoginToken();
+                var token_details = JObject.Parse(jsonToken);
+                var token = token_details["jwt"].ToString();
+                returnResult = await objSecomClient.MapCPUserWithGuestId(objRequestOmniModel, guest_id, token);
+                return returnResult;
+            }
+        }
+
 
         //Reregister in OmniEngiene
         public async Task<bool> ReRegister(RequestOmniModel objRequestOmniModel)

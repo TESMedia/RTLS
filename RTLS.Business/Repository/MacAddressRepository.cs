@@ -195,10 +195,10 @@ namespace RTLS.Repository
                         //db.SaveChanges();
                         //UpdateStatusToRegister(objMac.DeviceId);
                         var objMac = db.DeviceAssociateSite.FirstOrDefault(m => m.DeviceId == ObjDevice.DeviceId);
-                        //objMac.status = DeviceStatus.DeRegistered;
-                        objMac.status = DeviceStatus.None;
+                        objMac.status = DeviceStatus.DeRegistered;
+                        //objMac.status = DeviceStatus.None;
                         //change
-                        objMac.DeviceRegisteredInEngineType = DeviceRegisteredInEngine.None;
+                        objMac.DeviceRegisteredInEngineType = DeviceRegisteredInEngine.OmniEngine;
                         //objMac.IsDeviceRegisterInRtls = false;
                         db.Entry(objMac).State = System.Data.Entity.EntityState.Modified;
                         db.SaveChanges();
@@ -258,6 +258,12 @@ namespace RTLS.Repository
             {
                 return false;
             }
+        }
+
+        public string[] GetMacBySiteId(int SiteId)
+        {
+            string[] macList = (db.DeviceAssociateSite.Where(m => m.SiteId == SiteId).Select(m => m.Device.MacAddress)).ToArray();
+            return macList;
         }
 
         public string[] GetMacByStatus(DeviceStatus status)
