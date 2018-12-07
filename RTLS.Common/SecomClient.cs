@@ -25,6 +25,7 @@ namespace RTLS.Common
         private string _userName = ConfigurationManager.AppSettings["SecomLoginUname"].ToString();
         private string _password = ConfigurationManager.AppSettings["SecomLoginPassword"].ToString();
         private string _uri = ConfigurationManager.AppSettings["SecomAPI"].ToString();
+        private string _venueId = ConfigurationManager.AppSettings["VenueId"].ToString();
         private bool disposed;
 
 
@@ -102,7 +103,7 @@ namespace RTLS.Common
             var restClient = new RestClient();
             restClient.BaseUrl = new Uri(_uri);
             var restRequest = new RestRequest("POST");
-            restRequest.Resource = "api/v1/venues/e2c39ffc741a4d179a541085e838c49d/devices";
+            restRequest.Resource = "api/v1/venues/"+_venueId+"/devices";
             restRequest.AddHeader("Content-yType", "application/json");
             restRequest.AddHeader("Accept", "application/json");
             restRequest.AddHeader("Authorization", "Bearer" + " " + token);
@@ -130,7 +131,7 @@ namespace RTLS.Common
             var restClient = new RestClient();
             restClient.BaseUrl = new Uri(_uri);
             var restRequest = new RestRequest("POST");
-            restRequest.Resource = "api/v1/venues/e2c39ffc741a4d179a541085e838c49d/guests";
+            restRequest.Resource = "api/v1/venues/"+_venueId+"/guests";
             restRequest.AddHeader("Content-yType", "application/json");
             restRequest.AddHeader("Accept", "application/json");
             restRequest.AddHeader("Authorization", "Bearer" + " " + token);
