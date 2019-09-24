@@ -216,7 +216,29 @@ namespace RTLS.API
             };
         }
 
+        [Route("GetBlackListDevices")]
+        [HttpPost]
+        public async void GetBlacklistDevices(RequestLocationDataVM objRequestOmniModel)
+        {
+            MacAddressRepository objMacAddressRepository = new MacAddressRepository();
+            string[] macAddress = objMacAddressRepository.GetMacBySiteId(objRequestOmniModel.SiteId);
+            OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
+            List<string> macAddressRegWithOmniEngine = await objOmniEngineBusiness.GetBlacklistDevicesFromOmniEngine();
+            var result = macAddress.Where(p => !macAddressRegWithOmniEngine.Any(p1 => p1 == p));
+            objMacAddressRepository.DeRegisterListOfMacs(result.ToArray());
+        }
 
+        [Route("GetOnlyBlackListDevices")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetOnlyBlacklistDevices()
+        {
+            OmniEngineBusiness objOmniEngineBusiness = new OmniEngineBusiness();
+            List<string> macAddressRegWithOmniEngine = await objOmniEngineBusiness.GetBlacklistDevicesFromOmniEngine();
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(macAddressRegWithOmniEngine), Encoding.UTF8, "application/json")
+            };
+        }
 
 
 
