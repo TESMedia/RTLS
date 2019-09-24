@@ -9,7 +9,28 @@ namespace RTLS.Domins.ViewModels.OmniRequest
 {
   public class RequestOmniModel
     {
-        public string MacAddress { get; set; }
+        //public RequestOmniModel()
+        //{
+        //    this.MacAddress = this.MacAddress.ToLower();
+        //}
+
+        //public string MacAddress { get; set; }
+        private string _MacAddress;
+        public string MacAddress
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_MacAddress))
+                {
+                    return _MacAddress;
+                }
+                return _MacAddress.ToLower();
+            }
+            set
+            {
+                _MacAddress = value;
+            }
+        }
 
         public int NotificationTypeId { get; set; }
 
